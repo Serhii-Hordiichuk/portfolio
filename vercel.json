@@ -1,5 +1,11 @@
 {
-  "version": 2,
+  "buildCommand": null,
+  "outputDirectory": ".",
+  "framework": null,
+  "functions": {
+    "api/chat/index.js": { "maxDuration": 30 },
+    "api/health/index.js": { "maxDuration": 10 }
+  },
   "cleanUrls": true,
   "trailingSlash": false,
   "headers": [
@@ -11,4 +17,5 @@
     ] }
   ]
 }
+
 
