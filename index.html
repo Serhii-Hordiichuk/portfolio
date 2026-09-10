@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Serhii Hordiichuk — Portfolio</title>
 <meta name="description" content="Serhii Hordiichuk — Maintenance / Full Stack DevOps AI. Portfolio + AI assistant (Ollama, OpenRouter, Groq, HF).">
-<link rel="stylesheet" href="assets/styles.css">
-<link rel="stylesheet" href="assets/chat.css">
+<link rel="stylesheet" href="assets/styles.css?v=8">
+<link rel="stylesheet" href="assets/chat.css?v=8">
 </head>
 <body>
 <header class="header">
@@ -87,24 +87,27 @@
         <select id="clang" aria-label="lang"><option value="auto" data-i18n="cAuto">Авто</option><option value="uk">UK</option><option value="en">EN</option><option value="no">NO</option></select>
         <select id="tone" aria-label="tone"><option value="professional" data-i18n="tPro">Діловий</option><option value="friendly" data-i18n="tFr">Дружній</option><option value="short" data-i18n="tSh">Коротко</option></select>
       </div>
-      <div class="cx-status"><span class="cx-dot" id="cdot"></span><span id="ctxt">…</span></div>
     </div>
   </aside>
   <main class="cx-main">
-    <div class="cx-msgs" id="chat-body"></div>
+    <div class="cx-topbar"><button class="cx-menu" id="cx-menu" aria-label="menu">☰</button><span>✉ Assistant</span></div>
+    <div class="cx-msgs" id="chat-body"><div class="cx-inner" id="chat-inner"></div></div>
     <div class="cx-typing" id="typing" data-i18n="typing">…</div>
-    <div class="cx-bar">
-      <input id="chat-input" data-i18n-ph="ph" placeholder="…" autocomplete="off">
-      <button class="cx-send" id="send" title="Send">↑</button>
+    <div class="cx-center">
+      <div class="cx-box">
+        <textarea id="chat-input" data-i18n-ph="ph" placeholder="…" autocomplete="off" rows="1"></textarea>
+        <button class="cx-send" id="send" title="Send">↑</button>
+      </div>
+      <div class="cx-under"><span class="cx-dot" id="cdot"></span> <span id="ctxt2">demo</span> · <span id="ctxt3"></span></div>
     </div>
   </main>
 </div></section>
 
-<script src="assets/config.js"></script>
-<script src="assets/i18n.js"></script>
-<script src="assets/i18n2.js"></script>
-<script src="assets/app.js"></script>
-<script src="assets/chat.js"></script>
-<script src="assets/chat-ui.js"></script>
+<script src="assets/config.js?v=8"></script>
+<script src="assets/i18n.js?v=8"></script>
+<script src="assets/i18n2.js?v=8"></script>
+<script src="assets/app.js?v=8"></script>
+<script src="assets/chat.js?v=8"></script>
+<script src="assets/chat-ui.js?v=8"></script>
 </body>
 </html>

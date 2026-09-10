@@ -1,83 +1,84 @@
-/* SH chat UI v2 — sessions, guarded init, no duplicate listeners */
+/* SH chat UI v3 */
 (function () {
 "use strict";
 const $ = (s) => document.querySelector(s);
-let booted = false;
+let booted = false, sending = false;
 const store = () => window.SH.store;
-function fillModels() {
-const pEl = $("#provider"), mEl = $("#model");
-if (!pEl || !mEl) return;
-const cfg = window.SH_CONFIG.providers[pEl.value] || {};
-mEl.innerHTML = "";
-const list = (cfg.models && cfg.models.length) ? cfg.models : [cfg.defaultModel || "default"];
-list.forEach((m) => { const o = document.createElement("option"); o.value = m; o.textContent = m; mEl.appendChild(o); });
-const saved = store().get("sh.model:" + pEl.value, cfg.defaultModel || "");
-if (saved && list.includes(saved)) mEl.value = saved;
+function provEl() { return document.getElementById('provider'); }
+function modelEl() { return document.getElementById('model'); }
+function modelsFor(p) { const c = window.SH_CONFIG.providers[p] || {}; return (c.models && c.models.length) ? c.models : ['auto']; }
+function fillModels(keep) {
+const p = provEl(), m = modelEl();
+if (!p || !m) return;
+const list = modelsFor(p.value);
+// auto = server picks model -> hide the model dropdown entirely
+m.style.display = (list.length === 1 && list[0] === 'auto') ? 'none' : '';
+m.innerHTML = '';
+list.forEach((v) => { const o = document.createElement('option'); o.value = v; o.textContent = v; m.appendChild(o); });
+const want = keep || store().get('sh.model:' + p.value, list[0]);
+m.value = list.includes(want) ? want : list[0];
 }
-function sessions() { try { const v = JSON.parse(localStorage.getItem("sh.sessions") || "[]"); return Array.isArray(v) ? v : []; } catch { return []; } }
-function saveSessions(s) { try { localStorage.setItem("sh.sessions", JSON.stringify((s || []).slice(0, 20))); } catch {} }
-function curId() { return store().get("sh.cur", ""); }
-function setCur(id) { store().set("sh.cur", id); }
-function escT(s) { return String(s == null ? "" : s); }
+function sessions() { try { const v = JSON.parse(localStorage.getItem('sh.sessions') || '[]'); return Array.isArray(v) ? v : []; } catch (e) { return []; } }
+function saveSessions(s) { try { localStorage.setItem('sh.sessions', JSON.stringify((s || []).slice(0, 30))); } catch (e) {} }
+function curId() { return store().get('sh.cur', ''); }
+function setCur(id) { store().set('sh.cur', id); }
 function renderSessions() {
-const box = $("#sessions");
-if (!box) return;
-box.innerHTML = "";
+const b = document.getElementById('sessions');
+if (!b) return;
+b.innerHTML = '';
 sessions().forEach((s) => {
-const d = document.createElement("div");
-d.className = "cx-item" + (s.id === curId() ? " on" : "");
-const t = document.createElement("span");
-t.textContent = s.title || "Chat";
-t.title = s.title || "Chat";
-t.addEventListener("click", () => openSession(s.id));
-const x = document.createElement("button");
-x.textContent = "\u00d7"; x.title = "delete"; x.setAttribute("aria-label", "delete chat");
-x.addEventListener("click", (e) => { e.stopPropagation(); delSession(s.id); });
-d.appendChild(t); d.appendChild(x); box.appendChild(d);
+const d = document.createElement('div');
+d.className = 'cx-item' + (s.id === curId() ? ' on' : '');
+const t = document.createElement('span');
+t.textContent = s.title || 'Chat'; t.title = s.title || 'Chat';
+t.addEventListener('click', () => openSession(s.id));
+const x = document.createElement('button');
+x.textContent = '\u00d7'; x.title = 'delete';
+x.addEventListener('click', (e) => { e.stopPropagation(); delSession(s.id); });
+d.appendChild(t); d.appendChild(x); b.appendChild(d);
 });
 }
 function snapshot() {
-const body = $("#chat-body");
-if (!body) return [];
-return Array.from(body.querySelectorAll(".cx-msg")).map((m) => {
-const txt = (m.firstChild && m.firstChild.textContent != null) ? m.firstChild.textContent : m.textContent;
-const via = (m.querySelector(".cx-via") || {}).textContent || "";
-return { role: m.classList.contains("u") ? "user" : "assistant", content: txt, via };
-});
+const host = document.getElementById('chat-inner') || document.getElementById('chat-body');
+if (!host) return [];
+return Array.from(host.querySelectorAll('.cx-msg')).map((m) => ({
+role: m.classList.contains('u') ? 'user' : 'assistant',
+content: ((m.firstChild || {}).textContent) || m.textContent,
+via: ((m.querySelector('.cx-via') || {}).textContent) || ''
+}));
 }
 function persist() {
-const all = sessions();
 const id = curId();
 if (!id) return;
 const msgs = snapshot();
-const first = msgs.find((m) => m.role === "user");
-const title = (first ? first.content : "New chat") || "New chat";
-const rec = { id, title: escT(title).slice(0, 42), msgs: msgs.slice(-60), ts: Date.now() };
+const f = msgs.find((m) => m.role === 'user');
+const title = ((f && f.content) || 'New chat');
+const all = sessions();
+const rec = { id: id, title: String(title).slice(0, 42), msgs: msgs.slice(-80), ts: Date.now() };
 const i = all.findIndex((s) => s.id === id);
 if (i >= 0) all[i] = rec; else all.unshift(rec);
 saveSessions(all); renderSessions();
 }
-function paint(msgs) {
-const body = $("#chat-body");
-if (!body) return;
-body.innerHTML = "";
-(msgs || []).forEach((m) => window.SH_CHAT.add(m.content, m.role === "user" ? "user" : "bot", (m.via || "").replace(/^via /, "")));
-}
 function greet() {
-const T = (window.SH_I18N[window.SH.getLang()] || window.SH_I18N.uk || {});
-if ($("#chat-body") && !$("#chat-body").children.length) window.SH_CHAT.add(T.welcome || "Hi!", "bot");
+if (window.SH_CHAT.count() === 0) {
+const T = window.SH_I18N[window.SH.getLang()] || window.SH_I18N.uk;
+window.SH_CHAT.add(T.welcome || 'Hi!', 'bot');
 }
+}
+function closeSide() { const s = document.getElementById('cx-side'); if (s) s.classList.remove('open'); }
 function openSession(id) {
 setCur(id);
+closeSide();
+window.SH_CHAT.clear();
 const s = sessions().find((x) => x.id === id);
-paint(s ? s.msgs : []);
-if (!s || !s.msgs || !s.msgs.length) greet();
-renderSessions();
+((s && s.msgs) || []).forEach((m) => window.SH_CHAT.add(m.content, m.role === 'user' ? 'user' : 'bot', (m.via || '').replace(/^via /, '')));
+greet(); renderSessions();
 }
 function newSession() {
-const id = "s" + Date.now();
-setCur(id); paint([]); greet();
-saveSessions([{ id, title: "New chat", msgs: snapshot(), ts: Date.now() }, ...sessions()]);
+const id = 's' + Date.now();
+setCur(id);
+window.SH_CHAT.clear(); greet();
+saveSessions([{ id: id, title: 'New chat', msgs: snapshot(), ts: Date.now() }].concat(sessions()));
 renderSessions();
 }
 function delSession(id) {
@@ -86,87 +87,108 @@ saveSessions(rest);
 if (id === curId()) { if (rest.length) openSession(rest[0].id); else newSession(); }
 else renderSessions();
 }
+function setStatus(mode) {
+const dot = document.getElementById('cdot');
+const t2 = document.getElementById('ctxt2');
+const t3 = document.getElementById('ctxt3');
+if (dot) dot.classList.toggle('ok', mode === 'online');
+if (t2) t2.textContent = mode;
+const p = document.getElementById('provider');
+const m = document.getElementById('model');
+if (t3 && p) t3.textContent = p.value + (m && m.value && m.value !== 'auto' ? ' / ' + m.value : '');
+}
 async function health() {
-const dot = $("#cdot"), txt = $("#ctxt");
-if (!dot || !txt) return;
 try {
 const b = window.SH_CHAT.proxyBase();
 const ctl = new AbortController();
 const t = setTimeout(() => ctl.abort(), 8000);
-const r = await fetch(b + "/api/health", { signal: ctl.signal });
+const r = await fetch(b + '/api/health', { signal: ctl.signal });
 clearTimeout(t);
 const d = await r.json();
-if (d && d.ok) { dot.classList.add("ok"); txt.textContent = "online"; return; }
-} catch (e) {}
-dot.classList.remove("ok"); txt.textContent = "demo";
+setStatus(d && d.ok ? 'online' : 'demo');
+} catch (e) { setStatus('demo'); }
 }
-let sending = false;
+function autoresize() {
+const ta = document.getElementById('chat-input');
+if (!ta) return;
+ta.style.height = 'auto';
+ta.style.height = Math.min(ta.scrollHeight, 140) + 'px';
+}
 async function send() {
 if (sending) return;
-const inp = $("#chat-input");
+const inp = document.getElementById('chat-input');
 if (!inp) return;
 const q = inp.value.trim();
 if (!q) return;
 sending = true;
-$("#send").disabled = true;
-inp.value = "";
-window.SH_CHAT.add(q, "user");
-$("#typing").style.display = "block";
-const provider = $("#provider").value, model = $("#model").value;
-store().set("sh.provider", provider);
-store().set("sh.model:" + provider, model);
-const msgs = [...window.SH_CHAT.history(10), { role: "user", content: q }];
+document.getElementById('send').disabled = true;
+inp.value = ''; autoresize();
+window.SH_CHAT.add(q, 'user');
+const ty = document.getElementById('typing');
+ty.classList.add('show');
+const provider = provEl().value, model = modelEl().value;
+store().set('sh.provider', provider);
+store().set('sh.model:' + provider, model);
+const msgs = window.SH_CHAT.history(10).concat([{ role: 'user', content: q }]);
 try {
 let ans;
-try { ans = await window.SH_CHAT.viaProxy(provider, model, [window.SH_CHAT.sysMsg(), ...msgs]); }
+try { ans = await window.SH_CHAT.viaProxy(provider, model, [window.SH_CHAT.sysMsg()].concat(msgs)); }
 catch (pe) {
-const key = (($("#api-key") || {}).value || "").trim();
-if (provider === "auto" || !key) throw pe;
+const key = ((document.getElementById('api-key') || {}).value || '').trim();
+if (!key || provider === 'auto') throw pe;
 ans = await window.SH_CHAT.direct(provider, model, key, msgs);
 }
-$("#typing").style.display = "none";
-window.SH_CHAT.add(ans.reply, "bot", ans.via);
+ty.classList.remove('show');
+window.SH_CHAT.add(ans.reply, 'bot', ans.via);
 } catch (e) {
-$("#typing").style.display = "none";
-window.SH_CHAT.add(window.SH_CHAT.demo(q), "bot", "demo");
+ty.classList.remove('show');
+window.SH_CHAT.add(window.SH_CHAT.demo(q), 'bot', 'demo');
 }
-$("#send").disabled = false;
+document.getElementById('send').disabled = false;
 sending = false;
 persist();
+closeSide();
 inp.focus();
 }
 function boot() {
 if (booted) return;
-if (!$("#chat-body") || !$("#provider")) return;
+if (!document.getElementById('chat-body') || !provEl()) return;
 booted = true;
-const prov = $("#provider");
+const p = provEl();
 Object.keys(window.SH_CONFIG.providers).forEach((k) => {
-const o = document.createElement("option");
-o.value = k; o.textContent = window.SH_CONFIG.providers[k].label; prov.appendChild(o);
+const o = document.createElement('option');
+o.value = k; o.textContent = window.SH_CONFIG.providers[k].label; p.appendChild(o);
 });
-prov.value = store().get("sh.provider", "auto");
-if (!window.SH_CONFIG.providers[prov.value]) prov.value = "auto";
-fillModels();
-prov.addEventListener("change", () => { store().set("sh.provider", prov.value); fillModels(); });
-$("#model").addEventListener("change", (e) => store().set("sh.model:" + prov.value, e.target.value));
-const ak = $("#api-key");
-if (ak) { ak.value = store().get("sh.key", ""); ak.addEventListener("change", (e) => store().set("sh.key", e.target.value.trim())); }
-$("#tone").value = store().get("sh.tone", "professional");
-$("#tone").addEventListener("change", (e) => store().set("sh.tone", e.target.value));
-$("#clang").value = store().get("sh.clang", "auto");
-$("#clang").addEventListener("change", (e) => store().set("sh.clang", e.target.value));
-$("#send").addEventListener("click", send);
-$("#chat-input").addEventListener("keydown", (e) => { if (e.key === "Enter" && !e.shiftKey) { e.preventDefault(); send(); } });
-$("#new-chat").addEventListener("click", newSession);
-document.addEventListener("sh:proxy", health);
+const savedP = store().get('sh.provider', 'auto');
+p.value = window.SH_CONFIG.providers[savedP] ? savedP : 'auto';
+fillModels(store().get('sh.model:' + p.value, ''));
+p.addEventListener('change', () => { store().set('sh.provider', p.value); fillModels(''); persist(); const t3=document.getElementById('ctxt3'); if(t3) t3.textContent=p.value; });
+modelEl().addEventListener('change', (e) => store().set('sh.model:' + p.value, e.target.value));
+const ak = document.getElementById('api-key');
+if (ak) { ak.value = store().get('sh.key', ''); ak.addEventListener('change', (e) => store().set('sh.key', e.target.value.trim())); }
+const tone = document.getElementById('tone');
+tone.value = store().get('sh.tone', 'professional');
+tone.addEventListener('change', (e) => store().set('sh.tone', e.target.value));
+const cl = document.getElementById('clang');
+cl.value = store().get('sh.clang', 'auto');
+cl.addEventListener('change', (e) => store().set('sh.clang', e.target.value));
+document.getElementById('send').addEventListener('click', send);
+const ta = document.getElementById('chat-input');
+ta.addEventListener('input', autoresize);
+ta.addEventListener('keydown', (e) => { if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); } });
+document.getElementById('new-chat').addEventListener('click', () => { newSession(); closeSide(); });
+const mb = document.getElementById('cx-menu');
+if (mb) mb.addEventListener('click', (e) => { e.stopPropagation(); document.getElementById('cx-side').classList.toggle('open'); });
+document.addEventListener('sh:proxy', health);
 const all = sessions();
 const cur = curId();
 if (all.length && cur && all.some((s) => s.id === cur)) openSession(cur);
 else if (all.length) openSession(all[0].id);
 else newSession();
+autoresize();
 health();
 setInterval(health, 30000);
 }
-if (document.readyState === "loading") document.addEventListener("DOMContentLoaded", boot);
+if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
 else boot();
 })();
