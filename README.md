@@ -1,19 +1,22 @@
-# Serhii Hordiichuk — Portfolio (B/W/G)
+# Serhii Hordiichuk — Portfolio (B/W/G) + AI on Vercel
 
-Static portfolio + full AI assistant. Frontend → GitHub Pages, proxy → Render/Fly/VPS.
+Frontend + API в одному проєкті Vercel (same origin). Домен уже підключений там.
+Автодеплой: push в `main` → Vercel redeploy.
 
-## Files
-- `index.html` — tabs: Home / Resume / IT / Assistant
-- `assets/` — styles, config, i18n (uk/en/no), app, chat (proxy-first + BYOK direct + demo)
-- `server.js` — zero-dep Node proxy: GET /api/health, POST /api/chat (ollama, openrouter, groq, hf, openai)
-- `docs/CV-Serhii.Hordiichuk.pdf`
+## Deploy (1 раз)
+1. Vercel → Add New Project → Import `portfolio` repo → Framework: Other.
+2. Environment Variables (Production + Preview):
+   OPENROUTER_API_KEY, GROQ_API_KEY, HF_TOKEN, OPENAI_API_KEY (що є),
+   OLLAMA_URL=https://твій-ollama-доступ (або порожньо), OLLAMA_MODEL=llama3.1:8b,
+   ALLOWED_ORIGINS=https://твій-домен
+3. Deploy. Перевір: https://твій-домен/api/health → ok:true.
+4. Domains: твій домен уже там — нічого міняти не треба.
+
+## Chat
+Auto → /api/chat на тому ж домені (ключі тільки в Vercel env).
+Fallback: BYOK ключ у шестірні → localStorage; demo офлайн.
 
 ## Local
-cp .env.example .env
-node server.js
+node server.js (емулює /api/* локально на :8787).
 
-## Deploy
-1. Pages: Settings → Pages → main → / (root).
-2. Proxy: Render Web Service, start `node server.js`, env keys + OLLAMA_URL + ALLOWED_ORIGINS=https://you.github.io.
-3. Paste Proxy URL in gear panel → status online.
 

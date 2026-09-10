@@ -1,6 +1,6 @@
-// Central AI config — no secrets here. Keys only in UI or proxy env.
+// Central AI config — no secrets here. Keys only in Vercel env (server) or UI (BYOK).
 window.SH_CONFIG = {
-  proxyCandidates: ["", "http://localhost:8787"],
+  proxyCandidates: [""],
   providers: {
     auto: { label: "Auto (proxy first)", models: [] },
     ollama: { label: "Ollama (my server)", defaultModel: "llama3.1:8b",
