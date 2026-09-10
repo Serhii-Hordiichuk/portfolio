@@ -1,4 +1,4 @@
-/* SH Portfolio — strict Black / White / Gray */
+/* SH Portfolio - strict Black / White / Gray */
 :root{--bg:#fff;--fg:#0a0a0a;--mut:#6b6b6b;--line:#e6e6e6;--soft:#f5f5f5;--card:#fff}
 *{box-sizing:border-box;margin:0;padding:0}
 html,body{height:100%}

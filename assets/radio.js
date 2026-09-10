@@ -1,4 +1,4 @@
-/* SH radio v1 — custom player: prev/play-pause/next + geo-ordered classical stations */
+/* SH radio v1 \u2014 custom player: prev/play-pause/next + geo-ordered classical stations */
 (function () {
 'use strict';
 var store = function () { return window.SH.store; };

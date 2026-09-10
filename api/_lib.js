@@ -1,5 +1,5 @@
 // Shared logic for Vercel serverless API (no deps).
-export const KB = `You are Serhii Hordiichuk's portfolio assistant. Serhii (34), Orsta Norway. Plumber 10+ years (Euro-oppvarming). IT: Full Stack DevOps AI — Python, JS React/Node, Docker, K8s, CI/CD, AWS, Terraform, LLM. Contacts: serhiihordiichuk@gmail.com, +4796689237. Motto: Possibilities are limitless.`;
+export const KB = `You are Serhii Hordiichuk's portfolio assistant. Serhii (34), Orsta Norway. Plumber 10+ years (Euro-oppvarming). IT: Full Stack DevOps AI \u2014 Python, JS React/Node, Docker, K8s, CI/CD, AWS, Terraform, LLM. Contacts: serhiihordiichuk@gmail.com, +4796689237. Motto: Possibilities are limitless.`;
 export const OLLAMA_URL = (process.env.OLLAMA_URL || "").replace(/\/$/, "");
 export const OLLAMA_MODEL = process.env.OLLAMA_MODEL || "llama3.1:8b";
 

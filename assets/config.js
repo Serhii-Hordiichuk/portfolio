@@ -1,4 +1,4 @@
-// Central AI config — no secrets. Keys only in Vercel env or UI (BYOK).
+// Central AI config \u2014 no secrets. Keys only in Vercel env or UI (BYOK).
 window.SH_CONFIG = {
 providers: {
 auto: { label: "Auto (server)", models: ["auto"] },

@@ -1,4 +1,4 @@
-/* ===== Assistant v3 — ChatGPT-like, strict B/W/G, no page scroll ===== */
+/* ===== Assistant v3 - ChatGPT-like, strict B/W/G, no page scroll ===== */
 #chat{display:none}
 #chat.active{display:block;height:calc(100vh - 60px);height:calc(100dvh - 60px);overflow:hidden;background:var(--bg)}
 #chat .cx{display:flex;height:100%;min-height:0}
@@ -44,7 +44,7 @@ body.dark #chat .cx-send{background:#f5f5f5;border-color:#f5f5f5;color:#111}
 #chat .cx-under{display:flex;align-items:center;justify-content:center;gap:6px;max-width:760px;margin:8px auto 0;font-size:10.5px;letter-spacing:1px;text-transform:uppercase;color:var(--mut);text-align:center}
 #chat .cx-topbar{display:none;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line);font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--mut);background:var(--card);flex-shrink:0}
 #chat .cx-menu{border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:8px;width:36px;height:36px;font-size:16px;cursor:pointer;padding:0;display:inline-flex;align-items:center;justify-content:center}
-/* player — custom */
+/* player - custom */
 .player{display:block;max-width:420px;margin:30px auto 0;border:1px solid var(--line);border-radius:14px;background:var(--card);padding:16px 18px}
 .pl-row{display:flex;align-items:center;justify-content:center;gap:14px}
 .pl-btn{width:52px;height:52px;border-radius:50%;border:1px solid var(--line);background:var(--bg);color:var(--fg);cursor:pointer;display:inline-flex;align-items:center;justify-content:center}

@@ -1,4 +1,4 @@
-/* SH tech news v3 — infinite feed with images, summaries and UI-language
+/* SH tech news v3 \u2014 infinite feed with images, summaries and UI-language
    translation (MyMemory API). Two open modes: full page and modal. */
 (function () {
 'use strict';
@@ -6,16 +6,16 @@ var HN = 'https://hn.algolia.com/api/v1/search_by_date?tags=front_page,story&hit
 var DEV = 'https://dev.to/api/articles?per_page=12&page=';
 var MM = 'https://api.mymemory.translated.net/get?q=';
 var tr = {
-  uk:{loading:'Завантаження…',more:'Ще…',done:'Це все — кінець стрічки',err:'Не вдалося завантажити'},
-  en:{loading:'Loading…',more:'More…',done:"You've reached the end",err:'Failed to load'},
-  no:{loading:'Laster…',more:'Mer…',done:'Du har nådd slutten',err:'Kunne ikke laste'},
-  de:{loading:'Lädt…',more:'Mehr…',done:'Ende erreicht',err:'Laden fehlgeschlagen'},
-  fr:{loading:'Chargement…',more:'Plus…',done:'Fin de la liste',err:'Échec du chargement'},
-  es:{loading:'Cargando…',more:'Más…',done:'Has llegado al final',err:'Error al cargar'},
-  pl:{loading:'Ładowanie…',more:'Więcej…',done:'Koniec listy',err:'Błąd ładowania'},
-  ru:{loading:'Загрузка…',more:'Ещё…',done:'Это всё',err:'Не удалось загрузить'},
-  zh:{loading:'加载中…',more:'加载更多…',done:'已经到底了',err:'加载失败'},
-  ar:{loading:'جارٍ التحميل…',more:'المزيد…',done:'وصلت إلى النهاية',err:'فشل التحميل'}
+  uk:{loading:'\u0417\u0430\u0432\u0430\u043d\u0442\u0430\u0436\u0435\u043d\u043d\u044f\u2026',more:'\u0429\u0435\u2026',done:'\u0426\u0435 \u0432\u0441\u0435 \u2014 \u043a\u0456\u043d\u0435\u0446\u044c \u0441\u0442\u0440\u0456\u0447\u043a\u0438',err:'\u041d\u0435 \u0432\u0434\u0430\u043b\u043e\u0441\u044f \u0437\u0430\u0432\u0430\u043d\u0442\u0430\u0436\u0438\u0442\u0438'},
+  en:{loading:'Loading\u2026',more:'More\u2026',done:"You've reached the end",err:'Failed to load'},
+  no:{loading:'Laster\u2026',more:'Mer\u2026',done:'Du har n\u00e5dd slutten',err:'Kunne ikke laste'},
+  de:{loading:'L\u00e4dt\u2026',more:'Mehr\u2026',done:'Ende erreicht',err:'Laden fehlgeschlagen'},
+  fr:{loading:'Chargement\u2026',more:'Plus\u2026',done:'Fin de la liste',err:'\u00c9chec du chargement'},
+  es:{loading:'Cargando\u2026',more:'M\u00e1s\u2026',done:'Has llegado al final',err:'Error al cargar'},
+  pl:{loading:'\u0141adowanie\u2026',more:'Wi\u0119cej\u2026',done:'Koniec listy',err:'B\u0142\u0105d \u0142adowania'},
+  ru:{loading:'\u0417\u0430\u0433\u0440\u0443\u0437\u043a\u0430\u2026',more:'\u0415\u0449\u0451\u2026',done:'\u042d\u0442\u043e \u0432\u0441\u0451',err:'\u041d\u0435 \u0443\u0434\u0430\u043b\u043e\u0441\u044c \u0437\u0430\u0433\u0440\u0443\u0437\u0438\u0442\u044c'},
+  zh:{loading:'\u52a0\u8f7d\u4e2d\u2026',more:'\u52a0\u8f7d\u66f4\u591a\u2026',done:'\u5df2\u7ecf\u5230\u5e95\u4e86',err:'\u52a0\u8f7d\u5931\u8d25'},
+  ar:{loading:'\u062c\u0627\u0631\u064d \u0627\u0644\u062a\u062d\u0645\u064a\u0644\u2026',more:'\u0627\u0644\u0645\u0632\u064a\u062f\u2026',done:'\u0648\u0635\u0644\u062a \u0625\u0644\u0649 \u0627\u0644\u0646\u0647\u0627\u064a\u0629',err:'\u0641\u0634\u0644 \u0627\u0644\u062a\u062d\u0645\u064a\u0644'}
 };
 var seen = {}, seenN = 0, pending = [];
 var hnPage = 0, devPage = 0, cycle = 0, busy = false, done = false, opened = false, mode = 'page', fills = 0;
@@ -118,7 +118,7 @@ function loadHN(){
       var url = h.url || ('https://news.ycombinator.com/item?id=' + h.objectID);
       var desc = (h.story_text || '').replace(/<[^>]*>/g, ' ').trim().slice(0, 220);
       addCard({ title: t, url: url, image: null, desc: desc,
-        meta: (h.points||0) + ' pts · ' + (h.num_comments||0) + ' c · ' + ago(h.created_at), src: 'HN' });
+        meta: (h.points||0) + ' pts \u00b7 ' + (h.num_comments||0) + ' c \u00b7 ' + ago(h.created_at), src: 'HN' });
       n++;
     });
     return n;
@@ -132,7 +132,7 @@ function loadDev(){
       if (!a.title) return;
       addCard({ title: a.title, url: a.url, image: a.social_image || null,
         desc: (a.description || '').replace(/<[^>]*>/g, ' ').trim().slice(0, 220),
-        meta: (a.user && a.user.name ? a.user.name + ' · ' : '') + ago(a.published_at), src: 'dev.to' });
+        meta: (a.user && a.user.name ? a.user.name + ' \u00b7 ' : '') + ago(a.published_at), src: 'dev.to' });
       n++;
     });
     return n;

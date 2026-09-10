@@ -1,5 +1,5 @@
 window.SH_I18N.en = { tv: "TV",
-live: "LIVE", loadingSt: "Loading stations…", tapPlay: "Tap ▶ to listen", navHome: "Home", navResume: "Resume", navHobby: "Side projects", navChat: "Assistant",
+live: "LIVE", loadingSt: "Loading stations\u2026", tapPlay: "Tap \u25b6 to listen", navHome: "Home", navResume: "Resume", navHobby: "Side projects", navChat: "Assistant",
 uiLang: "Language", theme: "Theme", aAuto: "Auto", aLight: "Light", aDark: "Dark",
 proxy: "AI Proxy URL", proxyHint: "Empty = same domain.",
 dl: "Download PDF", hero: "Serhii Hordiichuk", motto: "Possibilities are limitless",
@@ -8,17 +8,17 @@ dob: "Born 27.02.1992",
 sumT: "Summary", sumX: "Hi! I'm Serhii, 34. 10+ years as plumber in Ukraine (heating, water, repairs). Into tech, web dev, PC builds. Fast hands-on learner.",
 expT: "Experience", expR: "Maintenance & operations",
 exp1: "Customer happy, systems running.", exp2: "Repair or replace units.", exp3: "Heating & water installs.",
-eduT: "Education", e1: "Berezhany Institute — enterprise economics (2015–2016)",
-e2: "WUNU — management bachelor (2013–2015)", e3: "Law (2007–2013)",
-langT: "Languages", lUk: "Ukrainian — good", lEn: "English — beginner", lNo: "Norwegian — beginner", lRu: "Russian — beginner",
+eduT: "Education", e1: "Berezhany Institute \u2014 enterprise economics (2015\u20132016)",
+e2: "WUNU \u2014 management bachelor (2013\u20132015)", e3: "Law (2007\u20132013)",
+langT: "Languages", lUk: "Ukrainian \u2014 good", lEn: "English \u2014 beginner", lNo: "Norwegian \u2014 beginner", lRu: "Russian \u2014 beginner",
 skillT: "Skills", skillX: "Plumbing: installation, repair, maintenance.",
-hobbyT: "Side projects", hobbyX: "Empty for now — just a hobby, not part of the portfolio.",
+hobbyT: "Side projects", hobbyX: "Empty for now \u2014 just a hobby, not part of the portfolio.",
 cAuto: "Auto", tPro: "Professional", tFr: "Friendly", tSh: "Brief",
-newChat: "New chat", typing: "Typing…", ph: "Type a message…",
+newChat: "New chat", typing: "Typing\u2026", ph: "Type a message\u2026",
 key: "API key (BYOK)",
-welcome: "Hi! I'm Serhii's assistant. Ask about experience, education, contacts." , newsBtn: "Tech news", newsTitle: "Tech news", widgets: "Widgets", radioT: "Radio", loading: "Loading…"};
+welcome: "Hi! I'm Serhii's assistant. Ask about experience, education, contacts." , newsBtn: "Tech news", newsTitle: "Tech news", widgets: "Widgets", radioT: "Radio", loading: "Loading\u2026"};
 window.SH_I18N.no = { tv: "TV",
-live: "DIREKTE", loadingSt: "Laster stasjoner…", tapPlay: "Trykk ▶ for å lytte", navHome: "Hjem", navResume: "CV", navHobby: "Prosjekter", navChat: "Assistent",
+live: "DIREKTE", loadingSt: "Laster stasjoner\u2026", tapPlay: "Trykk \u25b6 for \u00e5 lytte", navHome: "Hjem", navResume: "CV", navHobby: "Prosjekter", navChat: "Assistent",
 uiLang: "Sprak", theme: "Tema", aAuto: "Auto", aLight: "Lys", aDark: "Mork",
 proxy: "AI Proxy URL", proxyHint: "Tom = samme domene.",
 dl: "Last ned PDF", hero: "Serhii Hordiichuk", motto: "Mulighetene er ubegrenset",
@@ -27,15 +27,15 @@ dob: "Fodt 27.02.1992",
 sumT: "Sammendrag", sumX: "Hei! Jeg er Serhii, 34. Over 10 ar som rorlegger i Ukraina (varme, vann, reparasjoner). Glad i teknologi, webutvikling, PC-bygg. Laerer fort i praksis.",
 expT: "Erfaring", expR: "Drift og vedlikehold",
 exp1: "Fornoyd kunde, systemer i drift.", exp2: "Reparasjon eller bytte.", exp3: "Varme- og vanninstallasjoner.",
-eduT: "Utdanning", e1: "Berezhany — bedriftsokonomi (2015–2016)",
-e2: "WUNU — bachelor i ledelse (2013–2015)", e3: "Jus (2007–2013)",
-langT: "Sprak", lUk: "Ukrainsk — godt", lEn: "Engelsk — nybegynner", lNo: "Norsk — nybegynner", lRu: "Russisk — nybegynner",
+eduT: "Utdanning", e1: "Berezhany \u2014 bedriftsokonomi (2015\u20132016)",
+e2: "WUNU \u2014 bachelor i ledelse (2013\u20132015)", e3: "Jus (2007\u20132013)",
+langT: "Sprak", lUk: "Ukrainsk \u2014 godt", lEn: "Engelsk \u2014 nybegynner", lNo: "Norsk \u2014 nybegynner", lRu: "Russisk \u2014 nybegynner",
 skillT: "Kompetanse", skillX: "Rorleggerarbeid: montering, reparasjon, vedlikehold.",
-hobbyT: "Prosjekter", hobbyX: "Tomt forelopig — bare hobby, ikke del av portefoljen.",
+hobbyT: "Prosjekter", hobbyX: "Tomt forelopig \u2014 bare hobby, ikke del av portefoljen.",
 cAuto: "Auto", tPro: "Profesjonell", tFr: "Vennlig", tSh: "Kort",
-newChat: "Ny chat", typing: "Skriver…", ph: "Skriv en melding…",
+newChat: "Ny chat", typing: "Skriver\u2026", ph: "Skriv en melding\u2026",
 key: "API-nokkel (BYOK)",
-welcome: "Hei! Jeg er Serhiis assistent. Spor om erfaring, utdanning, kontakt." , newsBtn: "Teknologi-nyheter", newsTitle: "Teknologi-nyheter", widgets: "Widgets", radioT: "Radio", loading: "Laster…"};
+welcome: "Hei! Jeg er Serhiis assistent. Spor om erfaring, utdanning, kontakt." , newsBtn: "Teknologi-nyheter", newsTitle: "Teknologi-nyheter", widgets: "Widgets", radioT: "Radio", loading: "Laster\u2026"};
 
 window.SH_I18N.de = { tv: "TV", navHome: "Start", navResume: "Lebenslauf", navHobby: "Projekte", navChat: "Assistent",
 uiLang: "Sprache", theme: "Thema", aAuto: "Auto", aLight: "Hell", aDark: "Dunkel",
@@ -54,7 +54,7 @@ hobbyT: "Projekte", hobbyX: "Noch leer \u2014 nur Hobby, kein Teil des Portfolio
 cAuto: "Auto", tPro: "Sachlich", tFr: "Freundlich", tSh: "Kurz",
 newChat: "Neuer Chat", typing: "Schreibt\u2026", ph: "Nachricht schreiben\u2026",
 key: "API-Schl\u00fcssel (BYOK)",
-welcome: "Hallo! Ich bin Serhiis Assistent. Frag nach Erfahrung, Bildung, Kontakten." , newsBtn: "Tech-Nachrichten", newsTitle: "Tech-Nachrichten", widgets: "Widgets", radioT: "Radio", loading: "Lädt…"};
+welcome: "Hallo! Ich bin Serhiis Assistent. Frag nach Erfahrung, Bildung, Kontakten." , newsBtn: "Tech-Nachrichten", newsTitle: "Tech-Nachrichten", widgets: "Widgets", radioT: "Radio", loading: "L\u00e4dt\u2026"};
 window.SH_I18N.fr = { tv: "TV", navHome: "Accueil", navResume: "CV", navHobby: "Projets", navChat: "Assistant",
 uiLang: "Langue", theme: "Th\u00e8me", aAuto: "Auto", aLight: "Clair", aDark: "Sombre",
 proxy: "URL proxy IA", proxyHint: "Vide = m\u00eame domaine.",
@@ -72,7 +72,7 @@ hobbyT: "Projets", hobbyX: "Vide pour l\u2019instant \u2014 simple hobby, pas du
 cAuto: "Auto", tPro: "Pro", tFr: "Amical", tSh: "Bref",
 newChat: "Nouveau chat", typing: "\u00c9crit\u2026", ph: "\u00c9crivez un message\u2026",
 key: "Cl\u00e9 API (BYOK)",
-welcome: "Salut ! Je suis l\u2019assistant de Serhii. Questions sur exp\u00e9rience, formation, contacts." , newsBtn: "Actu tech", newsTitle: "Actu tech", widgets: "Widgets", radioT: "Radio", loading: "Chargement…"};
+welcome: "Salut ! Je suis l\u2019assistant de Serhii. Questions sur exp\u00e9rience, formation, contacts." , newsBtn: "Actu tech", newsTitle: "Actu tech", widgets: "Widgets", radioT: "Radio", loading: "Chargement\u2026"};
 window.SH_I18N.es = { tv: "TV", navHome: "Inicio", navResume: "CV", navHobby: "Proyectos", navChat: "Asistente",
 uiLang: "Idioma", theme: "Tema", aAuto: "Auto", aLight: "Claro", aDark: "Oscuro",
 proxy: "URL proxy IA", proxyHint: "Vac\u00edo = mismo dominio.",
@@ -90,7 +90,7 @@ hobbyT: "Proyectos", hobbyX: "Vac\u00edo por ahora \u2014 solo hobby, no es port
 cAuto: "Auto", tPro: "Formal", tFr: "Amable", tSh: "Breve",
 newChat: "Nuevo chat", typing: "Escribiendo\u2026", ph: "Escribe un mensaje\u2026",
 key: "Clave API (BYOK)",
-welcome: "\u00a1Hola! Soy el asistente de Serhii. Pregunta por experiencia, estudios, contacto." , newsBtn: "Noticias tech", newsTitle: "Noticias tech", widgets: "Widgets", radioT: "Radio", loading: "Cargando…"};
+welcome: "\u00a1Hola! Soy el asistente de Serhii. Pregunta por experiencia, estudios, contacto." , newsBtn: "Noticias tech", newsTitle: "Noticias tech", widgets: "Widgets", radioT: "Radio", loading: "Cargando\u2026"};
 window.SH_I18N.pl = { tv: "TV", navHome: "Start", navResume: "CV", navHobby: "Projekty", navChat: "Asystent",
 uiLang: "J\u0119zyk", theme: "Motyw", aAuto: "Auto", aLight: "Jasny", aDark: "Ciemny",
 proxy: "URL proxy AI", proxyHint: "Pusto = ta sama domena.",
@@ -108,8 +108,8 @@ hobbyT: "Projekty", hobbyX: "Na razie pusto \u2014 tylko hobby, nie portfolio.",
 cAuto: "Auto", tPro: "Formalnie", tFr: "Przyja\u017anie", tSh: "Kr\u00f3tko",
 newChat: "Nowy czat", typing: "Pisze\u2026", ph: "Napisz wiadomo\u015b\u0107\u2026",
 key: "Klucz API (BYOK)",
-welcome: "Cze\u015b\u0107! Jestem asystentem Serhiia. Pytaj o do\u015bwiadczenie, edukacj\u0119, kontakt." , newsBtn: "Wiadomości tech", newsTitle: "Wiadomości tech", widgets: "Widgetsy", radioT: "Radio", loading: "Ładowanie…"};
- window.SH_I18N.zh = { tv: "电视", navHome: "\u9996\u9875", navResume: "\u7b80\u5386", navHobby: "\u9879\u76ee", navChat: "\u52a9\u624b",
+welcome: "Cze\u015b\u0107! Jestem asystentem Serhiia. Pytaj o do\u015bwiadczenie, edukacj\u0119, kontakt." , newsBtn: "Wiadomo\u015bci tech", newsTitle: "Wiadomo\u015bci tech", widgets: "Widgetsy", radioT: "Radio", loading: "\u0141adowanie\u2026"};
+ window.SH_I18N.zh = { tv: "\u7535\u89c6", navHome: "\u9996\u9875", navResume: "\u7b80\u5386", navHobby: "\u9879\u76ee", navChat: "\u52a9\u624b",
 uiLang: "\u8bed\u8a00", theme: "\u4e3b\u9898", aAuto: "\u81ea\u52a8", aLight: "\u6d45\u8272", aDark: "\u6df1\u8272",
 proxy: "AI \u4ee3\u7406 URL", proxyHint: "\u7a7a = \u540c\u57df\u540d\u3002",
 dl: "\u4e0b\u8f7d PDF", hero: "Serhii Hordiichuk", motto: "\u53ef\u80fd\u65e0\u9650",
@@ -126,8 +126,8 @@ hobbyT: "\u9879\u76ee", hobbyX: "\u6682\u65f6\u4e3a\u7a7a \u2014 \u53ea\u662f\u7
 cAuto: "\u81ea\u52a8", tPro: "\u6b63\u5f0f", tFr: "\u53cb\u597d", tSh: "\u7b80\u77ed",
 newChat: "\u65b0\u5bf9\u8bdd", typing: "\u8f93\u5165\u4e2d\u2026", ph: "\u5199\u6d88\u606f\u2026",
 key: "API \u5bc6\u94a5 (BYOK)",
-welcome: "\u4f60\u597d\uff01\u6211\u662fSerhii\u7684\u52a9\u624b\u3002\u53ef\u95ee\u7ecf\u9a8c\u3001\u6559\u80b2\u3001\u8054\u7cfb\u65b9\u5f0f\u3002" , newsBtn: "科技新闻", newsTitle: "科技新闻", widgets: "小工具", radioT: "电台", loading: "加载中…"};
-window.SH_I18N.ar = { tv: "تلفاز", navHome: "\u0627\u0644\u0631\u0626\u064a\u0633\u064a\u0629", navResume: "\u0627\u0644\u0633\u064a\u0631\u0629", navHobby: "\u0645\u0634\u0627\u0631\u064a\u0639", navChat: "\u0627\u0644\u0645\u0633\u0627\u0639\u062f",
+welcome: "\u4f60\u597d\uff01\u6211\u662fSerhii\u7684\u52a9\u624b\u3002\u53ef\u95ee\u7ecf\u9a8c\u3001\u6559\u80b2\u3001\u8054\u7cfb\u65b9\u5f0f\u3002" , newsBtn: "\u79d1\u6280\u65b0\u95fb", newsTitle: "\u79d1\u6280\u65b0\u95fb", widgets: "\u5c0f\u5de5\u5177", radioT: "\u7535\u53f0", loading: "\u52a0\u8f7d\u4e2d\u2026"};
+window.SH_I18N.ar = { tv: "\u062a\u0644\u0641\u0627\u0632", navHome: "\u0627\u0644\u0631\u0626\u064a\u0633\u064a\u0629", navResume: "\u0627\u0644\u0633\u064a\u0631\u0629", navHobby: "\u0645\u0634\u0627\u0631\u064a\u0639", navChat: "\u0627\u0644\u0645\u0633\u0627\u0639\u062f",
 uiLang: "\u0627\u0644\u0644\u063a\u0629", theme: "\u0627\u0644\u0645\u0638\u0647\u0631", aAuto: "\u062a\u0644\u0642\u0627\u0626\u064a", aLight: "\u0641\u0627\u062a\u062d", aDark: "\u062f\u0627\u0643\u0646",
 proxy: "URL \u0627\u0644\u0628\u0631\u0648\u0643\u0633\u064a", proxyHint: "\u0641\u0627\u0631\u063a = \u0646\u0641\u0633 \u0627\u0644\u0646\u0637\u0627\u0642\u3002",
 dl: "\u062a\u062d\u0645\u064a\u0644 PDF", hero: "Serhii Hordiichuk", motto: "\u0627\u0644\u0625\u0645\u0643\u0627\u0646\u064a\u0627\u062a \u0628\u0644\u0627 \u062d\u062f\u0648\u062f",
@@ -144,8 +144,8 @@ hobbyT: "\u0645\u0634\u0627\u0631\u064a\u0639", hobbyX: "\u0641\u0627\u0631\u063
 cAuto: "\u062a\u0644\u0642\u0627\u0626\u064a", tPro: "\u0631\u0633\u0645\u064a", tFr: "\u0648\u062f\u064a", tSh: "\u0645\u062e\u062a\u0635\u0631",
 newChat: "\u062f\u0631\u062f\u0634\u0629 \u062c\u062f\u064a\u062f\u0629", typing: "\u064a\u0643\u062a\u0628\u2026", ph: "\u0627\u0643\u062a\u0628 \u0631\u0633\u0627\u0644\u0629\u2026",
 key: "\u0645\u0641\u062a\u0627\u062d API (BYOK)",
-welcome: "\u0645\u0631\u062d\u0628\u0627! \u0623\u0646\u0627 \u0645\u0633\u0627\u0639\u062f Serhii. \u0627\u0633\u0623\u0644 \u0639\u0646 \u0627\u0644\u062e\u0628\u0631\u0629 \u0623\u0648 \u0627\u0644\u062a\u0639\u0644\u064a\u0645." , newsBtn: "أخبار التقنية", newsTitle: "أخبار التقنية", widgets: "أدوات", radioT: "راديو", loading: "جارٍ التحميل…"};
-window.SH_I18N.ru = { tv: "ТВ", navHome: "\u0413\u043b\u0430\u0432\u043d\u0430\u044f", navResume: "\u0420\u0435\u0437\u044e\u043c\u0435", navHobby: "\u041f\u0440\u043e\u0435\u043a\u0442\u044b", navChat: "\u0410\u0441\u0441\u0438\u0441\u0442\u0435\u043d\u0442",
+welcome: "\u0645\u0631\u062d\u0628\u0627! \u0623\u0646\u0627 \u0645\u0633\u0627\u0639\u062f Serhii. \u0627\u0633\u0623\u0644 \u0639\u0646 \u0627\u0644\u062e\u0628\u0631\u0629 \u0623\u0648 \u0627\u0644\u062a\u0639\u0644\u064a\u0645." , newsBtn: "\u0623\u062e\u0628\u0627\u0631 \u0627\u0644\u062a\u0642\u0646\u064a\u0629", newsTitle: "\u0623\u062e\u0628\u0627\u0631 \u0627\u0644\u062a\u0642\u0646\u064a\u0629", widgets: "\u0623\u062f\u0648\u0627\u062a", radioT: "\u0631\u0627\u062f\u064a\u0648", loading: "\u062c\u0627\u0631\u064d \u0627\u0644\u062a\u062d\u0645\u064a\u0644\u2026"};
+window.SH_I18N.ru = { tv: "\u0422\u0412", navHome: "\u0413\u043b\u0430\u0432\u043d\u0430\u044f", navResume: "\u0420\u0435\u0437\u044e\u043c\u0435", navHobby: "\u041f\u0440\u043e\u0435\u043a\u0442\u044b", navChat: "\u0410\u0441\u0441\u0438\u0441\u0442\u0435\u043d\u0442",
 uiLang: "\u042f\u0437\u044b\u043a", theme: "\u0422\u0435\u043c\u0430", aAuto: "\u0410\u0432\u0442\u043e", aLight: "\u0421\u0432\u0435\u0442\u043b\u0430\u044f", aDark: "\u0422\u0451\u043c\u043d\u0430\u044f",
 proxy: "URL AI-\u043f\u0440\u043e\u043a\u0441\u0438", proxyHint: "\u041f\u0443\u0441\u0442\u043e = \u0442\u043e\u0442 \u0436\u0435 \u0434\u043e\u043c\u0435\u043d.",
 dl: "\u0421\u043a\u0430\u0447\u0430\u0442\u044c PDF", hero: "Serhii Hordiichuk", motto: "\u0412\u043e\u0437\u043c\u043e\u0436\u043d\u043e\u0441\u0442\u0438 \u0431\u0435\u0437\u0433\u0440\u0430\u043d\u0438\u0447\u043d\u044b",
@@ -162,4 +162,4 @@ hobbyT: "\u041f\u0440\u043e\u0435\u043a\u0442\u044b", hobbyX: "\u041f\u043e\u043
 cAuto: "\u0410\u0432\u0442\u043e", tPro: "\u041e\u0444\u0438\u0446\u0438\u0430\u043b\u044c\u043d\u043e", tFr: "\u0414\u0440\u0443\u0436\u0435\u043b\u044e\u0431\u043d\u043e", tSh: "\u041a\u0440\u0430\u0442\u043a\u043e",
 newChat: "\u041d\u043e\u0432\u044b\u0439 \u0447\u0430\u0442", typing: "\u041f\u0435\u0447\u0430\u0442\u0430\u0435\u0442\u2026", ph: "\u041d\u0430\u043f\u0438\u0448\u0438\u0442\u0435 \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u0435\u2026",
 key: "API-\u043a\u043b\u044e\u0447 (BYOK)",
-welcome: "\u041f\u0440\u0438\u0432\u0435\u0442! \u042f \u0430\u0441\u0441\u0438\u0441\u0442\u0435\u043d\u0442 Serhii. \u0421\u043f\u0440\u0430\u0448\u0438\u0432\u0430\u0439 \u043e \u043e\u043f\u044b\u0442\u0435, \u043e\u0431\u0440\u0430\u0437\u043e\u0432\u0430\u043d\u0438\u0438, \u043a\u043e\u043d\u0442\u0430\u043a\u0442\u0430\u0445." , newsBtn: "Новости технологий", newsTitle: "Техно-новости", widgets: "Виджеты", radioT: "Радио", loading: "Загрузка…"};
+welcome: "\u041f\u0440\u0438\u0432\u0435\u0442! \u042f \u0430\u0441\u0441\u0438\u0441\u0442\u0435\u043d\u0442 Serhii. \u0421\u043f\u0440\u0430\u0448\u0438\u0432\u0430\u0439 \u043e \u043e\u043f\u044b\u0442\u0435, \u043e\u0431\u0440\u0430\u0437\u043e\u0432\u0430\u043d\u0438\u0438, \u043a\u043e\u043d\u0442\u0430\u043a\u0442\u0430\u0445." , newsBtn: "\u041d\u043e\u0432\u043e\u0441\u0442\u0438 \u0442\u0435\u0445\u043d\u043e\u043b\u043e\u0433\u0438\u0439", newsTitle: "\u0422\u0435\u0445\u043d\u043e-\u043d\u043e\u0432\u043e\u0441\u0442\u0438", widgets: "\u0412\u0438\u0434\u0436\u0435\u0442\u044b", radioT: "\u0420\u0430\u0434\u0438\u043e", loading: "\u0417\u0430\u0433\u0440\u0443\u0437\u043a\u0430\u2026"};

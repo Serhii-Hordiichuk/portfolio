@@ -1,4 +1,4 @@
-/* SH widgets v3 — FAB, sheet, three widgets: Radio / TV / News */
+/* SH widgets v3 \u2014 FAB, sheet, three widgets: Radio / TV / News */
 (function () {
 'use strict';
 function $_(s) { return document.querySelector(s); }

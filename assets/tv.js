@@ -1,4 +1,4 @@
-/* SH TV v1 — custom HLS player, tech / documentary / news channels.
+/* SH TV v1 \u2014 custom HLS player, tech / documentary / news channels.
    All code and comments in English. */
 (function () {
 'use strict';
