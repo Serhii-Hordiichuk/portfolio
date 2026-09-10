@@ -1,0 +1,795 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Serhii Hordiichuk — Portfolio</title>
+<style>
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'Helvetica Neue',Arial,sans-serif;overflow-x:hidden;padding-top:60px;background:#fff;color:#000;transition:background .3s,color .3s}
+body.dark-theme{background:#0a0a0a;color:#fff}
+.icon{width:18px;height:18px;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;fill:none;display:block;flex-shrink:0;pointer-events:none}
+.icon-md{width:20px;height:20px}
+.icon-sm{width:15px;height:15px;stroke-width:2}
+
+.header{position:fixed;top:0;left:0;right:0;height:60px;background:rgba(255,255,255,.98);border-bottom:1px solid #e5e5e5;display:flex;align-items:center;justify-content:space-between;padding:0 24px;z-index:1000;backdrop-filter:blur(12px);transition:background .3s,border-color .3s}
+body.dark-theme .header{background:rgba(10,10,10,.98);border-color:#222}
+.header-logo{font-size:14px;font-weight:700;letter-spacing:2px;text-transform:uppercase;display:flex;align-items:center;gap:10px;white-space:nowrap}
+.logo-dot{width:6px;height:6px;border-radius:50%;background:#000}
+body.dark-theme .logo-dot{background:#fff}
+
+.nav-buttons{display:flex;align-items:center;gap:2px;margin-left:30px;flex:1;overflow-x:auto;scrollbar-width:none}
+.nav-buttons::-webkit-scrollbar{display:none}
+.nav-btn{display:inline-flex;align-items:center;gap:8px;padding:9px 16px;border:none;background:transparent;color:#666;font-size:13px;font-weight:500;cursor:pointer;border-radius:4px;transition:all .2s;font-family:inherit;white-space:nowrap}
+body.dark-theme .nav-btn{color:#888}
+.nav-btn:hover{background:#f0f0f0;color:#000}
+body.dark-theme .nav-btn:hover{background:#1a1a1a;color:#fff}
+.nav-btn.active{background:#000;color:#fff}
+body.dark-theme .nav-btn.active{background:#fff;color:#000}
+
+.settings-trigger{width:40px;height:40px;border-radius:50%;border:none;background:transparent;color:#000;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .3s}
+body.dark-theme .settings-trigger{color:#fff}
+.settings-trigger:hover{background:#f0f0f0;transform:rotate(90deg)}
+body.dark-theme .settings-trigger:hover{background:#1a1a1a}
+
+.settings-panel{position:fixed;top:70px;right:24px;width:300px;background:#fff;border-radius:6px;box-shadow:0 20px 60px rgba(0,0,0,.15);padding:8px;display:none;flex-direction:column;z-index:1001;border:1px solid #e5e5e5}
+body.dark-theme .settings-panel{background:#141414;border-color:#2a2a2a}
+.settings-panel.active{display:flex}
+.settings-section{padding:12px 14px;border-bottom:1px solid #f0f0f0}
+body.dark-theme .settings-section{border-color:#222}
+.settings-section:last-child{border-bottom:none}
+.settings-label{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:#999;font-weight:700;margin-bottom:8px;display:block}
+body.dark-theme .settings-label{color:#666}
+.settings-panel select{width:100%;padding:9px 12px;border-radius:4px;border:1px solid #e0e0e0;background:#fafafa;color:#000;cursor:pointer;font-size:13px;font-family:inherit;outline:none}
+.settings-panel select:focus{border-color:#000}
+body.dark-theme .settings-panel select{background:#1e1e1e;color:#fff;border-color:#333}
+body.dark-theme .settings-panel select:focus{border-color:#fff}
+
+.download-btn{display:flex;align-items:center;gap:10px;width:100%;padding:11px 14px;border-radius:4px;border:none;background:#000;color:#fff;cursor:pointer;font-size:13px;font-family:inherit;font-weight:500;transition:all .2s}
+.download-btn:hover{background:#333}
+body.dark-theme .download-btn{background:#fff;color:#000}
+body.dark-theme .download-btn:hover{background:#ddd}
+
+.section{width:100%;min-height:calc(100vh - 60px);display:none}
+.section.active{display:block}
+
+#cover{background:url('avatar.jpg') center/cover no-repeat #d4d4d4;position:relative;display:none;align-items:center;justify-content:center;min-height:calc(100vh - 60px)}
+#cover.active{display:flex}
+#cover::before{content:'';position:absolute;inset:0;background:rgba(0,0,0,.55);opacity:0;transition:opacity .3s;z-index:1;pointer-events:none}
+body.dark-theme #cover::before{opacity:1}
+.cover-content{background:rgba(255,255,255,.97);padding:50px 60px;border-radius:4px;text-align:center;z-index:2;box-shadow:0 30px 80px rgba(0,0,0,.35);border:1px solid rgba(0,0,0,.05);max-width:90%;width:520px;position:relative}
+body.dark-theme .cover-content{background:rgba(15,15,15,.97);border-color:rgba(255,255,255,.1)}
+.cover-content h1{font-size:28px;font-weight:300;letter-spacing:6px;text-transform:uppercase;margin-bottom:14px}
+.cover-motto{font-size:12px;font-weight:500;letter-spacing:5px;text-transform:uppercase;color:#666;padding-bottom:24px;border-bottom:1px solid #e0e0e0;margin-bottom:30px}
+body.dark-theme .cover-motto{color:#999;border-color:#333}
+.cover-actions{display:flex;justify-content:center;align-items:center;gap:14px;flex-wrap:wrap}
+
+.radio-controls{display:inline-flex;align-items:center;gap:4px;padding:5px;border:1px solid #e0e0e0;border-radius:50px}
+body.dark-theme .radio-controls{border-color:#333}
+.radio-btn{width:42px;height:42px;border-radius:50%;border:none;background:transparent;color:#000;cursor:pointer;display:flex;align-items:center;justify-content:center;transition:all .2s;padding:0}
+body.dark-theme .radio-btn{color:#fff}
+.radio-btn:hover{background:#f0f0f0}
+body.dark-theme .radio-btn:hover{background:#1a1a1a}
+.radio-btn.playing{background:#000;color:#fff}
+body.dark-theme .radio-btn.playing{background:#fff;color:#000}
+
+.cover-btn{display:inline-flex;align-items:center;gap:8px;padding:0 26px;cursor:pointer;border:1px solid #000;background:transparent;color:#000;font-size:12px;font-weight:600;letter-spacing:1.5px;text-transform:uppercase;transition:all .25s;border-radius:50px;font-family:inherit;height:52px}
+body.dark-theme .cover-btn{border-color:#fff;color:#fff}
+.cover-btn:hover{background:#000;color:#fff}
+body.dark-theme .cover-btn:hover{background:#fff;color:#000}
+
+.radio-status{display:block;margin-top:24px;font-size:10px;letter-spacing:3px;text-transform:uppercase;color:#999;height:14px;transition:color .3s;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.radio-status.live{color:#000}
+body.dark-theme .radio-status.live{color:#fff}
+
+#official{background:#fff;color:#000}
+body.dark-theme #official{background:#0a0a0a;color:#fff}
+.official-container{max-width:800px;margin:0 auto;padding:50px 40px}
+#official h1{font-size:30px;margin-bottom:12px;text-transform:uppercase;letter-spacing:5px;font-weight:300}
+.official-motto{font-size:11px;font-weight:500;letter-spacing:5px;text-transform:uppercase;color:#666;margin-bottom:24px;padding-bottom:24px;border-bottom:1px solid #e0e0e0}
+body.dark-theme .official-motto{color:#999;border-color:#333}
+.subtitle{font-size:12px;color:#666;margin-bottom:25px;letter-spacing:1.5px;text-transform:uppercase}
+body.dark-theme .subtitle{color:#999}
+#official h2{font-size:11px;text-transform:uppercase;letter-spacing:3px;border-bottom:1px solid #000;padding-bottom:8px;margin-top:38px;margin-bottom:15px;font-weight:700}
+body.dark-theme #official h2{border-color:#fff}
+#official p,#official li{line-height:1.75;font-size:13.5px;margin:6px 0;color:#333}
+body.dark-theme #official p,body.dark-theme #official li{color:#ccc}
+#official ul{padding-left:18px;margin-top:5px}
+.contact-info{margin-bottom:20px;font-size:13px;color:#444}
+body.dark-theme .contact-info{color:#aaa}
+.contact-info span{display:inline-flex;align-items:center;gap:6px;margin-right:18px;margin-bottom:5px}
+.job-title{font-weight:700;font-size:15px}
+.date{float:right;color:#666;font-size:13px;font-weight:400}
+body.dark-theme .date{color:#999}
+
+#it{background:#000;color:#e0e0e0;font-family:'JetBrains Mono','Courier New',monospace}
+.it-container{max-width:800px;margin:0 auto;padding:50px 40px}
+#it h1{color:#fff;text-transform:uppercase;font-size:22px;letter-spacing:4px;margin-bottom:14px;font-weight:400}
+#it h2{color:#fff;border-bottom:1px solid #333;padding-bottom:8px;margin-top:38px;font-size:11px;letter-spacing:3px;text-transform:uppercase;font-weight:700}
+#it p,#it li{line-height:1.8;color:#b0b0b0;font-size:13px}
+#it .tech{color:#fff;font-weight:500}
+#it a{color:#fff;text-decoration:none;border-bottom:1px dotted #666}
+#it a:hover{border-bottom-style:solid;border-color:#fff}
+#it ul{padding-left:18px}
+#it li{margin-bottom:12px}
+#it li strong{color:#fff}
+
+#chat-page{background:#f5f5f5;min-height:calc(100vh - 60px);display:none;flex-direction:column}
+#chat-page.active{display:flex}
+body.dark-theme #chat-page{background:#0a0a0a}
+.chat-page-layout{max-width:900px;width:100%;margin:0 auto;padding:30px 20px;flex:1;display:flex;flex-direction:column;gap:20px;min-height:calc(100vh - 120px)}
+.chat-settings-bar{background:#fff;border-radius:4px;padding:16px 20px;box-shadow:0 1px 3px rgba(0,0,0,.04);border:1px solid #e5e5e5;display:flex;flex-wrap:wrap;gap:18px;align-items:center}
+body.dark-theme .chat-settings-bar{background:#141414;border-color:#2a2a2a}
+.chat-settings-bar .field{display:flex;align-items:center;gap:8px}
+.chat-settings-bar label{font-size:10px;text-transform:uppercase;letter-spacing:1.5px;color:#888;font-weight:700}
+body.dark-theme .chat-settings-bar label{color:#666}
+.chat-settings-bar select{padding:7px 12px;border-radius:4px;border:1px solid #e0e0e0;background:#fafafa;color:#000;font-size:13px;font-family:inherit;cursor:pointer;outline:none}
+body.dark-theme .chat-settings-bar select{background:#1e1e1e;color:#fff;border-color:#333}
+.chat-status{margin-left:auto;display:flex;align-items:center;gap:8px;font-size:11px;letter-spacing:1.5px;text-transform:uppercase;color:#666;font-weight:600}
+body.dark-theme .chat-status{color:#999}
+.status-dot{width:6px;height:6px;border-radius:50%;background:#000;animation:pulse 2s infinite}
+body.dark-theme .status-dot{background:#fff}
+@keyframes pulse{0%,100%{opacity:1}50%{opacity:.3}}
+.chat-container{background:#fff;border-radius:4px;box-shadow:0 1px 3px rgba(0,0,0,.04);border:1px solid #e5e5e5;flex:1;display:flex;flex-direction:column;overflow:hidden;min-height:400px}
+body.dark-theme .chat-container{background:#141414;border-color:#2a2a2a}
+.chat-body{flex:1;padding:24px;overflow-y:auto;display:flex;flex-direction:column;gap:14px}
+.chat-body::-webkit-scrollbar{width:4px}
+.chat-body::-webkit-scrollbar-thumb{background:#ccc;border-radius:2px}
+body.dark-theme .chat-body::-webkit-scrollbar-thumb{background:#333}
+.chat-message{max-width:75%;padding:12px 16px;border-radius:4px;font-size:13.5px;line-height:1.55;word-wrap:break-word}
+.chat-message.bot{background:#f5f5f5;color:#000;align-self:flex-start;border:1px solid #e5e5e5}
+body.dark-theme .chat-message.bot{background:#1e1e1e;color:#fff;border-color:#2a2a2a}
+.chat-message.user{background:#000;color:#fff;align-self:flex-end}
+body.dark-theme .chat-message.user{background:#fff;color:#000}
+.chat-typing{font-size:12px;color:#999;padding:0 24px 10px;display:none;font-style:italic}
+.chat-footer{display:flex;padding:16px;background:#fafafa;border-top:1px solid #e5e5e5;gap:10px}
+body.dark-theme .chat-footer{background:#0f0f0f;border-color:#222}
+.chat-footer input{flex:1;padding:12px 18px;border:1px solid #e0e0e0;border-radius:4px;outline:none;font-size:13.5px;background:#fff;color:#000;font-family:inherit}
+.chat-footer input:focus{border-color:#000}
+body.dark-theme .chat-footer input{background:#1e1e1e;color:#fff;border-color:#333}
+body.dark-theme .chat-footer input:focus{border-color:#fff}
+.chat-footer button{background:#000;color:#fff;border:none;padding:0 22px;border-radius:4px;cursor:pointer;display:flex;align-items:center;gap:8px;font-size:12px;font-weight:600;letter-spacing:1px;text-transform:uppercase;font-family:inherit}
+.chat-footer button:hover{background:#333}
+body.dark-theme .chat-footer button{background:#fff;color:#000}
+body.dark-theme .chat-footer button:hover{background:#ddd}
+
+@media print{
+  body{padding-top:0;background:#fff!important;color:#000!important}
+  .header,.settings-panel,#cover,#it,#chat-page{display:none!important}
+  #official{display:block!important;background:#fff!important;color:#000!important;min-height:auto}
+  .official-container{padding:0;max-width:100%}
+  @page{margin:2cm}
+}
+
+@media (max-width:768px){
+  .header{padding:0 12px}
+  .header-logo .text{display:none}
+  .nav-buttons{margin-left:8px}
+  .nav-btn{padding:8px 10px}
+  .nav-btn .label{display:none}
+  .settings-panel{width:calc(100vw - 24px);right:12px}
+  .official-container,.it-container{padding:30px 20px}
+  .chat-message{max-width:88%}
+  .chat-status{display:none}
+  .cover-content{padding:35px 25px;width:auto}
+  .cover-content h1{font-size:20px;letter-spacing:3px}
+  .cover-motto{font-size:10px;letter-spacing:3px}
+  #official h1{font-size:22px;letter-spacing:3px}
+  #it h1{font-size:18px;letter-spacing:2px}
+  .cover-actions{flex-direction:column}
+}
+</style>
+</head>
+<body>
+
+<header class="header">
+  <div class="header-logo">
+    <span class="logo-dot"></span>
+    <span class="text">S. Hordiichuk</span>
+  </div>
+  <nav class="nav-buttons">
+    <button class="nav-btn active" data-nav="cover">
+      <svg class="icon" viewBox="0 0 24 24"><path d="M3 9l9-7 9 7v11a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2z"/><polyline points="9 22 9 12 15 12 15 22"/></svg>
+      <span class="label" data-i18n="navHome">Головна</span>
+    </button>
+    <button class="nav-btn" data-nav="official">
+      <svg class="icon" viewBox="0 0 24 24"><path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"/><polyline points="14 2 14 8 20 8"/><line x1="16" y1="13" x2="8" y2="13"/><line x1="16" y1="17" x2="8" y2="17"/></svg>
+      <span class="label" data-i18n="navOfficial">Резюме</span>
+    </button>
+    <button class="nav-btn" data-nav="it">
+      <svg class="icon" viewBox="0 0 24 24"><polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/></svg>
+      <span class="label" data-i18n="navIt">IT Проєкти</span>
+    </button>
+    <button class="nav-btn" data-nav="chat-page">
+      <svg class="icon" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+      <span class="label" data-i18n="navChat">Асистент</span>
+    </button>
+  </nav>
+  <div class="header-right">
+    <button id="settings-trigger" class="settings-trigger" title="Settings">
+      <svg class="icon icon-md" viewBox="0 0 24 24">
+        <circle cx="12" cy="12" r="3"/>
+        <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+      </svg>
+    </button>
+  </div>
+</header>
+
+<div id="settings-panel" class="settings-panel">
+  <div class="settings-section">
+    <span class="settings-label" data-i18n="settingsLang">Мова інтерфейсу</span>
+    <select id="lang-select">
+      <option value="uk">Українська</option>
+      <option value="en">English</option>
+      <option value="no">Norsk</option>
+    </select>
+  </div>
+  <div class="settings-section">
+    <span class="settings-label" data-i18n="settingsTheme">Тема</span>
+    <select id="theme-select">
+      <option value="auto" data-i18n="themeAuto">Авто (як в системі)</option>
+      <option value="light" data-i18n="themeLight">Світла</option>
+      <option value="dark" data-i18n="themeDark">Темна</option>
+    </select>
+  </div>
+  <div class="settings-section">
+    <span class="settings-label" data-i18n="settingsRadio">Класичне радіо</span>
+    <select id="radio-select">
+      <option value="https://ice1.somafm.com/classical-128-mp3">SomaFM Classical</option>
+      <option value="https://ice1.somafm.com/lush-128-mp3">SomaFM Lush</option>
+      <option value="https://ice1.somafm.com/dronezone-128-mp3">SomaFM Drone Zone</option>
+      <option value="https://ice1.somafm.com/secretagent-128-mp3">SomaFM Secret Agent</option>
+      <option value="https://stream.radioparadise.com/mp3-192">Radio Paradise</option>
+    </select>
+  </div>
+  <div class="settings-section">
+    <button class="download-btn" id="download-btn">
+      <svg class="icon" viewBox="0 0 24 24"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+      <span data-i18n="menuDownload">Завантажити PDF</span>
+    </button>
+  </div>
+</div>
+
+<div id="cover" class="section active">
+  <div class="cover-content">
+    <h1 data-i18n="coverTitle">Сергій Гордійчук</h1>
+    <p class="cover-motto" data-i18n="motto">Можливості безмежні</p>
+    <div class="cover-actions">
+      <div class="radio-controls">
+        <button class="radio-btn" id="radio-play" title="Play">
+          <svg class="icon" viewBox="0 0 24 24"><polygon points="5 3 19 12 5 21 5 3" fill="currentColor" stroke="none"/></svg>
+        </button>
+        <button class="radio-btn" id="radio-stop" title="Stop">
+          <svg class="icon" viewBox="0 0 24 24"><rect x="6" y="6" width="12" height="12" fill="currentColor" stroke="none"/></svg>
+        </button>
+      </div>
+      <button class="cover-btn" data-nav="chat-page">
+        <svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M21 11.5a8.38 8.38 0 0 1-.9 3.8 8.5 8.5 0 0 1-7.6 4.7 8.38 8.38 0 0 1-3.8-.9L3 21l1.9-5.7a8.38 8.38 0 0 1-.9-3.8 8.5 8.5 0 0 1 4.7-7.6 8.38 8.38 0 0 1 3.8-.9h.5a8.48 8.48 0 0 1 8 8v.5z"/></svg>
+        <span data-i18n="btnAssistant">Асистент</span>
+      </button>
+    </div>
+    <span class="radio-status" id="radio-status">● Радіо вимкнено</span>
+  </div>
+</div>
+
+<div id="official" class="section">
+  <div class="official-container">
+    <h1 data-i18n="cvName">Serhii Hordiichuk</h1>
+    <p class="official-motto" data-i18n="motto">Можливості безмежні</p>
+    <div class="subtitle" data-i18n="cvSubtitle"></div>
+    <div class="contact-info">
+      <span><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M4 4h16c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H4c-1.1 0-2-.9-2-2V6c0-1.1.9-2 2-2z"/><polyline points="22,6 12,13 2,6"/></svg> serhiihordiichuk@gmail.com</span>
+      <span><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg> +4796689237</span>
+      <span><svg class="icon icon-sm" viewBox="0 0 24 24"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"/><circle cx="12" cy="10" r="3"/></svg> Leitevegen 4a, 6150 Ørsta</span>
+      <br><span data-i18n="cvDob"></span>
+    </div>
+    <h2 data-i18n="cvSummaryTitle"></h2>
+    <p data-i18n="cvSummaryText"></p>
+    <h2 data-i18n="cvExpTitle"></h2>
+    <div>
+      <div class="job-title">Euro-oppvarming | Sniatyn</div>
+      <div class="date">2014 – 2024</div>
+      <p><strong data-i18n="cvExpRole"></strong> <span data-i18n="cvExpRoleText"></span></p>
+      <ul>
+        <li data-i18n="cvExpLi1"></li>
+        <li data-i18n="cvExpLi2"></li>
+        <li data-i18n="cvExpLi3"></li>
+      </ul>
+    </div>
+    <h2 data-i18n="cvEduTitle"></h2>
+    <ul>
+      <li><strong data-i18n="cvEdu1Title"></strong> (2015 – 2016)<br><span data-i18n="cvEdu1Desc"></span></li>
+      <li><strong data-i18n="cvEdu2Title"></strong> (2013 – 2015)<br><span data-i18n="cvEdu2Desc"></span></li>
+      <li><strong data-i18n="cvEdu3Title"></strong> (2007 – 2013)</li>
+    </ul>
+    <h2 data-i18n="cvLangTitle"></h2>
+    <ul>
+      <li><strong data-i18n="cvLangUkr"></strong> <span data-i18n="cvLangGood"></span></li>
+      <li><strong data-i18n="cvLangEng"></strong> <span data-i18n="cvLangBeg"></span></li>
+      <li><strong data-i18n="cvLangNor"></strong> <span data-i18n="cvLangBeg"></span></li>
+      <li><strong data-i18n="cvLangRus"></strong> <span data-i18n="cvLangBeg"></span></li>
+    </ul>
+  </div>
+</div>
+
+<div id="it" class="section">
+  <div class="it-container">
+    <h1 data-i18n="itTitle"></h1>
+    <p class="tech" data-i18n="techStack"></p>
+    <h2 data-i18n="projects"></h2>
+    <ul>
+      <li data-i18n="project1"></li>
+      <li data-i18n="project2"></li>
+      <li data-i18n="project3"></li>
+      <li data-i18n="project4"></li>
+    </ul>
+    <h2 data-i18n="links"></h2>
+    <p>GitHub: <a href="https://github.com" target="_blank" rel="noopener">github.com/serhii-hordiichuk</a> | LinkedIn: <a href="https://linkedin.com" target="_blank" rel="noopener">linkedin.com/in/serhii-hordiichuk</a></p>
+  </div>
+</div>
+
+<div id="chat-page" class="section">
+  <div class="chat-page-layout">
+    <div class="chat-settings-bar">
+      <div class="field">
+        <label data-i18n="chatLangLabel">Мова відповіді</label>
+        <select id="chat-lang-select">
+          <option value="auto" data-i18n="chatLangAuto">Авто (як пишу)</option>
+          <option value="uk">Українська</option>
+          <option value="en">English</option>
+          <option value="no">Norsk</option>
+        </select>
+      </div>
+      <div class="field">
+        <label data-i18n="chatToneLabel">Стиль</label>
+        <select id="chat-tone-select">
+          <option value="professional" data-i18n="chatTonePro">Діловий</option>
+          <option value="friendly" data-i18n="chatToneFriend">Дружній</option>
+          <option value="short" data-i18n="chatToneShort">Коротко</option>
+        </select>
+      </div>
+      <div class="chat-status">
+        <span class="status-dot"></span>
+        <span data-i18n="chatStatusOnline">Онлайн</span>
+      </div>
+    </div>
+    <div class="chat-container">
+      <div class="chat-body" id="chat-body">
+        <div class="chat-message bot" data-i18n="chatWelcome"></div>
+      </div>
+      <div class="chat-typing" id="chat-typing" data-i18n="chatTyping"></div>
+      <div class="chat-footer">
+        <input type="text" id="chat-input" data-i18n-placeholder="chatPlaceholder" placeholder="Напишіть повідомлення...">
+        <button id="chat-send">
+          <svg class="icon icon-sm" viewBox="0 0 24 24"><line x1="22" y1="2" x2="11" y2="13"/><polygon points="22 2 15 22 11 13 2 9 22 2"/></svg>
+          <span data-i18n="chatSend">Надіслати</span>
+        </button>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function(){
+'use strict';
+
+/* ============ TRANSLATIONS ============ */
+var translations = {
+  uk: {
+    navHome:"Головна",navOfficial:"Резюме",navIt:"IT Проєкти",navChat:"Асистент",
+    settingsLang:"Мова інтерфейсу",settingsTheme:"Тема",settingsRadio:"Класичне радіо",
+    themeAuto:"Авто (як в системі)",themeLight:"Світла",themeDark:"Темна",
+    menuDownload:"Завантажити PDF",
+    motto:"Можливості безмежні",
+    radioOff:"● Радіо вимкнено",radioLive:"● Зараз грає",radioLoading:"○ Завантаження...",radioError:"✕ Помилка потоку",
+    btnAssistant:"Асистент",
+    chatLangLabel:"Мова відповіді",chatLangAuto:"Авто (як пишу)",
+    chatToneLabel:"Стиль",chatTonePro:"Діловий",chatToneFriend:"Дружній",chatToneShort:"Коротко",
+    chatStatusOnline:"Онлайн",chatTyping:"Асистент друкує...",
+    chatWelcome:"Привіт! Я асистент Сергія. Запитайте мене про його досвід, навички, освіту чи IT-проєкти. Я відповім будь-якою мовою!",
+    chatPlaceholder:"Напишіть повідомлення...",chatSend:"Надіслати",
+    coverTitle:"Сергій Гордійчук",
+    cvName:"Serhii Hordiichuk",cvSubtitle:"Спеціаліст з експлуатації та обслуговування / Розробник",
+    cvDob:"Дата народження: 27.02.1992",
+    cvSummaryTitle:"Професійне резюме",
+    cvSummaryText:"Привіт! Мене звати Сергій. Мені 34 роки. Я працював сантехніком понад 10 років в Україні. У вільний час люблю досліджувати нові технології та інтегрувати їх у повсякденне життя, займатися веб-розробкою, стежити за IT-новинами, а також ремонтувати, збирати та будувати ПК і лагодити різні пристрої. Я швидко вчуся і освоюю речі в міру виконання завдань.",
+    cvExpTitle:"Досвід роботи",cvExpRole:"Посада:",cvExpRoleText:"Майстер з експлуатації та обслуговування",
+    cvExpLi1:"Забезпечення того, щоб клієнт завжди був задоволений, а системи працювали належним чином.",
+    cvExpLi2:"Виконання ремонту обладнання, коли це можливо, або заміна компонентів та вузлів.",
+    cvExpLi3:"Монтаж систем опалення та водопостачання.",
+    cvEduTitle:"Освіта",
+    cvEdu1Title:"Бережанський агротехнічний інститут",cvEdu1Desc:"Спеціаліст з економіки підприємства",
+    cvEdu2Title:"Західноукраїнський національний університет",cvEdu2Desc:"Бакалавр з менеджменту",
+    cvEdu3Title:"Правознавство",
+    cvLangTitle:"Мови",cvLangUkr:"Українська:",cvLangEng:"Англійська:",cvLangNor:"Норвезька:",cvLangRus:"Російська:",
+    cvLangGood:"Добре (письмо та мова)",cvLangBeg:"Початковий рівень",
+    itTitle:"Full Stack DevOps AI Інженер",
+    techStack:"Мій технологічний стек: Python, JavaScript (React/Node.js), Docker, Kubernetes, CI/CD, AWS, Terraform, LLM (GPT, LangChain).",
+    projects:"Реалізовані проєкти",
+    project1:"<strong>Проєкт 1: Автоматизація CI/CD.</strong> Розробив пайплайн для автоматичного деплою застосунків на хмарні сервери за допомогою GitHub Actions та Docker.",
+    project2:"<strong>Проєкт 2: AI-чат-бот.</strong> Впровадив RAG-систему на базі GPT-4 для обробки корпоративних документів та швидкого пошуку інформації.",
+    project3:"<strong>Проєкт 3: Інфраструктура як код.</strong> Побудував хмарну інфраструктуру AWS за допомогою Terraform для масштабування веб-застосунків.",
+    project4:"<strong>Проєкт 4: Веб-платформа.</strong> Створив повноцінний веб-додаток (фронтенд на React, бекенд на Node.js) з використанням баз даних PostgreSQL.",
+    links:"Посилання"
+  },
+  en: {
+    navHome:"Home",navOfficial:"Resume",navIt:"IT Projects",navChat:"Assistant",
+    settingsLang:"Interface Language",settingsTheme:"Theme",settingsRadio:"Classical Radio",
+    themeAuto:"Auto (system)",themeLight:"Light",themeDark:"Dark",
+    menuDownload:"Download PDF",
+    motto:"Possibilities are limitless",
+    radioOff:"● Radio off",radioLive:"● Now playing",radioLoading:"○ Loading...",radioError:"✕ Stream error",
+    btnAssistant:"Assistant",
+    chatLangLabel:"Response Language",chatLangAuto:"Auto (as I write)",
+    chatToneLabel:"Tone",chatTonePro:"Professional",chatToneFriend:"Friendly",chatToneShort:"Brief",
+    chatStatusOnline:"Online",chatTyping:"Assistant is typing...",
+    chatWelcome:"Hello! I am Serhii's assistant. Ask me about his experience, skills, education, or IT projects. I will answer in any language!",
+    chatPlaceholder:"Type a message...",chatSend:"Send",
+    coverTitle:"Serhii Hordiichuk",
+    cvName:"Serhii Hordiichuk",cvSubtitle:"Maintenance & Operations Specialist / Developer",
+    cvDob:"Date of Birth: 27.02.1992",
+    cvSummaryTitle:"Professional Summary",
+    cvSummaryText:"Hello! My name is Serhii. I am 34 years old. I have worked as a plumber for over 10 years in Ukraine. In my free time, I like to explore new technology and integrate it into everyday life, do web development, keep up with IT news, as well as repair, assemble and build PCs and fix various devices. I learn quickly and familiarize myself with things as I perform tasks.",
+    cvExpTitle:"Work Experience",cvExpRole:"Position:",cvExpRoleText:"Maintenance and Operations Specialist",
+    cvExpLi1:"Ensure the customer is always satisfied and that systems function as they should.",
+    cvExpLi2:"Perform equipment repairs when possible, or replace components and units.",
+    cvExpLi3:"Install heating and water supply systems.",
+    cvEduTitle:"Education",
+    cvEdu1Title:"Berezhany Agrotechnical Institute",cvEdu1Desc:"Specialist in Enterprise Economics",
+    cvEdu2Title:"West Ukrainian National University",cvEdu2Desc:"Bachelor's degree in Management",
+    cvEdu3Title:"Law",
+    cvLangTitle:"Languages",cvLangUkr:"Ukrainian:",cvLangEng:"English:",cvLangNor:"Norwegian:",cvLangRus:"Russian:",
+    cvLangGood:"Good (written & spoken)",cvLangBeg:"Beginner",
+    itTitle:"Full Stack DevOps AI Engineer",
+    techStack:"My Tech Stack: Python, JavaScript (React/Node.js), Docker, Kubernetes, CI/CD, AWS, Terraform, LLM (GPT, LangChain).",
+    projects:"Implemented Projects",
+    project1:"<strong>Project 1: CI/CD Automation.</strong> Developed a pipeline for automatic deployment of applications to cloud servers using GitHub Actions and Docker.",
+    project2:"<strong>Project 2: AI Chatbot.</strong> Implemented a RAG system based on GPT-4 for processing corporate documents and fast information retrieval.",
+    project3:"<strong>Project 3: Infrastructure as Code.</strong> Built AWS cloud infrastructure using Terraform for scaling web applications.",
+    project4:"<strong>Project 4: Web Platform.</strong> Created a full-fledged web application (React frontend, Node.js backend) using PostgreSQL databases.",
+    links:"Links"
+  },
+  no: {
+    navHome:"Hjem",navOfficial:"CV",navIt:"IT-prosjekter",navChat:"Assistent",
+    settingsLang:"Grensesnittspråk",settingsTheme:"Tema",settingsRadio:"Klassisk radio",
+    themeAuto:"Auto (system)",themeLight:"Lys",themeDark:"Mørk",
+    menuDownload:"Last ned PDF",
+    motto:"Mulighetene er ubegrenset",
+    radioOff:"● Radio av",radioLive:"● Spiller nå",radioLoading:"○ Laster...",radioError:"✕ Strømfeil",
+    btnAssistant:"Assistent",
+    chatLangLabel:"Svarspråk",chatLangAuto:"Auto (som jeg skriver)",
+    chatToneLabel:"Stil",chatTonePro:"Profesjonell",chatToneFriend:"Vennlig",chatToneShort:"Kort",
+    chatStatusOnline:"Online",chatTyping:"Assistenten skriver...",
+    chatWelcome:"Hei! Jeg er Serhii sin assistent. Spør meg om hans erfaring, ferdigheter, utdanning eller IT-prosjekter. Jeg svarer på alle språk!",
+    chatPlaceholder:"Skriv en melding...",chatSend:"Send",
+    coverTitle:"Serhii Hordiichuk",
+    cvName:"Serhii Hordiichuk",cvSubtitle:"Vedlikeholds- og driftsspesialist / Utvikler",
+    cvDob:"Fødselsdato: 27.02.1992",
+    cvSummaryTitle:"Profesjonell sammendrag",
+    cvSummaryText:"Hei! Eg heiter Serhii. Eg er 34 år gammal. Eg har jobba som rørlegger i over 10 år i Ukraina. På fritida likar eg å utforske ny teknologi og integrere han i kvardagen, drive med vevutvikling, setje meg inn i IT-nyhende, samt reparere, montere og byggje PC-ar og fikse ulike einingar. Eg lærer fort og set meg inn i ting etter kvart som eg utfører oppgåvene.",
+    cvExpTitle:"Arbeidserfaring",cvExpRole:"Stilling:",cvExpRoleText:"Drift og vedlikehald",
+    cvExpLi1:"Sikre at kunden alltid er nøgd og at systema fungerer som dei skal.",
+    cvExpLi2:"Utføre reparasjon av utstyr når det er mogleg, eller byte ut komponentar og einingar.",
+    cvExpLi3:"Montere anlegg for oppvarming og vassforsyning.",
+    cvEduTitle:"Utdanning",
+    cvEdu1Title:"Berezhany agratekniske institutt",cvEdu1Desc:"Spesialist i bedriftsøkonomi",
+    cvEdu2Title:"Vest-Ukraina nasjonale universitet",cvEdu2Desc:"Bachelorgrad i leiing",
+    cvEdu3Title:"Rettslære",
+    cvLangTitle:"Språk",cvLangUkr:"Ukrainsk:",cvLangEng:"Engelsk:",cvLangNor:"Norsk:",cvLangRus:"Russisk:",
+    cvLangGood:"Godt (skriftlig og muntlig)",cvLangBeg:"Nybegynner",
+    itTitle:"Full Stack DevOps AI Ingeniør",
+    techStack:"Min teknologistack: Python, JavaScript (React/Node.js), Docker, Kubernetes, CI/CD, AWS, Terraform, LLM (GPT, LangChain).",
+    projects:"Implementerte prosjekter",
+    project1:"<strong>Prosjekt 1: CI/CD-automatisering.</strong> Utviklet en pipeline for automatisk distribusjon av applikasjoner til skyservere ved hjelp av GitHub Actions og Docker.",
+    project2:"<strong>Prosjekt 2: AI-chatbot.</strong> Implementerte et RAG-system basert på GPT-4 for behandling av bedriftsdokumenter og rask informasjonsinnhenting.",
+    project3:"<strong>Prosjekt 3: Infrastruktur som kode.</strong> Bygde AWS-skyinfrastruktur ved hjelp av Terraform for skalering av webapplikasjoner.",
+    project4:"<strong>Prosjekt 4: Webplattform.</strong> Laget en fullverdig webapplikasjon (React frontend, Node.js backend) ved hjelp av PostgreSQL-databaser.",
+    links:"Lenker"
+  }
+};
+
+/* ============ ELEMENT REFS ============ */
+var settingsTrigger = document.getElementById('settings-trigger');
+var settingsPanel = document.getElementById('settings-panel');
+var langSelect = document.getElementById('lang-select');
+var themeSelect = document.getElementById('theme-select');
+var radioSelect = document.getElementById('radio-select');
+var downloadBtn = document.getElementById('download-btn');
+var radioPlayBtn = document.getElementById('radio-play');
+var radioStopBtn = document.getElementById('radio-stop');
+var radioStatusEl = document.getElementById('radio-status');
+var chatBody = document.getElementById('chat-body');
+var chatInput = document.getElementById('chat-input');
+var chatTyping = document.getElementById('chat-typing');
+var chatSend = document.getElementById('chat-send');
+
+/* ============ AUDIO ============ */
+var audio = new Audio();
+audio.volume = 0.6;
+audio.preload = 'none';
+audio.crossOrigin = 'anonymous';
+var radioPlaying = false;
+var radioLoading = false;
+
+/* ============ STATE ============ */
+var currentLang = 'uk';
+var currentThemeMode = 'auto';
+
+/* ============ RADIO STATUS ============ */
+function updateRadioStatusUI(){
+  if(!radioStatusEl) return;
+  var t = translations[currentLang] || translations.uk;
+  var opt = radioSelect && radioSelect.selectedOptions && radioSelect.selectedOptions[0];
+  var stationName = opt ? opt.text : '';
+
+  if(radioLoading){
+    radioStatusEl.textContent = t.radioLoading;
+    radioStatusEl.classList.remove('live');
+    radioPlayBtn.classList.remove('playing');
+  } else if(radioPlaying){
+    radioStatusEl.textContent = t.radioLive + ' — ' + stationName;
+    radioStatusEl.classList.add('live');
+    radioPlayBtn.classList.add('playing');
+  } else {
+    radioStatusEl.textContent = t.radioOff;
+    radioStatusEl.classList.remove('live');
+    radioPlayBtn.classList.remove('playing');
+  }
+}
+
+/* ============ LANGUAGE ============ */
+function applyLanguage(lang){
+  if(!translations[lang]) lang = 'uk';
+  currentLang = lang;
+  document.documentElement.lang = lang;
+
+  var elems = document.querySelectorAll('[data-i18n]');
+  for(var i=0; i<elems.length; i++){
+    var el = elems[i];
+    var key = el.getAttribute('data-i18n');
+    if(translations[lang][key] !== undefined){
+      el.innerHTML = translations[lang][key];
+    }
+  }
+  var phElems = document.querySelectorAll('[data-i18n-placeholder]');
+  for(var j=0; j<phElems.length; j++){
+    var phEl = phElems[j];
+    var phKey = phEl.getAttribute('data-i18n-placeholder');
+    if(translations[lang][phKey]) phEl.placeholder = translations[lang][phKey];
+  }
+  if(langSelect) langSelect.value = lang;
+
+  try { updateRadioStatusUI(); } catch(e){ console.warn('radio status:', e); }
+}
+
+/* ============ THEME ============ */
+function applyTheme(mode){
+  currentThemeMode = mode;
+  var prefersDark = false;
+  try { prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches; } catch(e){}
+  var isDark = (mode === 'dark') || (mode === 'auto' && prefersDark);
+  if(isDark) document.body.classList.add('dark-theme');
+  else document.body.classList.remove('dark-theme');
+  if(themeSelect) themeSelect.value = mode;
+}
+
+/* ============ NAVIGATION ============ */
+function showSection(id){
+  var sections = document.querySelectorAll('.section');
+  for(var i=0; i<sections.length; i++) sections[i].classList.remove('active');
+  var target = document.getElementById(id);
+  if(target) target.classList.add('active');
+
+  var navBtns = document.querySelectorAll('.nav-btn');
+  for(var j=0; j<navBtns.length; j++){
+    if(navBtns[j].getAttribute('data-nav') === id) navBtns[j].classList.add('active');
+    else navBtns[j].classList.remove('active');
+  }
+  if(settingsPanel) settingsPanel.classList.remove('active');
+  window.scrollTo(0,0);
+}
+
+/* Attach nav listeners */
+var navEls = document.querySelectorAll('[data-nav]');
+for(var n=0; n<navEls.length; n++){
+  (function(el){
+    el.addEventListener('click', function(ev){
+      ev.preventDefault();
+      showSection(el.getAttribute('data-nav'));
+    });
+  })(navEls[n]);
+}
+
+/* ============ SETTINGS PANEL ============ */
+if(settingsTrigger && settingsPanel){
+  settingsTrigger.addEventListener('click', function(e){
+    e.stopPropagation();
+    settingsPanel.classList.toggle('active');
+  });
+  document.addEventListener('click', function(e){
+    if(!settingsPanel.contains(e.target) && !settingsTrigger.contains(e.target)){
+      settingsPanel.classList.remove('active');
+    }
+  });
+}
+
+if(langSelect) langSelect.addEventListener('change', function(){ applyLanguage(this.value); });
+if(themeSelect) themeSelect.addEventListener('change', function(){ applyTheme(this.value); });
+
+if(downloadBtn){
+  downloadBtn.addEventListener('click', function(){
+    if(settingsPanel) settingsPanel.classList.remove('active');
+    showSection('official');
+    setTimeout(function(){ try{ window.print(); }catch(e){} }, 250);
+  });
+}
+
+/* ============ RADIO ============ */
+function playRadio(){
+  if(!radioSelect) return;
+  var url = radioSelect.value;
+  if(!url) return;
+  radioLoading = true;
+  updateRadioStatusUI();
+
+  try {
+    audio.pause();
+    audio.src = url;
+    audio.load();
+  } catch(e){ console.warn('audio setup:', e); }
+
+  var p;
+  try { p = audio.play(); } catch(e){ p = null; }
+
+  if(p && typeof p.then === 'function'){
+    p.then(function(){
+      radioLoading = false;
+      radioPlaying = true;
+      updateRadioStatusUI();
+    }).catch(function(err){
+      console.error('Radio play error:', err);
+      radioLoading = false;
+      radioPlaying = false;
+      if(radioStatusEl){
+        radioStatusEl.textContent = translations[currentLang].radioError;
+        radioStatusEl.classList.remove('live');
+      }
+      if(radioPlayBtn) radioPlayBtn.classList.remove('playing');
+    });
+  } else {
+    // older browsers
+    setTimeout(function(){
+      radioLoading = false;
+      radioPlaying = !audio.paused;
+      updateRadioStatusUI();
+    }, 800);
+  }
+}
+
+if(radioPlayBtn) radioPlayBtn.addEventListener('click', playRadio);
+
+if(radioStopBtn) radioStopBtn.addEventListener('click', function(){
+  try { audio.pause(); audio.currentTime = 0; } catch(e){}
+  radioPlaying = false;
+  radioLoading = false;
+  updateRadioStatusUI();
+});
+
+audio.addEventListener('error', function(){
+  if(radioLoading || radioPlaying){
+    radioLoading = false;
+    radioPlaying = false;
+    if(radioStatusEl){
+      radioStatusEl.textContent = translations[currentLang].radioError;
+      radioStatusEl.classList.remove('live');
+    }
+    if(radioPlayBtn) radioPlayBtn.classList.remove('playing');
+  }
+});
+
+if(radioSelect) radioSelect.addEventListener('change', function(){
+  if(radioPlaying || radioLoading) playRadio();
+});
+
+window.addEventListener('beforeunload', function(){ try{ audio.pause(); }catch(e){} });
+
+/* ============ ASSISTANT ============ */
+var OPENAI_API_KEY = "";
+var SERHII_KB = "Ім'я: Serhii Hordiichuk (Сергій Гордійчук). Девіз: Можливості безмежні. Вік: 34. Локація: Ørsta, Норвегія. Контакти: serhiihordiichuk@gmail.com, +4796689237. Досвід: понад 10 років сантехніком в Україні (Euro-oppvarming, Sniatyn). Освіта: Бережанський агротехнічний інститут, ЗУНУ, правознавство. Мови: укр (добре), англ/норв/рос (початковий). IT: Full Stack DevOps AI — Python, JS, Docker, K8s, CI/CD, AWS, Terraform, LLM.";
+
+function addMessage(text, sender){
+  if(!chatBody) return;
+  var msg = document.createElement('div');
+  msg.className = 'chat-message ' + sender;
+  msg.innerHTML = text;
+  chatBody.appendChild(msg);
+  chatBody.scrollTop = chatBody.scrollHeight;
+}
+
+function getDemoResponse(q){
+  q = q.toLowerCase();
+  if(/досвід|робот|experience|erfaring|прац/.test(q)) return "Сергій має понад 10 років досвіду роботи сантехніком в Україні (Euro-oppvarming, Sniatyn). Монтаж систем опалення, водопостачання та ремонт обладнання.";
+  if(/освіт|універ|education|utdanning|школ/.test(q)) return "Освіта Сергія: Бережанський агротехнічний інститут (економіка підприємства), Західноукраїнський національний університет (бакалавр менеджменту), правознавство.";
+  if(/it|проєкт|навич|skills|prosjekt|програм|код/.test(q)) return "Сергій — Full Stack DevOps AI ентузіаст. Python, JavaScript (React/Node.js), Docker, Kubernetes, CI/CD, AWS, Terraform. Проєкти: CI/CD автоматизація, AI-чат-бот на GPT-4, інфраструктура як код, веб-платформа.";
+  if(/мов|language|språk/.test(q)) return "Українська (добре), англійська, норвезька, російська (початковий рівень).";
+  if(/контакт|email|телефон|contact|адрес/.test(q)) return "serhiihordiichuk@gmail.com, +4796689237. Leitevegen 4a, 6150 Ørsta, Норвегія.";
+  if(/привіт|hello|hi|hei|добр/.test(q)) return "Привіт! Запитайте про досвід, освіту, навички чи IT-проєкти Сергія.";
+  if(/девіз|motto|можлив/.test(q)) return "Девіз Сергія: «Можливості безмежні».";
+  return "Демо-режим. Підключіть OPENAI_API_KEY у коді для повного AI. Поки що я можу розповісти про досвід, освіту, IT, мови чи контакти.";
+}
+
+function getAssistantResponse(q){
+  if(!OPENAI_API_KEY) return Promise.resolve(getDemoResponse(q));
+
+  var chatLangSel = document.getElementById('chat-lang-select');
+  var chatToneSel = document.getElementById('chat-tone-select');
+  var lang = chatLangSel ? chatLangSel.value : 'auto';
+  var tone = chatToneSel ? chatToneSel.value : 'professional';
+
+  var li = "Відповідай тією ж мовою, якою задане питання.";
+  if(lang === 'uk') li = "Відповідай ВИКЛЮЧНО українською.";
+  if(lang === 'en') li = "Always respond in ENGLISH only.";
+  if(lang === 'no') li = "Svar ALLTID på norsk.";
+  var ti = "Спілкуйся ввічливо та професійно.";
+  if(tone === 'friendly') ti = "Спілкуйся дружньо.";
+  if(tone === 'short') ti = "Відповідай дуже коротко (1-2 речення).";
+
+  return fetch("https://api.openai.com/v1/chat/completions", {
+    method:"POST",
+    headers:{"Content-Type":"application/json","Authorization":"Bearer "+OPENAI_API_KEY},
+    body:JSON.stringify({
+      model:"gpt-4o-mini",
+      messages:[
+        {role:"system",content:"Ти — асистент Сергія. " + li + " " + ti + "\n" + SERHII_KB},
+        {role:"user",content:q}
+      ],
+      temperature:0.7,max_tokens:400
+    })
+  }).then(function(r){ return r.json(); }).then(function(d){
+    if(d.choices && d.choices[0]) return d.choices[0].message.content;
+    return "Помилка відповіді.";
+  }).catch(function(e){ console.error(e); return "Помилка з'єднання."; });
+}
+
+function sendMessage(){
+  if(!chatInput) return;
+  var text = chatInput.value.trim();
+  if(!text) return;
+  addMessage(text.replace(/</g,'&lt;'), 'user');
+  chatInput.value = '';
+  if(chatTyping) chatTyping.style.display = 'block';
+  if(chatBody) chatBody.scrollTop = chatBody.scrollHeight;
+
+  getAssistantResponse(text).then(function(answer){
+    if(chatTyping) chatTyping.style.display = 'none';
+    addMessage(answer, 'bot');
+  });
+}
+
+if(chatSend) chatSend.addEventListener('click', sendMessage);
+if(chatInput) chatInput.addEventListener('keypress', function(e){ if(e.key === 'Enter') sendMessage(); });
+
+/* ============ INIT ============ */
+var navLang = 'uk';
+try {
+  var bl = (navigator.language || 'uk').toLowerCase();
+  if(bl.indexOf('en') === 0) navLang = 'en';
+  else if(bl.indexOf('no') === 0 || bl.indexOf('nb') === 0 || bl.indexOf('nn') === 0) navLang = 'no';
+} catch(e){}
+
+applyLanguage(navLang);
+applyTheme('auto');
+
+/* System theme listener */
+try {
+  var dmq = window.matchMedia('(prefers-color-scheme: dark)');
+  var handler = function(){ if(currentThemeMode === 'auto') applyTheme('auto'); };
+  if(dmq.addEventListener) dmq.addEventListener('change', handler);
+  else if(dmq.addListener) dmq.addListener(handler);
+} catch(e){}
+
+console.log('✓ Portfolio initialized. Language:', navLang);
+})();
+</script>
+</body>
+</html>
