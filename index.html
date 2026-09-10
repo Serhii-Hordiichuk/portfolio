@@ -14,7 +14,7 @@
   <nav class="nav">
     <button class="nav-btn active" data-nav="cover">◼ <span data-i18n="navHome">Головна</span></button>
     <button class="nav-btn" data-nav="official">▤ <span data-i18n="navResume">Резюме</span></button>
-    <button class="nav-btn" data-nav="it">&lt;/&gt; <span data-i18n="navIt">IT Проєкти</span></button>
+    <button class="nav-btn" data-nav="hobby">○ <span data-i18n="navHobby">Розробки</span></button>
     <button class="nav-btn" data-nav="chat">✉ <span data-i18n="navChat">Асистент</span></button>
   </nav>
   <button id="gear" class="gear" title="Settings">⚙</button>
@@ -34,85 +34,68 @@
   <div class="sec"><button class="btn-dark" id="dl">⬇ <span data-i18n="dl">PDF</span></button></div>
 </div>
 
-<section id="cover" class="section active"><div class="wrap">
-  <div class="kicker" data-i18n="kicker">Портфоліо</div>
+<section id="cover" class="section active"><div class="wrap hero-wrap">
+  <div class="kicker">S · H</div>
   <h1 class="hero" data-i18n="hero">Сергій Гордійчук</h1>
   <div class="motto" data-i18n="motto">Можливості безмежні</div>
-  <p style="color:var(--mut);font-size:14px;letter-spacing:1px" data-i18n="role"></p>
-  <div class="stack"><span class="tag">Python</span><span class="tag">JavaScript</span><span class="tag">React / Node</span><span class="tag">Docker</span><span class="tag">Kubernetes</span><span class="tag">CI/CD</span><span class="tag">AWS</span><span class="tag">Terraform</span><span class="tag">LLM / RAG</span></div>
-  <div class="grid">
-    <div class="card"><h3 data-i18n="aboutT">Про мене</h3><p data-i18n="aboutX"></p></div>
-    <div class="card"><h3 data-i18n="cvT">Резюме</h3><p data-i18n="cvX"></p></div>
-    <div class="card"><h3 data-i18n="stackT">Стек</h3><p>Python · JS · Docker · K8s · AWS · LLM</p></div>
-    <div class="card"><h3 data-i18n="itT">IT</h3><p data-i18n="itX"></p></div>
+  <div class="actions center">
+    <button class="btn solid big" id="radio-btn">▶ <span data-i18n="radio">Онлайн радіо</span></button>
+    <button class="btn big" data-nav="chat">✉ <span data-i18n="goAssist">Запитати асистента</span></button>
   </div>
-  <div class="actions">
-    <button class="btn solid" data-nav="chat">✉ <span data-i18n="goAssist">Асистент</span></button>
-    <button class="btn" data-nav="official"><span data-i18n="goResume">Резюме</span></button>
-    <button class="btn" data-nav="it"><span data-i18n="goIt">IT</span></button>
+  <div class="channels" id="channels">
+    <button class="chip radio-chip" data-stream="https://live.wostreaming.net/direct/alemus-classical-mp3">Klassisk</button>
+    <button class="chip radio-chip" data-stream="https://ice1.somafm.com/thistle-128-mp3">Thistle (Celtic)</button>
+    <button class="chip radio-chip" data-stream="https://ice1.somafm.com/tasa-128-mp3">TASA (Ambient)</button>
+    <button class="chip radio-chip" data-stream="https://live.musopen.org:8085/streamvbr0">Musopen Classic</button>
   </div>
+  <audio id="radio" preload="none"></audio>
 </div></section>
 
-<section id="official" class="section"><div class="wrap">
+<section id="official" class="section"><div class="wrap narrow">
   <div class="kicker">CV</div>
-  <h1 class="hero" style="font-size:32px">Serhii Hordiichuk</h1>
-  <div class="motto" data-i18n="motto">X</div>
-  <p style="font-size:12px;letter-spacing:2px;text-transform:uppercase;color:var(--mut)" data-i18n="cvRole">X</p>
-  <div class="contact"><span>serhiihordiichuk@gmail.com</span><span>+4796689237</span><span>Orsta, Norge</span><span data-i18n="dob">X</span></div>
-  <h2 data-i18n="sumT">X</h2><p data-i18n="sumX">X</p>
-  <h2 data-i18n="expT">X</h2>
-  <p><strong>Euro-oppvarming | Sniatyn</strong> · 2014–2024<br><span data-i18n="expR">X</span></p>
-  <ul style="padding-left:18px;color:var(--mut);font-size:13.5px;line-height:1.75">
-    <li data-i18n="exp1">X</li><li data-i18n="exp2">X</li><li data-i18n="exp3">X</li>
-  </ul>
-  <h2 data-i18n="eduT">X</h2>
-  <p data-i18n="e1">X</p><p data-i18n="e2">X</p><p data-i18n="e3">X</p>
-  <h2 data-i18n="langT">X</h2>
-  <p><span data-i18n="lUk">X</span><br><span data-i18n="lEn">X</span><br><span data-i18n="lNo">X</span><br><span data-i18n="lRu">X</span></p>
+  <h1 class="hero sm">Serhii Hordiichuk</h1>
+  <p class="sub">Leitevegen 4a, 6150 Ørsta · <span data-i18n="dob">Народився 27.02.1992</span></p>
+  <div class="contact"><span>serhiihordiichuk@gmail.com</span><span>+4796689237</span><a href="docs/CV-Serhii.Hordiichuk.pdf" download>PDF ↓</a></div>
+  <h2 data-i18n="sumT">Резюме</h2><p data-i18n="sumX"></p>
+  <h2 data-i18n="expT">Досвід</h2>
+  <p><strong>Euro-oppvarming | Sniatyn</strong> · 2008–2023<br><span data-i18n="expR"></span></p>
+  <ul class="dots"><li data-i18n="exp1"></li><li data-i18n="exp2"></li><li data-i18n="exp3"></li></ul>
+  <h2 data-i18n="eduT">Освіта</h2>
+  <p><strong>2015–2016</strong> — <span data-i18n="e1"></span></p>
+  <p><strong>2013–2015</strong> — <span data-i18n="e2"></span></p>
+  <p><strong>2007–2013</strong> — <span data-i18n="e3"></span></p>
+  <p><strong>2006–2007</strong> — Sniatyn school I–III (Stefanyk)</p>
+  <h2 data-i18n="langT">Мови</h2>
+  <p><span data-i18n="lUk"></span><br><span data-i18n="lEn"></span><br><span data-i18n="lNo"></span><br><span data-i18n="lRu"></span></p>
+  <h2 data-i18n="skillT">Навички</h2><p data-i18n="skillX"></p>
 </div></section>
 
-<section id="it" class="section"><div class="wrap">
-  <div class="kicker" style="color:#666">~/projects</div>
-  <h1 data-i18n="itH">Full Stack DevOps AI</h1>
-  <p style="margin-top:12px" class="d">Python · JS React/Node · Docker · K8s · AWS · Terraform · LLM</p>
-  <h2 data-i18n="proT">Проєкти</h2>
-  <p><span class="g">01.</span> <span data-i18n="p1"></span></p>
-  <p><span class="g">02.</span> <span data-i18n="p2"></span></p>
-  <p><span class="g">03.</span> <span data-i18n="p3"></span></p>
-  <p><span class="g">04.</span> <span data-i18n="p4"></span></p>
-  <div class="term"><div class="term-bar">● ● ● — deploy.sh</div>
-    <div class="term-body"><span class="d">$</span> <span class="g">docker build -t portfolio . && ollama run llama3.1:8b</span><br><span class="d">✓ proxy online → chat ready</span></div>
-  </div>
-  <h2 data-i18n="links">Посилання</h2>
-  <p>GitHub: <a href="https://github.com/Serhii-Hordiichuk" target="_blank" rel="noopener">github.com/Serhii-Hordiichuk</a></p>
+<section id="hobby" class="section"><div class="wrap narrow">
+  <div class="kicker">○</div>
+  <h1 class="hero sm" data-i18n="hobbyT">Розробки</h1>
+  <p class="empty" data-i18n="hobbyX">Поки порожньо — це хобі, не частина портфоліо.</p>
 </div></section>
 
-<section id="chat" class="section"><div class="chat-layout">
-  <div class="providers">
-    <div class="f"><label data-i18n="prov">Провайдер</label><select id="provider"></select></div>
-    <div class="f"><label data-i18n="model">Модель</label><select id="model"></select></div>
-    <div class="f"><label data-i18n="cLang">Мова</label>
+<section id="chat" class="section"><div class="app">
+  <aside class="side">
+    <div class="side-head"><span>◼</span><button id="new-chat" class="chip">+ <span data-i18n="newChat">Новий чат</span></button></div>
+    <div id="sessions"></div>
+    <div class="side-foot">
+      <select id="provider"></select>
+      <select id="model"></select>
       <select id="clang"><option value="auto" data-i18n="cAuto">Авто</option><option value="uk">UK</option><option value="en">EN</option><option value="no">NO</option></select>
-    </div>
-    <div class="f"><label data-i18n="cTone">Стиль</label>
       <select id="tone"><option value="professional" data-i18n="tPro">Діловий</option><option value="friendly" data-i18n="tFr">Дружній</option><option value="short" data-i18n="tSh">Коротко</option></select>
+      <div class="status"><span id="cdot" class="dot"></span><span id="ctxt">…</span></div>
     </div>
-    <div class="status"><span id="cdot" class="dot"></span><span id="ctxt">…</span></div>
-  </div>
-  <div class="chat">
+  </aside>
+  <main class="main">
     <div class="body" id="chat-body"></div>
     <div class="typing" id="typing" data-i18n="typing">…</div>
-    <div class="chips" style="padding:0 14px 10px">
-      <button class="chip">Розкажи про досвід</button>
-      <button class="chip">Які IT-навички?</button>
-      <button class="chip">Контакти</button>
-    </div>
     <div class="foot">
       <input id="chat-input" data-i18n-ph="ph" placeholder="…">
-      <button class="btn solid" id="send"><span data-i18n="send">→</span></button>
-      <button class="btn" id="clear">✕</button>
+      <button class="btn solid sq" id="send">↑</button>
     </div>
-  </div>
+  </main>
 </div></section>
 
 <script src="assets/config.js"></script>
