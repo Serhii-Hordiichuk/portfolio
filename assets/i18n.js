@@ -1,5 +1,5 @@
 window.SH_I18N = {
-uk: {
+uk: { tv: "Телебачення",
 live: "НАЖИВО", loadingSt: "Завантаження станцій…", tapPlay: "Торкни ▶ щоб слухати", navHome: "Головна", navResume: "Резюме", navHobby: "Розробки", navChat: "Асистент",
 uiLang: "Мова", theme: "Тема", aAuto: "Авто", aLight: "Світла", aDark: "Темна",
 proxy: "AI Proxy URL", proxyHint: "Порожньо = той самий домен.",

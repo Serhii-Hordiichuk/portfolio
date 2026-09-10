@@ -1,4 +1,4 @@
-/* SH widgets v2 — FAB toggle, bottom sheet, widget cards */
+/* SH widgets v3 — FAB, sheet, three widgets: Radio / TV / News */
 (function () {
 'use strict';
 function $_(s) { return document.querySelector(s); }
@@ -24,19 +24,24 @@ function boot() {
     if (!w.classList.contains('open')) return;
     if (!w.contains(e.target) && !fab.contains(e.target)) closeWidgets();
   });
+  /* Radio widget: cover page + start playback */
   var wgRadio = $_('#wg-card-radio');
   if (wgRadio) wgRadio.addEventListener('click', function () {
     closeWidgets();
     if (window.SH && window.SH.show) window.SH.show('cover');
     setTimeout(function () { if (window.SH_RADIO) window.SH_RADIO.toggle(); }, 80);
   });
-  /* News card: closed here; news.js opens the feed */
-  var wgCv = $_('#wg-card-cv');
-  if (wgCv) wgCv.addEventListener('click', function () {
+  /* TV widget: modal player */
+  var wgTv = $_('#wg-card-tv');
+  if (wgTv) wgTv.addEventListener('click', function () {
     closeWidgets();
-    $_('#panel').classList.remove('open');
-    window.SH.show('official');
-    setTimeout(function () { window.print(); }, 250);
+    setTimeout(function () { if (window.SH_TV) window.SH_TV.open(); }, 60);
+  });
+  /* News widget: modal feed */
+  var wgNews = $_('#wg-card-news');
+  if (wgNews) wgNews.addEventListener('click', function () {
+    closeWidgets();
+    setTimeout(function () { if (window.SH_NEWS) window.SH_NEWS.open('modal'); }, 60);
   });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeWidgets(); });
 }
