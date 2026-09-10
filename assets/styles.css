@@ -6,6 +6,8 @@ body{font-family:'Helvetica Neue',Arial,system-ui,sans-serif;background:var(--bg
 body.dark{--bg:#0a0a0a;--fg:#fff;--mut:#9a9a9a;--line:#222;--soft:#141414;--card:#111}
 body.locked{overflow:hidden}
 ::selection{background:var(--fg);color:var(--bg)}
+.ic{width:18px;height:18px;display:block;fill:none;stroke:currentColor;stroke-width:1.8;stroke-linecap:round;stroke-linejoin:round;flex-shrink:0}
+.ic-lg{width:22px;height:22px}
 .header{position:fixed;inset:0 0 auto 0;height:60px;display:flex;align-items:center;gap:12px;padding:0 20px;background:var(--bg);border-bottom:1px solid var(--line);z-index:1000}
 .logo{display:flex;align-items:center;gap:10px;font-size:13px;font-weight:800;letter-spacing:2.5px;text-transform:uppercase;white-space:nowrap}
 .logo i{width:8px;height:8px;border-radius:50%;background:var(--fg);display:block}
