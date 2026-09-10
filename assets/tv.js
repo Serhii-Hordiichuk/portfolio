@@ -65,6 +65,19 @@ function toggle() {
     setUse(false);
   }
 }
+function fsMode() {
+  try {
+    if (document.fullscreenElement) { document.exitFullscreen(); }
+    else if (el.win && el.win.requestFullscreen) { el.win.requestFullscreen(); } /* whole window so the control bar stays visible */
+    else if (el.video && el.video.webkitEnterFullscreen) { el.video.webkitEnterFullscreen(); } /* iOS Safari */
+  } catch (e) {}
+}
+function pipMode() {
+  try {
+    if (document.pictureInPictureElement === el.video) { document.exitPictureInPicture(); }
+    else if (el.video.requestPictureInPicture) { el.video.requestPictureInPicture(); }
+  } catch (e) {}
+}
 function open() {
   opened = true;
   el.root.classList.add('open');
@@ -91,11 +104,25 @@ function boot() {
     el.sel.appendChild(o);
   });
   el.sel.value = '0';
+  el.stage = document.querySelector('.tv-stage');
+  el.win = document.querySelector('.tv-win');
+  el.fs = pick('tv-fs'); el.pip = pick('tv-pip');
   pick('tv-close').addEventListener('click', close);
-  pick('tv-big').addEventListener('click', toggle);
   pick('tv-toggle').addEventListener('click', toggle);
   pick('tv-prev').addEventListener('click', prev);
   pick('tv-next').addEventListener('click', next);
+  el.video.addEventListener('click', toggle); /* click video = play/pause, no center overlay */
+  if (el.fs) el.fs.addEventListener('click', fsMode);
+  if (el.pip) {
+    el.pip.addEventListener('click', pipMode);
+    try {
+      if (!document.pictureInPictureEnabled || !el.video.requestPictureInPicture) el.pip.style.display = 'none';
+    } catch (e) { el.pip.style.display = 'none'; }
+  }
+  document.addEventListener('fullscreenchange', function () {
+    var on = document.fullscreenElement === el.win;
+    if (el.fs) { var u = el.fs.querySelector('use'); if (u) u.setAttribute('href', on ? '#i-fsx' : '#i-fs'); }
+  });
   el.sel.addEventListener('change', function () { play(parseInt(el.sel.value, 10) || 0); });
   el.video.addEventListener('playing', function () { ui(true); });
   el.video.addEventListener('pause', function () { setUse(false); });

@@ -20,7 +20,7 @@ var tr = {
 var seen = {}, seenN = 0, pending = [];
 var hnPage = 0, devPage = 0, cycle = 0, busy = false, done = false, opened = false, mode = 'page', fills = 0;
 var lang = 'en';
-var feed, sentinel, statusEl, root;
+var feed, sentinel, statusEl, root, inlineEl;
 function T(k){ var m = tr[lang] || tr.en; return m[k] || tr.en[k]; }
 function currentLang(){
   try { var s = localStorage.getItem('sh.lang'); if (s && tr[s]) return s; } catch(e){}
@@ -157,27 +157,54 @@ function loadMore(){
 }
 function maybeFill(){
   if (done || busy || !opened || !feed) return;
-  if (feed.scrollHeight <= feed.clientHeight + 480 && fills < 5) {
+  /* modal: feed scrolls internally; page: whole page scrolls, measure viewport space */
+  var space = (mode === 'page')
+    ? (document.body.scrollHeight - window.scrollY - window.innerHeight)
+    : (feed.scrollHeight - feed.scrollTop - feed.clientHeight);
+  if (space < 520 && fills < 6) {
     fills++;
-    setTimeout(function(){ if (!busy && !done) loadMore(); }, 150);
+    setTimeout(function(){ if (!busy && !done && opened) loadMore().then(function(){ maybeFill(); }); }, 150);
   }
 }
 /* ---------- open / close ---------- */
+/* move the shared feed between the modal overlay and the inline slot */
+function mountInline(){
+  if (inlineEl && feed.parentElement !== inlineEl) {
+    inlineEl.appendChild(feed);
+    if (statusEl) inlineEl.appendChild(statusEl);
+  }
+}
+function unmountInline(){
+  if (inlineEl && feed.parentElement === inlineEl) {
+    root.appendChild(feed);
+    if (statusEl) root.appendChild(statusEl);
+  }
+}
 function openFeed(m){
   mode = m || 'page';
   lang = currentLang();
   opened = true;
-  root.classList.toggle('modal', mode === 'modal');
-  root.classList.add('open');
-  document.body.classList.add('locked');
-  if (feed) feed.scrollTop = 0;
+  if (mode === 'modal') {
+    unmountInline();
+    root.classList.add('modal', 'open');
+    document.body.classList.add('locked');
+    if (feed) feed.scrollTop = 0;
+  } else {
+    mountInline();
+    inlineEl.classList.add('open');
+    var act = document.querySelector('.section.active');
+    document.body.classList.toggle('locked', !!(act && act.id === 'chat'));
+  }
   if (seenN === 0) loadMore(); else { maybeFill(); processQueue(); }
 }
 function closeFeed(){
   opened = false;
   root.classList.remove('open', 'modal');
+  if (inlineEl) inlineEl.classList.remove('open');
+  unmountInline();
   var act = document.querySelector('.section.active');
   document.body.classList.toggle('locked', !!(act && act.id === 'chat'));
+  if (mode === 'page') window.scrollTo(0, 0); /* back to the home top */
 }
 /* ---------- boot ---------- */
 function boot(){
@@ -190,6 +217,9 @@ function boot(){
   if (openBtn) openBtn.addEventListener('click', function(){ openFeed('page'); });
   var closeBtn = document.getElementById('nw-close');
   if (closeBtn) closeBtn.addEventListener('click', closeFeed);
+  inlineEl = document.getElementById('news-inline');
+  var colBtn = document.getElementById('news-collapse');
+  if (colBtn) colBtn.addEventListener('click', closeFeed);
   root.addEventListener('click', function(e){ if (e.target === root && root.classList.contains('modal')) closeFeed(); });
   document.addEventListener('sh:lang', function(e){
   if (!e.detail || !tr[e.detail] || e.detail === lang) return;
@@ -206,7 +236,7 @@ function boot(){
   if (sentinel && 'IntersectionObserver' in window) {
     var io = new IntersectionObserver(function(entries){
       entries.forEach(function(en){ if (en.isIntersecting && opened) loadMore(); });
-    }, { root: feed, rootMargin: '500px 0px', threshold: 0 });
+    }, { rootMargin: '600px 0px', threshold: 0 });
     io.observe(sentinel);
   }
   feed.addEventListener('scroll', function(){
@@ -214,12 +244,19 @@ function boot(){
     if (feed.scrollTop + feed.clientHeight >= feed.scrollHeight - 480) loadMore();
     processQueue();
   }, { passive: true });
+  /* page mode: the page itself scrolls to infinity */
+  window.addEventListener('scroll', function(){
+    if (!opened || mode !== 'page' || busy || done) return;
+    var r = sentinel.getBoundingClientRect();
+    if (r.top < window.innerHeight + 600) loadMore();
+  }, { passive: true });
   document.addEventListener('keydown', function(e){ if (e.key === 'Escape' && opened) closeFeed(); });
 }
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
 else boot();
 window.SH_NEWS = {
   loadMore: loadMore, open: openFeed, close: closeFeed,
-  count: function(){ return seenN; }, busy: function(){ return busy; }, done: function(){ return done; }
+  count: function(){ return seenN; }, busy: function(){ return busy; }, done: function(){ return done; },
+  isOpen: function(){ return opened; }
 };
 })();

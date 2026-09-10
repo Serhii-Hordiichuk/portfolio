@@ -163,3 +163,18 @@ cAuto: "\u0410\u0432\u0442\u043e", tPro: "\u041e\u0444\u0438\u0446\u0438\u0430\u
 newChat: "\u041d\u043e\u0432\u044b\u0439 \u0447\u0430\u0442", typing: "\u041f\u0435\u0447\u0430\u0442\u0430\u0435\u0442\u2026", ph: "\u041d\u0430\u043f\u0438\u0448\u0438\u0442\u0435 \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u0435\u2026",
 key: "API-\u043a\u043b\u044e\u0447 (BYOK)",
 welcome: "\u041f\u0440\u0438\u0432\u0435\u0442! \u042f \u0430\u0441\u0441\u0438\u0441\u0442\u0435\u043d\u0442 Serhii. \u0421\u043f\u0440\u0430\u0448\u0438\u0432\u0430\u0439 \u043e \u043e\u043f\u044b\u0442\u0435, \u043e\u0431\u0440\u0430\u0437\u043e\u0432\u0430\u043d\u0438\u0438, \u043a\u043e\u043d\u0442\u0430\u043a\u0442\u0430\u0445." , newsBtn: "\u041d\u043e\u0432\u043e\u0441\u0442\u0438 \u0442\u0435\u0445\u043d\u043e\u043b\u043e\u0433\u0438\u0439", newsTitle: "\u0422\u0435\u0445\u043d\u043e-\u043d\u043e\u0432\u043e\u0441\u0442\u0438", widgets: "\u0412\u0438\u0434\u0436\u0435\u0442\u044b", radioT: "\u0420\u0430\u0434\u0438\u043e", loading: "\u0417\u0430\u0433\u0440\u0443\u0437\u043a\u0430\u2026"};
+
+/* extra keys: inline news collapse + TV fullscreen / PiP (v18) */
+(function () {
+var X = window.SH_I18N; if (!X) return;
+if (X.uk) { X.uk.collapse = "\u0417\u0433\u043e\u0440\u043d\u0443\u0442\u0438 \u043d\u043e\u0432\u0438\u043d\u0438"; X.uk.fs = "\u041d\u0430 \u0432\u0435\u0441\u044c \u0435\u043a\u0440\u0430\u043d"; X.uk.pip = "\u041a\u0430\u0440\u0442\u0438\u043d\u043a\u0430 \u0432 \u043a\u0430\u0440\u0442\u0438\u043d\u0446\u0456"; }
+if (X.en) { X.en.collapse = "Collapse news"; X.en.fs = "Fullscreen"; X.en.pip = "Picture in picture"; }
+if (X.no) { X.no.collapse = "Skjul nyheter"; X.no.fs = "Fullskjerm"; X.no.pip = "Bilde i bilde"; }
+if (X.de) { X.de.collapse = "Nachrichten zuklappen"; X.de.fs = "Vollbild"; X.de.pip = "Bild in Bild"; }
+if (X.fr) { X.fr.collapse = "Replier les actus"; X.fr.fs = "Plein \u00e9cran"; X.fr.pip = "Image dans l'image"; }
+if (X.es) { X.es.collapse = "Plegar noticias"; X.es.fs = "Pantalla completa"; X.es.pip = "Imagen en imagen"; }
+if (X.pl) { X.pl.collapse = "Zwi\u0144 wiadomo\u015bci"; X.pl.fs = "Pe\u0142ny ekran"; X.pl.pip = "Obraz w obrazie"; }
+if (X.ru) { X.ru.collapse = "\u0421\u0432\u0435\u0440\u043d\u0443\u0442\u044c \u043d\u043e\u0432\u043e\u0441\u0442\u0438"; X.ru.fs = "\u041f\u043e\u043b\u043d\u044b\u0439 \u044d\u043a\u0440\u0430\u043d"; X.ru.pip = "\u041a\u0430\u0440\u0442\u0438\u043d\u043a\u0430 \u0432 \u043a\u0430\u0440\u0442\u0438\u043d\u043a\u0435"; }
+if (X.zh) { X.zh.collapse = "\u6536\u8d77\u65b0\u95fb"; X.zh.fs = "\u5168\u5c4f"; X.zh.pip = "\u753b\u4e2d\u753b"; }
+if (X.ar) { X.ar.collapse = "\u0637\u064a \u0627\u0644\u0623\u062e\u0628\u0627\u0631"; X.ar.fs = "\u0645\u0644\u0621 \u0627\u0644\u0634\u0627\u0634\u0629"; X.ar.pip = "\u0635\u0648\u0631\u0629 \u062f\u0627\u062e\u0644 \u0635\u0648\u0631\u0629"; }
+})();
