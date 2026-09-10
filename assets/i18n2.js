@@ -1,4 +1,5 @@
-window.SH_I18N.en = { navHome: "Home", navResume: "Resume", navHobby: "Side projects", navChat: "Assistant",
+window.SH_I18N.en = {
+live: "LIVE", loadingSt: "Loading stations…", tapPlay: "Tap ▶ to listen", navHome: "Home", navResume: "Resume", navHobby: "Side projects", navChat: "Assistant",
 uiLang: "Language", theme: "Theme", aAuto: "Auto", aLight: "Light", aDark: "Dark",
 proxy: "AI Proxy URL", proxyHint: "Empty = same domain.",
 dl: "Download PDF", hero: "Serhii Hordiichuk", motto: "Possibilities are limitless",
@@ -15,8 +16,9 @@ hobbyT: "Side projects", hobbyX: "Empty for now — just a hobby, not part of th
 cAuto: "Auto", tPro: "Professional", tFr: "Friendly", tSh: "Brief",
 newChat: "New chat", typing: "Typing…", ph: "Type a message…",
 key: "API key (BYOK)",
-welcome: "Hi! I'm Serhii's assistant. Ask about experience, education, contacts." };
-window.SH_I18N.no = { navHome: "Hjem", navResume: "CV", navHobby: "Prosjekter", navChat: "Assistent",
+welcome: "Hi! I'm Serhii's assistant. Ask about experience, education, contacts." , newsBtn: "Tech news", newsTitle: "Tech news", widgets: "Widgets", radioT: "Radio", loading: "Loading…"};
+window.SH_I18N.no = {
+live: "DIREKTE", loadingSt: "Laster stasjoner…", tapPlay: "Trykk ▶ for å lytte", navHome: "Hjem", navResume: "CV", navHobby: "Prosjekter", navChat: "Assistent",
 uiLang: "Sprak", theme: "Tema", aAuto: "Auto", aLight: "Lys", aDark: "Mork",
 proxy: "AI Proxy URL", proxyHint: "Tom = samme domene.",
 dl: "Last ned PDF", hero: "Serhii Hordiichuk", motto: "Mulighetene er ubegrenset",
@@ -33,7 +35,7 @@ hobbyT: "Prosjekter", hobbyX: "Tomt forelopig — bare hobby, ikke del av portef
 cAuto: "Auto", tPro: "Profesjonell", tFr: "Vennlig", tSh: "Kort",
 newChat: "Ny chat", typing: "Skriver…", ph: "Skriv en melding…",
 key: "API-nokkel (BYOK)",
-welcome: "Hei! Jeg er Serhiis assistent. Spor om erfaring, utdanning, kontakt." };
+welcome: "Hei! Jeg er Serhiis assistent. Spor om erfaring, utdanning, kontakt." , newsBtn: "Teknologi-nyheter", newsTitle: "Teknologi-nyheter", widgets: "Widgets", radioT: "Radio", loading: "Laster…"};
 
 window.SH_I18N.de = { navHome: "Start", navResume: "Lebenslauf", navHobby: "Projekte", navChat: "Assistent",
 uiLang: "Sprache", theme: "Thema", aAuto: "Auto", aLight: "Hell", aDark: "Dunkel",
@@ -52,7 +54,7 @@ hobbyT: "Projekte", hobbyX: "Noch leer \u2014 nur Hobby, kein Teil des Portfolio
 cAuto: "Auto", tPro: "Sachlich", tFr: "Freundlich", tSh: "Kurz",
 newChat: "Neuer Chat", typing: "Schreibt\u2026", ph: "Nachricht schreiben\u2026",
 key: "API-Schl\u00fcssel (BYOK)",
-welcome: "Hallo! Ich bin Serhiis Assistent. Frag nach Erfahrung, Bildung, Kontakten." };
+welcome: "Hallo! Ich bin Serhiis Assistent. Frag nach Erfahrung, Bildung, Kontakten." , newsBtn: "Tech-Nachrichten", newsTitle: "Tech-Nachrichten", widgets: "Widgets", radioT: "Radio", loading: "Lädt…"};
 window.SH_I18N.fr = { navHome: "Accueil", navResume: "CV", navHobby: "Projets", navChat: "Assistant",
 uiLang: "Langue", theme: "Th\u00e8me", aAuto: "Auto", aLight: "Clair", aDark: "Sombre",
 proxy: "URL proxy IA", proxyHint: "Vide = m\u00eame domaine.",
@@ -70,7 +72,7 @@ hobbyT: "Projets", hobbyX: "Vide pour l\u2019instant \u2014 simple hobby, pas du
 cAuto: "Auto", tPro: "Pro", tFr: "Amical", tSh: "Bref",
 newChat: "Nouveau chat", typing: "\u00c9crit\u2026", ph: "\u00c9crivez un message\u2026",
 key: "Cl\u00e9 API (BYOK)",
-welcome: "Salut ! Je suis l\u2019assistant de Serhii. Questions sur exp\u00e9rience, formation, contacts." };
+welcome: "Salut ! Je suis l\u2019assistant de Serhii. Questions sur exp\u00e9rience, formation, contacts." , newsBtn: "Actu tech", newsTitle: "Actu tech", widgets: "Widgets", radioT: "Radio", loading: "Chargement…"};
 window.SH_I18N.es = { navHome: "Inicio", navResume: "CV", navHobby: "Proyectos", navChat: "Asistente",
 uiLang: "Idioma", theme: "Tema", aAuto: "Auto", aLight: "Claro", aDark: "Oscuro",
 proxy: "URL proxy IA", proxyHint: "Vac\u00edo = mismo dominio.",
@@ -88,7 +90,7 @@ hobbyT: "Proyectos", hobbyX: "Vac\u00edo por ahora \u2014 solo hobby, no es port
 cAuto: "Auto", tPro: "Formal", tFr: "Amable", tSh: "Breve",
 newChat: "Nuevo chat", typing: "Escribiendo\u2026", ph: "Escribe un mensaje\u2026",
 key: "Clave API (BYOK)",
-welcome: "\u00a1Hola! Soy el asistente de Serhii. Pregunta por experiencia, estudios, contacto." };
+welcome: "\u00a1Hola! Soy el asistente de Serhii. Pregunta por experiencia, estudios, contacto." , newsBtn: "Noticias tech", newsTitle: "Noticias tech", widgets: "Widgets", radioT: "Radio", loading: "Cargando…"};
 window.SH_I18N.pl = { navHome: "Start", navResume: "CV", navHobby: "Projekty", navChat: "Asystent",
 uiLang: "J\u0119zyk", theme: "Motyw", aAuto: "Auto", aLight: "Jasny", aDark: "Ciemny",
 proxy: "URL proxy AI", proxyHint: "Pusto = ta sama domena.",
@@ -106,7 +108,7 @@ hobbyT: "Projekty", hobbyX: "Na razie pusto \u2014 tylko hobby, nie portfolio.",
 cAuto: "Auto", tPro: "Formalnie", tFr: "Przyja\u017anie", tSh: "Kr\u00f3tko",
 newChat: "Nowy czat", typing: "Pisze\u2026", ph: "Napisz wiadomo\u015b\u0107\u2026",
 key: "Klucz API (BYOK)",
-welcome: "Cze\u015b\u0107! Jestem asystentem Serhiia. Pytaj o do\u015bwiadczenie, edukacj\u0119, kontakt." };
+welcome: "Cze\u015b\u0107! Jestem asystentem Serhiia. Pytaj o do\u015bwiadczenie, edukacj\u0119, kontakt." , newsBtn: "Wiadomości tech", newsTitle: "Wiadomości tech", widgets: "Widgetsy", radioT: "Radio", loading: "Ładowanie…"};
  window.SH_I18N.zh = { navHome: "\u9996\u9875", navResume: "\u7b80\u5386", navHobby: "\u9879\u76ee", navChat: "\u52a9\u624b",
 uiLang: "\u8bed\u8a00", theme: "\u4e3b\u9898", aAuto: "\u81ea\u52a8", aLight: "\u6d45\u8272", aDark: "\u6df1\u8272",
 proxy: "AI \u4ee3\u7406 URL", proxyHint: "\u7a7a = \u540c\u57df\u540d\u3002",
@@ -124,7 +126,7 @@ hobbyT: "\u9879\u76ee", hobbyX: "\u6682\u65f6\u4e3a\u7a7a \u2014 \u53ea\u662f\u7
 cAuto: "\u81ea\u52a8", tPro: "\u6b63\u5f0f", tFr: "\u53cb\u597d", tSh: "\u7b80\u77ed",
 newChat: "\u65b0\u5bf9\u8bdd", typing: "\u8f93\u5165\u4e2d\u2026", ph: "\u5199\u6d88\u606f\u2026",
 key: "API \u5bc6\u94a5 (BYOK)",
-welcome: "\u4f60\u597d\uff01\u6211\u662fSerhii\u7684\u52a9\u624b\u3002\u53ef\u95ee\u7ecf\u9a8c\u3001\u6559\u80b2\u3001\u8054\u7cfb\u65b9\u5f0f\u3002" };
+welcome: "\u4f60\u597d\uff01\u6211\u662fSerhii\u7684\u52a9\u624b\u3002\u53ef\u95ee\u7ecf\u9a8c\u3001\u6559\u80b2\u3001\u8054\u7cfb\u65b9\u5f0f\u3002" , newsBtn: "科技新闻", newsTitle: "科技新闻", widgets: "小工具", radioT: "电台", loading: "加载中…"};
 window.SH_I18N.ar = { navHome: "\u0627\u0644\u0631\u0626\u064a\u0633\u064a\u0629", navResume: "\u0627\u0644\u0633\u064a\u0631\u0629", navHobby: "\u0645\u0634\u0627\u0631\u064a\u0639", navChat: "\u0627\u0644\u0645\u0633\u0627\u0639\u062f",
 uiLang: "\u0627\u0644\u0644\u063a\u0629", theme: "\u0627\u0644\u0645\u0638\u0647\u0631", aAuto: "\u062a\u0644\u0642\u0627\u0626\u064a", aLight: "\u0641\u0627\u062a\u062d", aDark: "\u062f\u0627\u0643\u0646",
 proxy: "URL \u0627\u0644\u0628\u0631\u0648\u0643\u0633\u064a", proxyHint: "\u0641\u0627\u0631\u063a = \u0646\u0641\u0633 \u0627\u0644\u0646\u0637\u0627\u0642\u3002",
@@ -142,7 +144,7 @@ hobbyT: "\u0645\u0634\u0627\u0631\u064a\u0639", hobbyX: "\u0641\u0627\u0631\u063
 cAuto: "\u062a\u0644\u0642\u0627\u0626\u064a", tPro: "\u0631\u0633\u0645\u064a", tFr: "\u0648\u062f\u064a", tSh: "\u0645\u062e\u062a\u0635\u0631",
 newChat: "\u062f\u0631\u062f\u0634\u0629 \u062c\u062f\u064a\u062f\u0629", typing: "\u064a\u0643\u062a\u0628\u2026", ph: "\u0627\u0643\u062a\u0628 \u0631\u0633\u0627\u0644\u0629\u2026",
 key: "\u0645\u0641\u062a\u0627\u062d API (BYOK)",
-welcome: "\u0645\u0631\u062d\u0628\u0627! \u0623\u0646\u0627 \u0645\u0633\u0627\u0639\u062f Serhii. \u0627\u0633\u0623\u0644 \u0639\u0646 \u0627\u0644\u062e\u0628\u0631\u0629 \u0623\u0648 \u0627\u0644\u062a\u0639\u0644\u064a\u0645." };
+welcome: "\u0645\u0631\u062d\u0628\u0627! \u0623\u0646\u0627 \u0645\u0633\u0627\u0639\u062f Serhii. \u0627\u0633\u0623\u0644 \u0639\u0646 \u0627\u0644\u062e\u0628\u0631\u0629 \u0623\u0648 \u0627\u0644\u062a\u0639\u0644\u064a\u0645." , newsBtn: "أخبار التقنية", newsTitle: "أخبار التقنية", widgets: "أدوات", radioT: "راديو", loading: "جارٍ التحميل…"};
 window.SH_I18N.ru = { navHome: "\u0413\u043b\u0430\u0432\u043d\u0430\u044f", navResume: "\u0420\u0435\u0437\u044e\u043c\u0435", navHobby: "\u041f\u0440\u043e\u0435\u043a\u0442\u044b", navChat: "\u0410\u0441\u0441\u0438\u0441\u0442\u0435\u043d\u0442",
 uiLang: "\u042f\u0437\u044b\u043a", theme: "\u0422\u0435\u043c\u0430", aAuto: "\u0410\u0432\u0442\u043e", aLight: "\u0421\u0432\u0435\u0442\u043b\u0430\u044f", aDark: "\u0422\u0451\u043c\u043d\u0430\u044f",
 proxy: "URL AI-\u043f\u0440\u043e\u043a\u0441\u0438", proxyHint: "\u041f\u0443\u0441\u0442\u043e = \u0442\u043e\u0442 \u0436\u0435 \u0434\u043e\u043c\u0435\u043d.",
@@ -160,4 +162,4 @@ hobbyT: "\u041f\u0440\u043e\u0435\u043a\u0442\u044b", hobbyX: "\u041f\u043e\u043
 cAuto: "\u0410\u0432\u0442\u043e", tPro: "\u041e\u0444\u0438\u0446\u0438\u0430\u043b\u044c\u043d\u043e", tFr: "\u0414\u0440\u0443\u0436\u0435\u043b\u044e\u0431\u043d\u043e", tSh: "\u041a\u0440\u0430\u0442\u043a\u043e",
 newChat: "\u041d\u043e\u0432\u044b\u0439 \u0447\u0430\u0442", typing: "\u041f\u0435\u0447\u0430\u0442\u0430\u0435\u0442\u2026", ph: "\u041d\u0430\u043f\u0438\u0448\u0438\u0442\u0435 \u0441\u043e\u043e\u0431\u0449\u0435\u043d\u0438\u0435\u2026",
 key: "API-\u043a\u043b\u044e\u0447 (BYOK)",
-welcome: "\u041f\u0440\u0438\u0432\u0435\u0442! \u042f \u0430\u0441\u0441\u0438\u0441\u0442\u0435\u043d\u0442 Serhii. \u0421\u043f\u0440\u0430\u0448\u0438\u0432\u0430\u0439 \u043e \u043e\u043f\u044b\u0442\u0435, \u043e\u0431\u0440\u0430\u0437\u043e\u0432\u0430\u043d\u0438\u0438, \u043a\u043e\u043d\u0442\u0430\u043a\u0442\u0430\u0445." };
+welcome: "\u041f\u0440\u0438\u0432\u0435\u0442! \u042f \u0430\u0441\u0441\u0438\u0441\u0442\u0435\u043d\u0442 Serhii. \u0421\u043f\u0440\u0430\u0448\u0438\u0432\u0430\u0439 \u043e \u043e\u043f\u044b\u0442\u0435, \u043e\u0431\u0440\u0430\u0437\u043e\u0432\u0430\u043d\u0438\u0438, \u043a\u043e\u043d\u0442\u0430\u043a\u0442\u0430\u0445." , newsBtn: "Новости технологий", newsTitle: "Техно-новости", widgets: "Виджеты", radioT: "Радио", loading: "Загрузка…"};

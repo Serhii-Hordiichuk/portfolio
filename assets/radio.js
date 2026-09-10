@@ -80,7 +80,12 @@ function boot() {
   sel.addEventListener('change', function () { play(parseInt(sel.value, 10) || 0); });
   audio.addEventListener('playing', ui);
   audio.addEventListener('pause', ui);
-  audio.addEventListener('error', function () { play(idx + 1); });
+  var errs = 0;
+  audio.addEventListener('playing', function () { errs = 0; });
+  audio.addEventListener('error', function () {
+    if (++errs >= Math.max(list.length, 3)) { errs = 0; ui(); return; }
+    play(idx + 1);
+  });
   // autoplay attempt (browsers may block until first gesture)
   var started = false;
   function kick() {
@@ -97,4 +102,13 @@ function boot() {
 }
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
 else boot();
+window.SH_RADIO = {
+  toggle: toggle,
+  play: function (i) { play(typeof i === 'number' ? i : idx); },
+  next: function () { play(idx + 1); },
+  prev: function () { play(idx - 1); },
+  state: function () {
+    return { playing: !!(audio && !audio.paused && audio.src), idx: idx, total: list.length, name: (list[idx] || {}).name || '' };
+  }
+};
 })();

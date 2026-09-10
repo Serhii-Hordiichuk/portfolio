@@ -10,7 +10,7 @@ set(k, v) { try { localStorage.setItem(k, v); } catch {} }
 window.SH = window.SH || {};
 window.SH.store = store;
 let lang = store.get("sh.lang", autoLang());
-var LANGS = ["uk","en","no","de","fr","es","pl","zh","ar"];
+var LANGS = ["uk","en","no","de","fr","es","pl","ru","zh","ar"];
 function autoLang() {
 try {
 const b = (navigator.language || "uk").toLowerCase();
@@ -49,12 +49,17 @@ function show(id) {
 $$(".section").forEach((s) => s.classList.remove("active"));
 const t = document.getElementById(id); if (t) t.classList.add("active");
 $$("[data-nav]").forEach((b) => b.classList.toggle("active", b.getAttribute("data-nav") === id));
-$("#panel").classList.remove("open");
+const panel = $("#panel"); if (panel) panel.classList.remove("open");
+const wg = $("#widgets"); if (wg) wg.classList.remove("open");
+const fab = $("#fab"); if (fab) fab.classList.remove("on");
+const nw = $("#news"); if (nw) nw.classList.remove("open");
+const nav = $(".nav"); if (nav) nav.classList.remove("open");
 document.body.classList.toggle("locked", id === "chat");
-if (id !== "chat") document.body.classList.remove("locked");
 window.scrollTo(0, 0); store.set("sh.tab", id);
 }
 $$("[data-nav]").forEach((b) => b.addEventListener("click", (e) => { e.preventDefault(); show(b.getAttribute("data-nav")); }));
+const menuBtn = $("#menu-btn");
+if (menuBtn) menuBtn.addEventListener("click", (e) => { e.stopPropagation(); const nav = $(".nav"); if (nav) nav.classList.toggle("open"); });
 var gear = $("#gear");
 if (gear) gear.addEventListener("click", (e) => { e.stopPropagation(); $("#panel").classList.toggle("open"); });
 document.addEventListener("click", (e) => {

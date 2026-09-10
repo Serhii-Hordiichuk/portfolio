@@ -1,5 +1,6 @@
 window.SH_I18N = {
-uk: { navHome: "Головна", navResume: "Резюме", navHobby: "Розробки", navChat: "Асистент",
+uk: {
+live: "НАЖИВО", loadingSt: "Завантаження станцій…", tapPlay: "Торкни ▶ щоб слухати", navHome: "Головна", navResume: "Резюме", navHobby: "Розробки", navChat: "Асистент",
 uiLang: "Мова", theme: "Тема", aAuto: "Авто", aLight: "Світла", aDark: "Темна",
 proxy: "AI Proxy URL", proxyHint: "Порожньо = той самий домен.",
 dl: "Завантажити PDF", hero: "Сергій Гордійчук", motto: "Можливості безмежні",
@@ -16,5 +17,6 @@ hobbyT: "Розробки", hobbyX: "Поки порожньо — це хобі
 cAuto: "Авто", tPro: "Діловий", tFr: "Дружній", tSh: "Коротко",
 newChat: "Новий чат", typing: "Друкує…", ph: "Напишіть повідомлення…",
 key: "API ключ (BYOK)",
+newsBtn: "Новини технологій", newsTitle: "Техно-новости", widgets: "Віджети", radioT: "Радіо", loading: "Завантаження…",
 welcome: "Привіт! Я асистент Сергія. Питай про досвід, освіту, контакти." }
 };
