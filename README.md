@@ -17,6 +17,6 @@ Auto → /api/chat на тому ж домені (ключі тільки в Ver
 Fallback: BYOK ключ у шестірні → localStorage; demo офлайн.
 
 ## Local
-node server.js (емулює /api/* локально на :8787).
+node dev-server.js (емулює /api/* локально на :8787).
 
 

@@ -7,5 +7,5 @@ jobs:
       - uses: actions/checkout@v4
       - uses: actions/setup-node@v4
         with: { node-version: 20 }
-      - run: node --check server.js && node --check api/_lib.js && node --check api/chat/index.js && node --check api/health/index.js
+      - run: node --check dev-server.js && node --check api/_lib.js && node --check api/chat/index.js && node --check api/health/index.js
       - run: node -e "const v=require('./vercel.json');console.log('vercel.json ok')"
