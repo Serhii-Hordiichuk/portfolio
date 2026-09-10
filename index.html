@@ -1,113 +1,134 @@
 <!DOCTYPE html>
-<html lang="uk">
+<html lang="uk" dir="ltr">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover">
 <title>Serhii Hordiichuk — Portfolio</title>
-<meta name="description" content="Serhii Hordiichuk — Maintenance / Full Stack DevOps AI. Portfolio + AI assistant (Ollama, OpenRouter, Groq, HF).">
-<link rel="stylesheet" href="assets/styles.css?v=8">
-<link rel="stylesheet" href="assets/chat.css?v=8">
+<meta name="description" content="Serhii Hordiichuk — Possibilities are limitless. Portfolio + AI assistant + classical radio.">
+<link rel="stylesheet" href="assets/styles.css?v=10">
+<link rel="stylesheet" href="assets/chat.css?v=10">
 </head>
 <body>
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+<defs>
+<symbol id="i-home" viewBox="0 0 24 24"><path d="M4 11.5 12 4l8 7.5"/><path d="M6.5 10.3V20h11v-9.7"/></symbol>
+<symbol id="i-cv" viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4"/><path d="M9.7 12.5h4.6M9.7 16h4.6"/></symbol>
+<symbol id="i-hobby" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.5"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/></symbol>
+<symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 5.5h16v10.5H9.5L4 20z"/><path d="M8 9.5h8M8 12.5h5"/></symbol>
+<symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.8v2.8M12 18.4v2.8M2.8 12h2.8M18.4 12h2.8M5.5 5.5l2 2M16.5 16.5l2 2M18.5 5.5l-2 2M7.5 16.5l-2 2"/></symbol>
+<symbol id="i-prev" viewBox="0 0 24 24"><path d="M17.5 5.5 9 12l8.5 6.5z"/><path d="M6.5 5v14"/></symbol>
+<symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.3v13.4L19 12z" fill="currentColor" stroke="none"/></symbol>
+<symbol id="i-pause" viewBox="0 0 24 24"><path d="M8 5h3v14H8zM13.5 5h3v14h-3z" fill="currentColor" stroke="none"/></symbol>
+<symbol id="i-next" viewBox="0 0 24 24"><path d="M6.5 5.5 15 12l-8.5 6.5z"/><path d="M17.5 5v14"/></symbol>
+<symbol id="i-send" viewBox="0 0 24 24"><path d="M12 19V5"/><path d="M5.5 11.5 12 5l6.5 6.5"/></symbol>
+<symbol id="i-plus" viewBox="0 0 24 24"><path d="M12 5v14M5 12h14"/></symbol>
+<symbol id="i-x" viewBox="0 0 24 24"><path d="M6 6l12 12M18 6 6 18"/></symbol>
+<symbol id="i-menu" viewBox="0 0 24 24"><path d="M4 7h16M4 12h16M4 17h16"/></symbol>
+<symbol id="i-dl" viewBox="0 0 24 24"><path d="M12 4v11"/><path d="M7 11l5 5 5-5"/><path d="M5 20h14"/></symbol>
+</defs>
+</svg>
 <header class="header">
-  <div class="logo"><i></i><span>S. Hordiichuk</span></div>
-  <nav class="nav">
-    <button class="nav-btn active" data-nav="cover">◼ <span data-i18n="navHome">Головна</span></button>
-    <button class="nav-btn" data-nav="official">▤ <span data-i18n="navResume">Резюме</span></button>
-    <button class="nav-btn" data-nav="hobby">○ <span data-i18n="navHobby">Розробки</span></button>
-    <button class="nav-btn" data-nav="chat">✉ <span data-i18n="navChat">Асистент</span></button>
-  </nav>
-  <button id="gear" class="gear" title="Settings">⚙</button>
+<nav class="nav">
+<button class="nav-btn active" data-nav="cover"><svg class="ic"><use href="#i-home"/></svg><span data-i18n="navHome">Головна</span></button>
+<button class="nav-btn" data-nav="official"><svg class="ic"><use href="#i-cv"/></svg><span data-i18n="navResume">Резюме</span></button>
+<button class="nav-btn" data-nav="hobby"><svg class="ic"><use href="#i-hobby"/></svg><span data-i18n="navHobby">Розробки</span></button>
+<button class="nav-btn" data-nav="chat"><svg class="ic"><use href="#i-chat"/></svg><span data-i18n="navChat">Асистент</span></button>
+</nav>
+<button id="gear" class="gear" title="Settings" aria-label="settings"><svg class="ic ic-lg"><use href="#i-gear"/></svg></button>
 </header>
 <div id="panel" class="panel">
-  <div class="sec"><label data-i18n="uiLang">Мова</label>
-    <select id="lang-select"><option value="uk">Українська</option><option value="en">English</option><option value="no">Norsk</option></select>
-  </div>
-  <div class="sec"><label data-i18n="theme">Тема</label>
-    <select id="theme-select"><option value="auto" data-i18n="aAuto">Авто</option><option value="light" data-i18n="aLight">Світла</option><option value="dark" data-i18n="aDark">Темна</option></select>
-  </div>
-  <div class="sec"><label data-i18n="proxy">AI Proxy URL</label>
-    <input id="proxy-url" placeholder="https://your-proxy.onrender.com">
-    <div class="hint" data-i18n="proxyHint"></div>
-    <input id="api-key" type="password" data-i18n-ph="key" placeholder="API ключ (BYOK)">
-  </div>
-  <div class="sec"><button class="btn-dark" id="dl">⬇ <span data-i18n="dl">PDF</span></button></div>
+<div class="sec"><label data-i18n="uiLang">Мова</label>
+<select id="lang-select">
+<option value="uk">Українська</option><option value="en">English</option><option value="no">Norsk</option>
+<option value="de">Deutsch</option><option value="fr">Français</option><option value="es">Español</option>
+<option value="pl">Polski</option><option value="ru">Русский</option><option value="zh">中文</option><option value="ar">العربية</option>
+</select></div>
+<div class="sec"><label data-i18n="theme">Тема</label>
+<select id="theme-select"><option value="auto" data-i18n="aAuto">Авто</option><option value="light" data-i18n="aLight">Світла</option><option value="dark" data-i18n="aDark">Темна</option></select></div>
+<div class="sec"><label data-i18n="proxy">AI Proxy URL</label>
+<input id="proxy-url" placeholder="https://your-proxy.onrender.com">
+<div class="hint" data-i18n="proxyHint"></div>
+<input id="api-key" type="password" data-i18n-ph="key" placeholder="API ключ (BYOK)"></div>
+<div class="sec"><button class="btn-dark" id="dl"><svg class="ic"><use href="#i-dl"/></svg><span data-i18n="dl">PDF</span></button></div>
 </div>
-
 <section id="cover" class="section active"><div class="wrap hero-wrap">
-  <div class="kicker">S · H</div>
-  <h1 class="hero" data-i18n="hero">Сергій Гордійчук</h1>
-  <div class="motto" data-i18n="motto">Можливості безмежні</div>
-  <div class="actions center">
-    <button class="btn solid big" id="radio-btn">▶ <span data-i18n="radio">Онлайн радіо</span></button>
-    <button class="btn big" data-nav="chat">✉ <span data-i18n="goAssist">Запитати асистента</span></button>
-  </div>
-  <div class="channels" id="channels">
-    <button class="chip radio-chip" data-stream="https://live.wostreaming.net/direct/alemus-classical-mp3">Klassisk</button>
-    <button class="chip radio-chip" data-stream="https://ice1.somafm.com/thistle-128-mp3">Thistle (Celtic)</button>
-    <button class="chip radio-chip" data-stream="https://ice1.somafm.com/tasa-128-mp3">TASA (Ambient)</button>
-    <button class="chip radio-chip" data-stream="https://live.musopen.org:8085/streamvbr0">Musopen Classic</button>
-  </div>
-  <audio id="radio" preload="none"></audio>
+<div class="kicker">.sh</div>
+<h1 class="hero" data-i18n="hero">Сергій Гордійчук</h1>
+<div class="motto" data-i18n="motto">Можливості безмежні</div>
+<div class="player" id="player">
+<div class="pl-row">
+<button class="pl-btn" id="pl-prev" aria-label="previous station"><svg class="ic ic-lg"><use href="#i-prev"/></svg></button>
+<button class="pl-btn pl-play" id="pl-toggle" aria-label="play pause"><svg class="ic ic-lg"><use href="#i-play" id="pl-use"/></svg></button>
+<button class="pl-btn" id="pl-next" aria-label="next station"><svg class="ic ic-lg"><use href="#i-next"/></svg></button>
+</div>
+<div class="pl-meta"><span class="pl-live" id="pl-live"><i></i><em data-i18n="live">НАЖИВО</em></span><span class="pl-name" id="pl-name" data-i18n="loadingSt">Завантаження станцій…</span></div>
+<select id="pl-station" class="pl-select" aria-label="station"></select>
+<div class="pl-hint" id="pl-hint" data-i18n="tapPlay">Торкни ▶ щоб слухати</div>
+</div>
+<div class="actions center">
+<button class="btn big" data-nav="chat"><svg class="ic"><use href="#i-chat"/></svg><span data-i18n="goAssist">Запитати асистента</span></button>
+</div>
+<audio id="radio" preload="none"></audio>
 </div></section>
-
 <section id="official" class="section"><div class="wrap narrow">
-  <div class="kicker">CV</div>
-  <h1 class="hero sm">Serhii Hordiichuk</h1>
-  <p class="sub">Leitevegen 4a, 6150 Ørsta · <span data-i18n="dob">Народився 27.02.1992</span></p>
-  <div class="contact"><span>serhiihordiichuk@gmail.com</span><span>+4796689237</span><a href="docs/CV-Serhii.Hordiichuk.pdf" download>PDF ↓</a></div>
-  <h2 data-i18n="sumT">Резюме</h2><p data-i18n="sumX"></p>
-  <h2 data-i18n="expT">Досвід</h2>
-  <p><strong>Euro-oppvarming | Sniatyn</strong> · 2008–2023<br><span data-i18n="expR"></span></p>
-  <ul class="dots"><li data-i18n="exp1"></li><li data-i18n="exp2"></li><li data-i18n="exp3"></li></ul>
-  <h2 data-i18n="eduT">Освіта</h2>
-  <p><strong>2015–2016</strong> — <span data-i18n="e1"></span></p>
-  <p><strong>2013–2015</strong> — <span data-i18n="e2"></span></p>
-  <p><strong>2007–2013</strong> — <span data-i18n="e3"></span></p>
-  <p><strong>2006–2007</strong> — Sniatyn school I–III (Stefanyk)</p>
-  <h2 data-i18n="langT">Мови</h2>
-  <p><span data-i18n="lUk"></span><br><span data-i18n="lEn"></span><br><span data-i18n="lNo"></span><br><span data-i18n="lRu"></span></p>
-  <h2 data-i18n="skillT">Навички</h2><p data-i18n="skillX"></p>
+<div class="kicker">CV</div>
+<h1 class="hero sm">Serhii Hordiichuk</h1>
+<div class="motto sm" data-i18n="motto">Можливості безмежні</div>
+<p class="sub">Leitevegen 4a, 6150 Ørsta · <span data-i18n="dob">Народився 27.02.1992</span></p>
+<div class="contact"><span>serhiihordiichuk@gmail.com</span><span>+4796689237</span><a href="docs/CV-Serhii.Hordiichuk.pdf" download>PDF ↓</a></div>
+<h2 data-i18n="sumT">Резюме</h2><p data-i18n="sumX"></p>
+<h2 data-i18n="expT">Досвід</h2>
+<p><strong>Euro-oppvarming | Sniatyn</strong> · 2008–2023<br><span data-i18n="expR"></span></p>
+<ul class="dots"><li data-i18n="exp1"></li><li data-i18n="exp2"></li><li data-i18n="exp3"></li></ul>
+<h2 data-i18n="eduT">Освіта</h2>
+<p><strong>2015–2016</strong> — <span data-i18n="e1"></span></p>
+<p><strong>2013–2015</strong> — <span data-i18n="e2"></span></p>
+<p><strong>2007–2013</strong> — <span data-i18n="e3"></span></p>
+<p><strong>2006–2007</strong> — Sniatyn school I–III (Stefanyk)</p>
+<h2 data-i18n="langT">Мови</h2>
+<p><span data-i18n="lUk"></span><br><span data-i18n="lEn"></span><br><span data-i18n="lNo"></span><br><span data-i18n="lRu"></span></p>
+<h2 data-i18n="skillT">Навички</h2><p data-i18n="skillX"></p>
 </div></section>
-
 <section id="hobby" class="section"><div class="wrap narrow">
-  <div class="kicker">○</div>
-  <h1 class="hero sm" data-i18n="hobbyT">Розробки</h1>
-  <p class="empty" data-i18n="hobbyX">Поки порожньо — це хобі, не частина портфоліо.</p>
+<div class="kicker">○</div>
+<h1 class="hero sm">Serhii Hordiichuk</h1>
+<div class="motto sm" data-i18n="motto">Можливості безмежні</div>
+<h2 class="ghost" data-i18n="hobbyT">Розробки</h2>
+<p class="empty" data-i18n="hobbyX">Поки порожньо — це хобі, не частина портфоліо.</p>
 </div></section>
-
 <section id="chat" class="section"><div class="cx">
-  <aside class="cx-side" id="cx-side">
-    <div class="cx-side-top"><span class="cx-brand">◼ Chats</span><button class="cx-new" id="new-chat">+ <span data-i18n="newChat">Новий чат</span></button></div>
-    <div class="cx-list" id="sessions"></div>
-    <div class="cx-opts">
-      <select id="provider" aria-label="provider"></select>
-      <select id="model" aria-label="model"></select>
-      <div class="cx-row">
-        <select id="clang" aria-label="lang"><option value="auto" data-i18n="cAuto">Авто</option><option value="uk">UK</option><option value="en">EN</option><option value="no">NO</option></select>
-        <select id="tone" aria-label="tone"><option value="professional" data-i18n="tPro">Діловий</option><option value="friendly" data-i18n="tFr">Дружній</option><option value="short" data-i18n="tSh">Коротко</option></select>
-      </div>
-    </div>
-  </aside>
-  <main class="cx-main">
-    <div class="cx-topbar"><button class="cx-menu" id="cx-menu" aria-label="menu">☰</button><span>✉ Assistant</span></div>
-    <div class="cx-msgs" id="chat-body"><div class="cx-inner" id="chat-inner"></div></div>
-    <div class="cx-typing" id="typing" data-i18n="typing">…</div>
-    <div class="cx-center">
-      <div class="cx-box">
-        <textarea id="chat-input" data-i18n-ph="ph" placeholder="…" autocomplete="off" rows="1"></textarea>
-        <button class="cx-send" id="send" title="Send">↑</button>
-      </div>
-      <div class="cx-under"><span class="cx-dot" id="cdot"></span> <span id="ctxt2">demo</span> · <span id="ctxt3"></span></div>
-    </div>
-  </main>
+<aside class="cx-side" id="cx-side">
+<div class="cx-side-top"><span class="cx-brand">◼ Chats</span><button class="cx-new" id="new-chat"><svg class="ic"><use href="#i-plus"/></svg><span data-i18n="newChat">Новий чат</span></button></div>
+<div class="cx-list" id="sessions"></div>
+<div class="cx-opts">
+<select id="provider" aria-label="provider"></select>
+<select id="model" aria-label="model"></select>
+<div class="cx-row">
+<select id="clang" aria-label="lang"><option value="auto" data-i18n="cAuto">Авто</option><option value="uk">UK</option><option value="en">EN</option><option value="no">NO</option><option value="de">DE</option><option value="fr">FR</option><option value="es">ES</option><option value="pl">PL</option><option value="zh">中文</option><option value="ar">AR</option></select>
+<select id="tone" aria-label="tone"><option value="professional" data-i18n="tPro">Діловий</option><option value="friendly" data-i18n="tFr">Дружній</option><option value="short" data-i18n="tSh">Коротко</option></select>
+</div>
+</div>
+</aside>
+<main class="cx-main">
+<div class="cx-topbar"><button class="cx-menu" id="cx-menu" aria-label="menu"><svg class="ic ic-lg"><use href="#i-menu"/></svg></button><span>✉ Assistant</span></div>
+<div class="cx-msgs" id="chat-body"><div class="cx-inner" id="chat-inner"></div></div>
+<div class="cx-typing" id="typing" data-i18n="typing">…</div>
+<div class="cx-center">
+<div class="cx-box">
+<textarea id="chat-input" data-i18n-ph="ph" placeholder="…" autocomplete="off" rows="1"></textarea>
+<button class="cx-send" id="send" title="Send" aria-label="send"><svg class="ic ic-lg"><use href="#i-send"/></svg></button>
+</div>
+<div class="cx-under"><span class="cx-dot" id="cdot"></span> <span id="ctxt2">demo</span> · <span id="ctxt3"></span></div>
+</div>
+</main>
 </div></section>
-
-<script src="assets/config.js?v=8"></script>
-<script src="assets/i18n.js?v=8"></script>
-<script src="assets/i18n2.js?v=8"></script>
-<script src="assets/app.js?v=8"></script>
-<script src="assets/chat.js?v=8"></script>
-<script src="assets/chat-ui.js?v=8"></script>
+<script src="assets/config.js?v=10"></script>
+<script src="assets/stations.js?v=10"></script>
+<script src="assets/i18n.js?v=10"></script>
+<script src="assets/i18n2.js?v=10"></script>
+<script src="assets/app.js?v=10"></script>
+<script src="assets/radio.js?v=10"></script>
+<script src="assets/chat.js?v=10"></script>
+<script src="assets/chat-ui.js?v=10"></script>
 </body>
 </html>

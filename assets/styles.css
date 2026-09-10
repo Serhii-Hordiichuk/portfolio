@@ -42,8 +42,6 @@ h1.hero.sm{font-size:30px}
 .btn.solid{background:var(--fg);color:var(--bg)}
 .btn.sq{border-radius:8px;height:48px;padding:0 18px}
 .btn:hover{opacity:.85}
-.channels{display:none;gap:8px;flex-wrap:wrap;justify-content:center;margin-top:18px}
-.channels.open{display:flex}
 .chip{font-size:11px;border:1px solid var(--line);border-radius:16px;padding:8px 14px;background:var(--card);color:var(--mut);cursor:pointer}
 .chip:hover,.chip.on{color:var(--fg);border-color:var(--fg)}
 #official h2{font-size:11px;letter-spacing:3px;text-transform:uppercase;border-bottom:1px solid var(--fg);padding-bottom:8px;margin:32px 0 12px}
@@ -54,4 +52,4 @@ h1.hero.sm{font-size:30px}
 ul.dots{padding-left:18px}
 .empty{color:var(--mut);font-size:14px;line-height:1.8;border:1px dashed var(--line);border-radius:10px;padding:26px;text-align:center;margin-top:18px}
 @media(max-width:760px){.logo span{display:none}.wrap{padding:36px 18px}.hero-wrap{padding-top:10vh}}
-@media print{.header,.panel,#cover,#hobby,#chat,.actions,.channels{display:none!important}#official{display:block!important}}
+@media print{.header,.panel,#cover,#hobby,#chat,.actions,.player{display:none!important}#official{display:block!important}}

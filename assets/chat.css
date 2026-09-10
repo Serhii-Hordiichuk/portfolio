@@ -43,7 +43,44 @@ body.dark #chat .cx-send{background:#f5f5f5;border-color:#f5f5f5;color:#111}
 #chat .cx-send:disabled{opacity:.35;cursor:default}
 #chat .cx-under{display:flex;align-items:center;justify-content:center;gap:6px;max-width:760px;margin:8px auto 0;font-size:10.5px;letter-spacing:1px;text-transform:uppercase;color:var(--mut);text-align:center}
 #chat .cx-topbar{display:none;align-items:center;gap:10px;padding:10px 14px;border-bottom:1px solid var(--line);font-size:11px;font-weight:800;letter-spacing:2px;text-transform:uppercase;color:var(--mut);background:var(--card);flex-shrink:0}
-#chat .cx-menu{border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:8px;width:36px;height:36px;font-size:16px;cursor:pointer}
+#chat .cx-menu{border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:8px;width:36px;height:36px;font-size:16px;cursor:pointer;padding:0;display:inline-flex;align-items:center;justify-content:center}
+/* player — custom */
+.player{display:block;max-width:420px;margin:30px auto 0;border:1px solid var(--line);border-radius:14px;background:var(--card);padding:16px 18px}
+.pl-row{display:flex;align-items:center;justify-content:center;gap:14px}
+.pl-btn{width:52px;height:52px;border-radius:50%;border:1px solid var(--line);background:var(--bg);color:var(--fg);cursor:pointer;display:inline-flex;align-items:center;justify-content:center}
+.pl-btn:hover{border-color:var(--fg);background:var(--soft)}
+.pl-play{width:72px;height:72px;border-radius:50%;background:#111;border-color:#111;color:#fff}
+body.dark .pl-play{background:#f5f5f5;border-color:#f5f5f5;color:#111}
+.pl-play.on{animation:plpulse 1.6s ease-in-out infinite}
+@keyframes plpulse{50%{box-shadow:0 0 0 10px var(--line)}}
+.pl-btn svg,.pl-play svg{width:26px;height:26px}
+.pl-meta{display:flex;justify-content:center;gap:10px;margin-top:14px;padding:0 4px;border-bottom:1px solid var(--line);padding-bottom:10px}
+.pl-live{display:inline-flex;align-items:center;gap:6px;font-size:10px;letter-spacing:2px;font-weight:800;color:var(--mut)}
+.pl-live i{width:8px;height:8px;border-radius:50%;background:var(--fg);animation:pllive 1s steps(2) infinite}
+@keyframes pllive{50%{opacity:.2}}
+.pl-live.on{color:var(--fg)}
+.pl-name{flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:13px;letter-spacing:.5px;color:var(--fg);text-transform:none}
+.pl-select{width:100%;margin-top:10px;padding:9px 12px;border:1px solid var(--line);border-radius:9px;background:var(--soft);color:var(--fg);font:500 12.5px inherit;outline:none;text-overflow:ellipsis}
+.pl-hint{font-size:10.5px;letter-spacing:1px;text-transform:uppercase;color:var(--mut);text-align:center;margin-top:6px}
+/* mobile header */
+@media(max-width:640px){
+.header{height:54px;padding:0 10px}
+.nav-btn{padding:8px 10px;font-size:12px}
+.nav-btn .ic{width:16px;height:16px}
+.gear{width:34px;height:34px}
+.panel{top:62px;right:8px;width:calc(100vw - 16px)}
+.wrap{padding:30px 14px}
+.hero-wrap{padding-top:6vh}
+h1.hero{font-size:clamp(26px,7vw,40px)}
+.motto{font-size:10px;letter-spacing:3px}
+.player{max-width:100%;padding:12px 14px}
+.pl-btn{width:44px;height:44px}.pl-play{width:62px;height:62px}
+.btn{height:46px;padding:0 18px;font-size:11px}
+.btn svg{width:16px;height:16px}
+}
+html[dir=rtl] .header{flex-direction:row-reverse}
+html[dir=rtl] .nav{flex-direction:row-reverse}
+html[dir=rtl] .pl-row{flex-direction:row-reverse}
 @media(max-width:840px){
 #chat .cx-topbar{display:flex}
 #chat .cx-side{position:fixed;left:0;top:60px;bottom:0;z-index:950;box-shadow:12px 0 40px rgba(0,0,0,.15);transform:translateX(-105%);transition:transform .25s ease}

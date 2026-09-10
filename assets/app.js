@@ -10,24 +10,32 @@ set(k, v) { try { localStorage.setItem(k, v); } catch {} }
 window.SH = window.SH || {};
 window.SH.store = store;
 let lang = store.get("sh.lang", autoLang());
+var LANGS = ["uk","en","no","de","fr","es","pl","zh","ar"];
 function autoLang() {
 try {
 const b = (navigator.language || "uk").toLowerCase();
+if (b.startsWith("uk")) return "uk";
+if (b.startsWith("nb") || b.startsWith("nn") || b.startsWith("no")) return "no";
+if (b.startsWith("zh")) return "zh";
+if (b.startsWith("ar")) return "ar";
+if (b.startsWith("de")) return "de";
+if (b.startsWith("fr")) return "fr";
+if (b.startsWith("es")) return "es";
+if (b.startsWith("pl")) return "pl";
 if (b.startsWith("en")) return "en";
-if (b.startsWith("no") || b.startsWith("nb") || b.startsWith("nn")) return "no";
 } catch {}
 return "uk";
 }
 function applyLang(l) {
+if (!window.SH_I18N[l]) l = "en";
 if (!window.SH_I18N[l]) l = "uk";
 lang = l; store.set("sh.lang", l);
 document.documentElement.lang = l;
+document.documentElement.dir = (l === "ar") ? "rtl" : "ltr";
 const T = window.SH_I18N[l];
 $$("[data-i18n]").forEach((el) => { const k = el.getAttribute("data-i18n"); if (T[k] !== undefined) el.innerHTML = T[k]; });
 $$("[data-i18n-ph]").forEach((el) => { const k = el.getAttribute("data-i18n-ph"); if (T[k]) el.placeholder = T[k]; });
 const ls = $("#lang-select"); if (ls) ls.value = l;
-const rb = $("#radio-btn span");
-if (rb && !isPlaying()) rb.textContent = T.radio || "Radio";
 document.dispatchEvent(new CustomEvent("sh:lang", { detail: l }));
 }
 function applyTheme(m) {
@@ -46,45 +54,32 @@ document.body.classList.toggle("locked", id === "chat");
 if (id !== "chat") document.body.classList.remove("locked");
 window.scrollTo(0, 0); store.set("sh.tab", id);
 }
-function isPlaying() { const a = $("#radio"); return a && !a.paused && a.src; }
-function radioUI() {
-const T = window.SH_I18N[lang] || {};
-const btn = $("#radio-btn");
-const label = btn ? btn.querySelector("span") : null;
-if (!btn || !label) return;
-if (isPlaying()) { label.textContent = "■ " + (T.stopRadio || "Stop"); btn.classList.add("solid"); }
-else { label.textContent = "▶ " + (T.radio || "Radio"); }
-}
 $$("[data-nav]").forEach((b) => b.addEventListener("click", (e) => { e.preventDefault(); show(b.getAttribute("data-nav")); }));
-$("#gear").addEventListener("click", (e) => { e.stopPropagation(); $("#panel").classList.toggle("open"); });
+var gear = $("#gear");
+if (gear) gear.addEventListener("click", (e) => { e.stopPropagation(); $("#panel").classList.toggle("open"); });
 document.addEventListener("click", (e) => {
-if (!$("#panel").contains(e.target) && e.target.id !== "gear") $("#panel").classList.remove("open");
+  var p = $("#panel");
+  if (p && !p.contains(e.target) && e.target.id !== "gear" && !e.target.closest("#gear")) p.classList.remove("open");
 });
-$("#lang-select").addEventListener("change", (e) => applyLang(e.target.value));
-$("#theme-select").addEventListener("change", (e) => applyTheme(e.target.value));
-$("#proxy-url").value = store.get("sh.proxy", "");
-$("#proxy-url").addEventListener("change", (e) => { store.set("sh.proxy", e.target.value.trim()); document.dispatchEvent(new Event("sh:proxy")); });
-$("#dl").addEventListener("click", () => { $("#panel").classList.remove("open"); show("official"); setTimeout(() => window.print(), 250); });
-const rb = $("#radio-btn");
-if (rb) rb.addEventListener("click", () => {
-const ch = $("#channels");
-const a = $("#radio");
-if (isPlaying()) { a.pause(); a.removeAttribute("src"); a.load(); ch.classList.remove("open"); radioUI(); return; }
-ch.classList.toggle("open");
-});
-$$(".radio-chip").forEach((c) => c.addEventListener("click", () => {
-const a = $("#radio");
-$$(".radio-chip").forEach((x) => x.classList.remove("on"));
-c.classList.add("on");
-a.src = c.getAttribute("data-stream");
-a.play().catch(() => {});
-radioUI();
-}));
+var langSel = $("#lang-select");
+if (langSel) {
+  if (!window.SH_I18N[langSel.value]) langSel.value = lang;
+  langSel.addEventListener("change", (e) => applyLang(e.target.value));
+}
+var themeSel = $("#theme-select");
+if (themeSel) themeSel.addEventListener("change", (e) => applyTheme(e.target.value));
+var px = $("#proxy-url");
+if (px) {
+  px.value = store.get("sh.proxy", "");
+  px.addEventListener("change", (e) => { store.set("sh.proxy", e.target.value.trim()); document.dispatchEvent(new Event("sh:proxy")); });
+}
+var dl = $("#dl");
+if (dl) dl.addEventListener("click", () => { $("#panel").classList.remove("open"); show("official"); setTimeout(() => window.print(), 250); });
 try {
-const mq = matchMedia("(prefers-color-scheme: dark)");
-const h = () => { if ((store.get("sh.theme", "auto")) === "auto") applyTheme("auto"); };
-mq.addEventListener ? mq.addEventListener("change", h) : mq.addListener(h);
-} catch {}
+  var mq = matchMedia("(prefers-color-scheme: dark)");
+  var h = () => { if ((store.get("sh.theme", "auto")) === "auto") applyTheme("auto"); };
+  if (mq.addEventListener) mq.addEventListener("change", h); else if (mq.addListener) mq.addListener(h);
+} catch (e) {}
 window.SH.show = show;
 window.SH.getLang = () => lang;
 applyLang(lang);
