@@ -1,4 +1,4 @@
-import { cors } from "./_lib.js";
+import { cors } from "../_lib.js";
 export default async function handler(req, res) {
   if (cors(req, res)) return;
   res.setHeader("Cache-Control", "no-store");
