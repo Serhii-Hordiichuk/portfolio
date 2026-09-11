@@ -27,13 +27,6 @@ export function buildKB(extra) {
   return "You are Serhii Hordiichuk's portfolio assistant. Answer only from the site info below. If not on the site, say so honestly. Site info:\n" + siteKB() + (x ? "\n\nLive page snapshot:\n" + x : "");
 }
 
-export const DEFAULT_MODELS = {
-  openrouter: ["meta-llama/llama-3.1-8b-instruct:free", "mistralai/mistral-7b-instruct:free", "google/gemma-2-9b-it:free"],
-  groq: ["llama-3.1-8b-instant", "llama-3.1-70b-versatile"],
-  hf: ["meta-llama/Llama-3.1-8B-Instruct", "mistralai/Mistral-7B-Instruct-v0.3"],
-  ollama: ["llama3.1:8b", "qwen2.5", "mistral"]
-};
-
 export function ollamaBase(u) { return String(u || process.env.OLLAMA_URL || "").replace(/\/$/, ""); }
 export function ollamaModel(m) { return m || process.env.OLLAMA_MODEL || "llama3.1:8b"; }
 
@@ -86,11 +79,11 @@ export async function fetchJSON(url, key, timeoutMs) {
   } finally { clearTimeout(t); }
 }
 
-export async function listModels(provider, key, ollamaUrl) {
+export async function listModels(provider) {
   const p = String(provider || "").toLowerCase();
   if (p === "openrouter") {
-    const k = key || process.env.OPENROUTER_API_KEY || "";
-    if (!k) throw new Error("missing OpenRouter key");
+    const k = process.env.OPENROUTER_API_KEY || "";
+    if (!k) throw new Error("OPENROUTER_API_KEY not set in Vercel env");
     const d = await fetchJSON("https://openrouter.ai/api/v1/models", k);
     const ids = (d.data || []).map((m) => m && m.id).filter(Boolean);
     if (!ids.length) throw new Error("no models returned");
@@ -98,23 +91,24 @@ export async function listModels(provider, key, ollamaUrl) {
     return { models: (free.length ? free : ids).slice(0, 60), via: "openrouter-api" };
   }
   if (p === "groq") {
-    const k = key || process.env.GROQ_API_KEY || "";
-    if (!k) throw new Error("missing Groq key");
+    const k = process.env.GROQ_API_KEY || "";
+    if (!k) throw new Error("GROQ_API_KEY not set in Vercel env");
     const d = await fetchJSON("https://api.groq.com/openai/v1/models", k);
     const ids = (d.data || []).map((m) => m && m.id).filter(Boolean);
     if (!ids.length) throw new Error("no models returned");
     return { models: ids.slice(0, 60), via: "groq-api" };
   }
   if (p === "hf" || p === "huggingface") {
-    const k = key || process.env.HF_TOKEN || "";
+    const k = process.env.HF_TOKEN || "";
+    if (!k) throw new Error("HF_TOKEN not set in Vercel env");
     const d = await fetchJSON("https://huggingface.co/api/models?pipeline_tag=text-generation&sort=likes&direction=-1&limit=30", k);
     const ids = (Array.isArray(d) ? d : []).map((m) => m && m.id).filter(Boolean);
     if (!ids.length) throw new Error("no models returned");
     return { models: ids.slice(0, 30), via: "hf-api" };
   }
   if (p === "ollama") {
-    const base = ollamaBase(ollamaUrl);
-    if (!base) return { models: DEFAULT_MODELS.ollama.slice(), via: "default" };
+    const base = ollamaBase("");
+    if (!base) throw new Error("OLLAMA_URL not set in Vercel env");
     const d = await fetchJSON(base + "/api/tags", "", 8000);
     const names = (d.models || []).map((m) => m && m.name).filter(Boolean);
     if (!names.length) throw new Error("no local models (run: ollama pull llama3.1:8b)");

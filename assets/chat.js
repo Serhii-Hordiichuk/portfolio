@@ -79,13 +79,6 @@ window.SH_CHAT.history = function (limit) {
   }));
 };
 function storeGet(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : v; } catch (e) { return d; } }
-window.SH_CHAT.getKey = function (provider) {
-  const p = String(provider || '').toLowerCase();
-  return (storeGet('sh.key:' + p, '') || storeGet('sh.key', '') || '').trim();
-};
-window.SH_CHAT.getOllamaUrl = function () {
-  return (storeGet('sh.ollamaUrl', '') || '').trim().replace(/\/$/, '');
-};
 window.SH_CHAT.proxyBase = function () {
   try { return (window.SH.store.get('sh.proxy', '') || '').replace(/\/$/, ''); } catch (e) { return ''; }
 };
@@ -100,8 +93,6 @@ window.SH_CHAT.viaProxy = async function (provider, model, messages) {
       body: JSON.stringify({
         provider: provider, model: (model === 'auto' ? undefined : model),
         messages: messages,
-        key: window.SH_CHAT.getKey(provider),
-        ollamaUrl: window.SH_CHAT.getOllamaUrl(),
         siteContext: siteContext
       }), signal: ctl.signal
     });
@@ -110,72 +101,29 @@ window.SH_CHAT.viaProxy = async function (provider, model, messages) {
     throw new Error(d.error || ('HTTP ' + r.status));
   } finally { clearTimeout(t); }
 };
-var modelsCache = {};
-window.SH_CHAT.fetchModels = async function (provider) {
-  const p = String(provider || '').toLowerCase();
-  if (p === 'auto') return { models: ['auto'], via: 'auto' };
-  const key = window.SH_CHAT.getKey(p);
-  const ollamaUrl = window.SH_CHAT.getOllamaUrl();
-  const ck = p + '|' + (key ? 'k' + key.length + ':' + key.slice(-4) : 'nokey') + '|' + ollamaUrl;
-  if (modelsCache[ck]) return modelsCache[ck];
+var modelsBulk = null;
+var modelsBulkAt = 0;
+window.SH_CHAT.fetchAllModels = async function () {
+  const now = Date.now();
+  if (modelsBulk && (now - modelsBulkAt) < 60000) return modelsBulk;
   const b = window.SH_CHAT.proxyBase();
   const ctl = new AbortController();
   const t = setTimeout(() => ctl.abort(), 15000);
   try {
-    const r = await fetch(b + '/api/models', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ provider: p, key: key, ollamaUrl: ollamaUrl }), signal: ctl.signal
-    });
-    const d = await r.json().catch(() => ({}));
-    if (r.ok && Array.isArray(d.models) && d.models.length) {
-      const out = { models: d.models, via: d.via || 'server' };
-      modelsCache[ck] = out;
-      return out;
-    }
-    throw new Error((d && d.error) || ('HTTP ' + r.status));
-  } finally { clearTimeout(t); }
-};
-window.SH_CHAT.direct = async function (provider, model, key, messages) {
-  const cfg = window.SH_CONFIG.providers[provider];
-  if (!cfg || !cfg.api) throw new Error('Pick a cloud provider (OpenRouter / Groq / HF) for direct mode');
-  if (!key) throw new Error('missing API key');
-  const all = [window.SH_CHAT.sysMsg()].concat(messages);
-  const extra = provider === 'openrouter' ? { 'HTTP-Referer': location.origin, 'X-Title': 'SH Portfolio' } : {};
-  const r = await fetch(cfg.api, {
-    method: 'POST', headers: Object.assign({ 'Content-Type': 'application/json', Authorization: 'Bearer ' + key }, extra),
-    body: JSON.stringify({ model: model, messages: all, temperature: 0.7, max_tokens: 600 })
-  });
-  const d = await r.json().catch(() => ({}));
-  if (!r.ok) throw new Error(((d && d.error && d.error.message) || (d && d.error) || ('HTTP ' + r.status)));
-  const txt = d && d.choices && d.choices[0] && d.choices[0].message && d.choices[0].message.content;
-  if (!txt) throw new Error('empty answer');
-  return { reply: txt, via: provider + ' direct' };
-};
-window.SH_CHAT.ollamaDirect = async function (model, messages) {
-  const base = window.SH_CHAT.getOllamaUrl();
-  if (!base) throw new Error('set Ollama URL first (e.g. http://localhost:11434)');
-  const md = model && model !== 'auto' ? model : (storeGet('sh.model:ollama', '') || 'llama3.1:8b');
-  const all = [window.SH_CHAT.sysMsg()].concat(messages);
-  try {
-    const r = await fetch(base + '/v1/chat/completions', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model: md, messages: all, temperature: 0.7, max_tokens: 600 })
-    });
+    const r = await fetch(b + '/api/models', { signal: ctl.signal });
     const d = await r.json().catch(() => ({}));
     if (!r.ok) throw new Error((d && d.error) || ('HTTP ' + r.status));
-    const txt = d && d.choices && d.choices[0] && d.choices[0].message && d.choices[0].message.content;
-    if (txt) return { reply: txt, via: 'ollama direct' };
-    throw new Error('empty answer');
-  } catch (e1) {
-    const r2 = await fetch(base + '/api/chat', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model: md, messages: all, stream: false })
-    });
-    const d2 = await r2.json().catch(() => ({}));
-    if (!r2.ok) throw new Error((d2 && d2.error) || ('Ollama HTTP ' + r2.status));
-    const txt2 = d2 && d2.message && d2.message.content;
-    if (!txt2) throw new Error('empty answer from Ollama');
-    return { reply: txt2, via: 'ollama direct' };
-  }
+    modelsBulk = (d && d.providers) || {};
+    modelsBulkAt = now;
+    return modelsBulk;
+  } finally { clearTimeout(t); }
+};
+window.SH_CHAT.fetchModels = async function (provider) {
+  const p = String(provider || '').toLowerCase();
+  if (p === 'auto') return { models: ['auto'], via: 'auto', configured: true };
+  const all = await window.SH_CHAT.fetchAllModels();
+  const e = all[p] || {};
+  if (e.configured && Array.isArray(e.models) && e.models.length) return { models: e.models, via: e.via || 'server', configured: true };
+  throw new Error((e && e.error) || ('no models: key for ' + p + ' not set in Vercel env'));
 };
 })();

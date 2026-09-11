@@ -7,7 +7,7 @@ import http from "node:http";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { siteKB, buildKB, listModels, DEFAULT_MODELS, ollamaBase, ollamaModel, chatOAI, chatOllama } from "./api/_lib.js";
+import { siteKB, buildKB, listModels, ollamaBase, ollamaModel, chatOAI, chatOllama } from "./api/_lib.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT || 8787);
@@ -45,16 +45,24 @@ const server = http.createServer(async (req, res) => {
       providers: { ollama, openrouter: !!process.env.OPENROUTER_API_KEY, groq: !!process.env.GROQ_API_KEY, hf: !!process.env.HF_TOKEN } });
   }
   if (u.pathname === "/api/models" && (req.method === "POST" || req.method === "GET")) {
-    let provider = "", key = "", ollamaUrl = "";
-    if (req.method === "POST") { const b = await readBody(req); provider = b.provider || ""; key = b.key || ""; ollamaUrl = b.ollamaUrl || ""; }
+    let provider = "";
+    if (req.method === "POST") { const b = await readBody(req); provider = b.provider || ""; }
     else provider = u.searchParams.get("provider") || "";
     provider = String(provider).toLowerCase();
+    if (!provider) {
+      const out = {};
+      for (const p of ["openrouter", "groq", "hf", "ollama"]) {
+        try { const r = await listModels(p); out[p] = { configured: true, models: r.models, via: r.via }; }
+        catch (e) { out[p] = { configured: false, models: [], via: "none", error: String((e && e.message) || e) }; }
+      }
+      return json(res, 200, { providers: out });
+    }
+    if (provider === "huggingface") provider = "hf";
     try {
-      const out = await listModels(provider, key, ollamaUrl);
-      return json(res, 200, { provider, models: out.models, via: out.via });
+      const out = await listModels(provider);
+      return json(res, 200, { provider, configured: true, models: out.models, via: out.via });
     } catch (e) {
-      const p = provider === "huggingface" ? "hf" : provider;
-      return json(res, 200, { provider, models: (DEFAULT_MODELS[p] || []).slice(), via: "fallback", error: String((e && e.message) || e) });
+      return json(res, 200, { provider, configured: false, models: [], via: "none", error: String((e && e.message) || e) });
     }
   }
   if (u.pathname === "/api/chat" && req.method === "POST") {
@@ -64,20 +72,18 @@ const server = http.createServer(async (req, res) => {
     const p = String(b.provider || "auto").toLowerCase();
     const sysKB = buildKB(b.siteContext);
     const order = p === "auto" ? ["ollama", "openrouter", "groq", "hf"] : [p];
-    const byok = b.key || "";
-    const ollamaUrl = b.ollamaUrl || "";
-    let lastErr = "no provider configured";
+    let lastErr = "no provider configured (set keys in Vercel env)";
     for (const name of order) {
       try {
         let reply = "";
-        if (name === "ollama") reply = await chatOllama([{ role: "system", content: sysKB }, ...messages], ollamaUrl, b.model);
-        else if (name === "openrouter" && (process.env.OPENROUTER_API_KEY || byok))
-          reply = await chatOAI("https://openrouter.ai/api/v1/chat/completions", byok || process.env.OPENROUTER_API_KEY, b.model || "meta-llama/llama-3.1-8b-instruct:free", [{ role: "system", content: sysKB }, ...messages]);
-        else if (name === "groq" && (process.env.GROQ_API_KEY || byok))
-          reply = await chatOAI("https://api.groq.com/openai/v1/chat/completions", byok || process.env.GROQ_API_KEY, b.model || "llama-3.1-8b-instant", [{ role: "system", content: sysKB }, ...messages]);
-        else if ((name === "hf" || name === "huggingface") && (process.env.HF_TOKEN || byok))
-          reply = await chatOAI("https://router.huggingface.co/v1/chat/completions", byok || process.env.HF_TOKEN, b.model || "meta-llama/Llama-3.1-8B-Instruct", [{ role: "system", content: sysKB }, ...messages]);
-        else { lastErr = name + ": missing key"; continue; }
+        if (name === "ollama") reply = await chatOllama([{ role: "system", content: sysKB }, ...messages], "", b.model);
+        else if (name === "openrouter" && process.env.OPENROUTER_API_KEY)
+          reply = await chatOAI("https://openrouter.ai/api/v1/chat/completions", process.env.OPENROUTER_API_KEY, b.model || "meta-llama/llama-3.1-8b-instruct:free", [{ role: "system", content: sysKB }, ...messages]);
+        else if (name === "groq" && process.env.GROQ_API_KEY)
+          reply = await chatOAI("https://api.groq.com/openai/v1/chat/completions", process.env.GROQ_API_KEY, b.model || "llama-3.1-8b-instant", [{ role: "system", content: sysKB }, ...messages]);
+        else if ((name === "hf" || name === "huggingface") && process.env.HF_TOKEN)
+          reply = await chatOAI("https://router.huggingface.co/v1/chat/completions", process.env.HF_TOKEN, b.model || "meta-llama/Llama-3.1-8B-Instruct", [{ role: "system", content: sysKB }, ...messages]);
+        else { lastErr = name + ": key not set in Vercel env"; continue; }
         if (reply) return json(res, 200, { reply, via: name });
       } catch (e) { lastErr = name + ": " + (e.message || e); }
     }
