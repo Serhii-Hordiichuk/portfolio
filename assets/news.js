@@ -76,17 +76,14 @@ function addCard(o){
   if (!o.title || seen[o.title]) return;
   seen[o.title] = 1; seenN++;
   var it = document.createElement('article'); it.className = 'nw-item';
-  var img;
   if (o.image) {
     img = document.createElement('img');
     img.className = 'nw-img'; img.loading = 'lazy'; img.alt = '';
     img.src = o.image;
-    img.onerror = function () { img.remove(); };
+    img.onerror = function () { img.remove(); showPh(it, o.title); };
     it.appendChild(img);
   } else {
-    img = document.createElement('div'); img.className = 'nw-img nw-ph';
-    img.textContent = o.src;
-    it.appendChild(img);
+    showPh(it, o.title);
   }
   var a = document.createElement('a');
   a.className = 'nw-title'; a.href = o.url; a.target = '_blank'; a.rel = 'noopener noreferrer';
@@ -100,6 +97,15 @@ function addCard(o){
   it.appendChild(m);
   feed.insertBefore(it, sentinel);
   pending.push({ a: a, descEl: d, title: o.title, desc: o.desc, fallback: o.fallback || host(o.url) });
+}
+/* deterministic gradient placeholder from title hash */
+function showPh(el, title){
+  var ph = document.createElement('div'); ph.className = 'nw-img nw-ph';
+  var h = 0, i; for (i = 0; i < title.length; i++) { h = (h * 31 + title.charCodeAt(i)) | 0; }
+  var hue = Math.abs(h) % 360;
+  ph.style.background = 'linear-gradient(135deg, hsl(' + hue + ',12%,22%) 0%, hsl(' + ((hue+40)%360) + ',12%,12%) 100%)';
+  ph.textContent = title.charAt(0).toUpperCase();
+  el.appendChild(ph);
 }
 function getJSON(u){
   var ctl = new AbortController();
