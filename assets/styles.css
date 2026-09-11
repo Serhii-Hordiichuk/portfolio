@@ -79,5 +79,6 @@ ul.dots{padding-left:18px}
   .wrap{padding:72px 40px;max-width:920px}
   .wrap.narrow{max-width:700px}
 }
-@media(max-width:760px){.logo span{display:none}.wrap{padding:36px 18px}.hero-wrap{padding-top:10vh}}
+@media(max-width:760px){.logo span{display:none}.wrap{padding:36px 18px 110px}.hero-wrap{padding-top:10vh}}
+@media(max-width:640px){body{padding-top:54px}.header{height:54px}.section{min-height:calc(100dvh - 54px)}}
 @media print{.header,.panel,#cover,#hobby,#chat,.actions,.player{display:none!important}#official{display:block!important}}

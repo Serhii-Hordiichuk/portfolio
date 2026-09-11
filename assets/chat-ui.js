@@ -333,10 +333,12 @@ function keyboardFix() {
     const chat = document.getElementById('chat');
     if (!vv || !chat) return;
     const HEADER = 60;
+    const hdrEl = document.querySelector('.header');
     const onR = () => {
       // visualViewport.height = видима область БЕЗ клавіатури;
-      // мінус хедер (60px), бо body має padding-top:60px, а хедер fixed.
-      const h = Math.max(320, Math.round(vv.height - HEADER));
+      // мінус реальна висота хедера (60 десктоп / 54 мобайл), бо body має padding-top, а хедер fixed.
+      const hh = hdrEl ? Math.round(hdrEl.getBoundingClientRect().height) : HEADER;
+      const h = Math.max(320, Math.round(vv.height - hh));
       chat.style.setProperty('--vv-h', h + 'px');
       setTimeout(() => window.SH_CHAT.scrollBottom(), 60);
     };
