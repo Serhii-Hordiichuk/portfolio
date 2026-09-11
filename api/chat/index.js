@@ -1,5 +1,5 @@
 import { cors, chatOAI, chatOllama, buildKB } from "../_lib.js";
-// Keys ONLY from Vercel env. Client must not send keys.
+// Keys ONLY from Vercel env. Client must not send keys. ollamaUrl (not secret) allowed for ollama.
 export default async function handler(req, res) {
   if (cors(req, res)) return;
   if (req.method !== "POST") return res.status(405).json({ error: "POST only" });
@@ -7,13 +7,14 @@ export default async function handler(req, res) {
   const messages = Array.isArray(b.messages) ? b.messages.slice(-12) : [];
   if (!messages.length) return res.status(400).json({ error: "empty messages" });
   const p = String(b.provider || "auto").toLowerCase();
-  const sysKB = buildKB(b.siteContext);
+  const sysKB = buildKB(b.siteContext, b.attachments);
+  const ollamaUrl = String(b.ollamaUrl || "").replace(/\/$/, "");
   const order = p === "auto" ? ["ollama", "openrouter", "groq", "hf"] : [p];
   let lastErr = "no provider configured (set keys in Vercel env)";
   for (const name of order) {
     try {
       let reply = "";
-      if (name === "ollama") reply = await chatOllama([{ role: "system", content: sysKB }, ...messages], "", b.model);
+      if (name === "ollama") reply = await chatOllama([{ role: "system", content: sysKB }, ...messages], ollamaUrl, b.model);
       else if (name === "openrouter" && process.env.OPENROUTER_API_KEY)
         reply = await chatOAI("https://openrouter.ai/api/v1/chat/completions", process.env.OPENROUTER_API_KEY, b.model || "meta-llama/llama-3.1-8b-instruct:free", [{ role: "system", content: sysKB }, ...messages], { "HTTP-Referer": "https://portfolio", "X-Title": "SH Portfolio" });
       else if (name === "groq" && process.env.GROQ_API_KEY)

@@ -45,21 +45,21 @@ const server = http.createServer(async (req, res) => {
       providers: { ollama, openrouter: !!process.env.OPENROUTER_API_KEY, groq: !!process.env.GROQ_API_KEY, hf: !!process.env.HF_TOKEN } });
   }
   if (u.pathname === "/api/models" && (req.method === "POST" || req.method === "GET")) {
-    let provider = "";
-    if (req.method === "POST") { const b = await readBody(req); provider = b.provider || ""; }
-    else provider = u.searchParams.get("provider") || "";
+    let provider = ""; let ollamaUrl = "";
+    if (req.method === "POST") { const b = await readBody(req); provider = b.provider || ""; ollamaUrl = b.ollamaUrl || ""; }
+    else { provider = u.searchParams.get("provider") || ""; ollamaUrl = u.searchParams.get("ollamaUrl") || ""; }
     provider = String(provider).toLowerCase();
     if (!provider) {
       const out = {};
       for (const p of ["openrouter", "groq", "hf", "ollama"]) {
-        try { const r = await listModels(p); out[p] = { configured: true, models: r.models, via: r.via }; }
+        try { const r = await listModels(p, p === "ollama" ? ollamaUrl : ""); out[p] = { configured: true, models: r.models, via: r.via }; }
         catch (e) { out[p] = { configured: false, models: [], via: "none", error: String((e && e.message) || e) }; }
       }
       return json(res, 200, { providers: out });
     }
     if (provider === "huggingface") provider = "hf";
     try {
-      const out = await listModels(provider);
+      const out = await listModels(provider, provider === "ollama" ? ollamaUrl : "");
       return json(res, 200, { provider, configured: true, models: out.models, via: out.via });
     } catch (e) {
       return json(res, 200, { provider, configured: false, models: [], via: "none", error: String((e && e.message) || e) });
@@ -70,13 +70,14 @@ const server = http.createServer(async (req, res) => {
     const messages = Array.isArray(b.messages) ? b.messages.slice(-12) : [];
     if (!messages.length) return json(res, 400, { error: "empty messages" });
     const p = String(b.provider || "auto").toLowerCase();
-    const sysKB = buildKB(b.siteContext);
+    const sysKB = buildKB(b.siteContext, b.attachments);
+    const ollamaUrl = String(b.ollamaUrl || "").replace(/\/$/, "");
     const order = p === "auto" ? ["ollama", "openrouter", "groq", "hf"] : [p];
     let lastErr = "no provider configured (set keys in Vercel env)";
     for (const name of order) {
       try {
         let reply = "";
-        if (name === "ollama") reply = await chatOllama([{ role: "system", content: sysKB }, ...messages], "", b.model);
+        if (name === "ollama") reply = await chatOllama([{ role: "system", content: sysKB }, ...messages], ollamaUrl, b.model);
         else if (name === "openrouter" && process.env.OPENROUTER_API_KEY)
           reply = await chatOAI("https://openrouter.ai/api/v1/chat/completions", process.env.OPENROUTER_API_KEY, b.model || "meta-llama/llama-3.1-8b-instruct:free", [{ role: "system", content: sysKB }, ...messages]);
         else if (name === "groq" && process.env.GROQ_API_KEY)

@@ -22,9 +22,20 @@ export function siteKB() {
   return FALLBACK_KB;
 }
 
-export function buildKB(extra) {
+export function buildKB(extra, attachments) {
   const x = String(extra || "").trim().slice(0, 4000);
-  return "You are Serhii Hordiichuk's portfolio assistant. Answer only from the site info below. If not on the site, say so honestly. Site info:\n" + siteKB() + (x ? "\n\nLive page snapshot:\n" + x : "");
+  let att = "";
+  try {
+    const arr = Array.isArray(attachments) ? attachments.slice(0, 3) : [];
+    const parts = [];
+    for (const a of arr) {
+      const nm = String((a && a.name) || "file").slice(0, 80);
+      const tx = String((a && a.text) || "").slice(0, 3000);
+      if (tx) parts.push("["+nm+"] "+tx);
+    }
+    if (parts.length) att = " Attached files: "+parts.join(" | ").slice(0,6000);
+  } catch {}
+  return "You are Serhii Hordiichuk's portfolio assistant. " + "Answer only from the site info below. " + "If not on the site, say so honestly. Site info: " + siteKB() + (x ? " Live page snapshot: " + x : "") + att;
 }
 
 export function ollamaBase(u) { return String(u || process.env.OLLAMA_URL || "").replace(/\/$/, ""); }
@@ -79,7 +90,7 @@ export async function fetchJSON(url, key, timeoutMs) {
   } finally { clearTimeout(t); }
 }
 
-export async function listModels(provider) {
+export async function listModels(provider, clientUrl) {
   const p = String(provider || "").toLowerCase();
   if (p === "openrouter") {
     const k = process.env.OPENROUTER_API_KEY || "";
@@ -107,9 +118,11 @@ export async function listModels(provider) {
     return { models: ids.slice(0, 30), via: "hf-api" };
   }
   if (p === "ollama") {
-    const base = ollamaBase("");
-    if (!base) throw new Error("OLLAMA_URL not set in Vercel env");
-    const d = await fetchJSON(base + "/api/tags", "", 8000);
+    const base = ollamaBase(clientUrl || "");
+    if (!base) throw new Error("OLLAMA_URL not set in Vercel env (server cannot see your localhost; use the Ollama URL field in chat for direct local access)");
+    let d;
+    try { d = await fetchJSON(base + "/api/tags", "", 8000); }
+    catch (e) { throw new Error("cannot reach Ollama from Vercel: " + (e.message || e) + " | OLLAMA_URL=" + base); }
     const names = (d.models || []).map((m) => m && m.name).filter(Boolean);
     if (!names.length) throw new Error("no local models (run: ollama pull llama3.1:8b)");
     return { models: names, via: "ollama-tags" };

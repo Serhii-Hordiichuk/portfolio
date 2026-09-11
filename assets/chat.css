@@ -191,3 +191,51 @@ body.dark .nw-item a:hover{color:#fff}
 #chat .cx-opts input:focus{border-color:var(--fg)}
 #chat .cx-hint{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--mut)}
 #chat .cx-msg .cx-via{display:block;margin-top:6px;font-size:9.5px;letter-spacing:1.2px;text-transform:uppercase;opacity:.5}
+
+/* ===== Assistant v4 polish: full chatbot, mobile keyboard-safe ===== */
+#chat{--vv-h:calc(100dvh - 60px)}
+#chat.active{height:calc(100vh - 60px);height:var(--vv-h)}
+#chat .cx-side-top{flex-wrap:nowrap}
+#chat .cx-topbtns{display:flex;align-items:center;gap:6px}
+#chat .cx-icon{width:34px;height:34px;flex-shrink:0;border:1px solid var(--line);background:var(--bg);color:var(--fg);border-radius:9px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0}
+#chat .cx-icon:hover{border-color:var(--fg);background:var(--soft)}
+#chat .cx-mrow{display:grid;grid-template-columns:1fr 34px;gap:6px;align-items:center}
+#chat .cx-mrow select{min-width:0}
+#chat .cx-check{display:flex;align-items:center;gap:8px;font-size:11px;letter-spacing:1px;text-transform:uppercase;color:var(--mut);cursor:pointer;user-select:none}
+#chat .cx-check input{width:16px;height:16px;accent-color:var(--fg)}
+#chat .cx-tool{flex-shrink:0;width:52px;height:52px;border-radius:12px;border:1px solid var(--line);background:var(--bg);color:var(--fg);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0}
+#chat .cx-tool:hover{border-color:var(--fg);background:var(--soft)}
+#chat .cx-tool.on{background:var(--fg);color:var(--bg);border-color:var(--fg);animation:plpulse 1.4s ease-in-out infinite}
+#chat .cx-files{display:flex;flex-wrap:wrap;gap:6px;max-width:760px;margin:0 auto 8px}
+#chat .cx-pfile{display:inline-flex;align-items:center;gap:6px;font-size:11px;color:var(--fg);background:var(--soft);border:1px solid var(--line);border-radius:16px;padding:5px 6px 5px 12px;max-width:220px;overflow:hidden;white-space:nowrap;text-overflow:ellipsis}
+#chat .cx-pfile button{border:0;background:var(--line);color:var(--fg);width:20px;height:20px;border-radius:50%;cursor:pointer;font-size:13px;line-height:1;display:inline-flex;align-items:center;justify-content:center;padding:0}
+#chat .cx-msg{position:relative}
+#chat .cx-msg .cx-acts{position:absolute;top:6px;right:8px;display:none;gap:4px}
+#chat .cx-msg:hover .cx-acts,#chat .cx-msg:focus-within .cx-acts{display:flex}
+#chat .cx-act{width:26px;height:26px;border-radius:7px;border:1px solid var(--line);background:var(--card);color:var(--mut);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0}
+#chat .cx-act:hover{color:var(--fg);border-color:var(--fg)}
+#chat .cx-act.ok{color:var(--fg);border-color:var(--fg)}
+#chat .cx-act .ic{width:14px;height:14px}
+#chat .cx-filechip{display:flex;align-items:center;gap:10px;padding:6px}
+#chat .cx-filesmsg{display:grid;gap:6px;padding:8px}
+#chat .cx-filechip img{width:100%;max-height:220px;object-fit:cover;border-radius:9px;border:1px solid var(--line)}
+#chat .cx-fileic{font-size:10px;font-weight:800;letter-spacing:1px;border:1px solid var(--line);border-radius:7px;padding:6px 8px;color:var(--mut)}
+#chat .cx-filename{font-size:11px;color:var(--mut);overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+#chat .cx-toast{position:absolute;left:50%;bottom:110px;transform:translateX(-50%) translateY(8px);background:var(--fg);color:var(--bg);font-size:12px;font-weight:600;padding:9px 16px;border-radius:20px;opacity:0;pointer-events:none;transition:opacity .2s,transform .2s;z-index:60;white-space:nowrap}
+#chat .cx-toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+#chat{position:relative}
+/* mobile: composer above keyboard, sidebar overlay, tighter bubbles */
+@media(max-width:840px){
+  #chat.active{height:var(--vv-h)}
+  #chat .cx-box{gap:6px}
+  #chat .cx-box textarea{min-height:46px;padding:12px 13px;font-size:16px}
+  #chat .cx-tool{width:46px;height:46px;border-radius:11px}
+  #chat .cx-send{width:46px;height:46px;border-radius:11px}
+  #chat .cx-msg:hover .cx-acts{display:none}
+  #chat .cx-msg .cx-acts{display:flex;opacity:.55}
+  #chat .cx-toast{bottom:120px}
+}
+@media(max-width:840px) and (orientation:landscape){
+  #chat .cx-msgs{padding:12px 12px 6px}
+  #chat .cx-center{padding:8px 10px 10px}
+}
