@@ -3,9 +3,18 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+<link rel="icon" href="/favicon.svg" type="image/svg+xml">
+<link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png">
+<link rel="apple-touch-icon" href="/apple-touch-icon.png">
+<link rel="manifest" href="/manifest.json">
+<meta name="theme-color" content="#0a0a0a">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+<meta name="apple-mobile-web-app-title" content="SH">
 <title>Serhii Hordiichuk &#x2014; Portfolio</title>
 <meta name="description" content="Serhii Hordiichuk &#x2014; Possibilities are limitless. Portfolio + AI assistant + tech news + radio.">
-<link rel="stylesheet" href="assets/styles.css?v=20">
+<link rel="stylesheet" href="assets/styles.css?v=21">
 <link rel="stylesheet" href="assets/chat.css?v=26">
 </head>
 <body>
@@ -189,5 +198,27 @@
 <script src="assets/widgets.js?v=19"></script>
 <script src="assets/chat.js?v=27"></script>
 <script src="assets/chat-ui.js?v=27"></script>
+<div class="pwa-pill" id="pwa-install" hidden><span>Встановити SH як додаток</span><b class="pwa-x" aria-label="close">&times;</b></div>
+<script>
+(function () {
+  var pwa = null;
+  window.addEventListener('beforeinstallprompt', function (e) {
+    e.preventDefault(); pwa = e;
+    var p = document.getElementById('pwa-install');
+    if (!p) return;
+    try { if (localStorage.getItem('sh.pwaOff') === '1') return; } catch (err) {}
+    p.hidden = false;
+  });
+  document.addEventListener('click', function (e) {
+    var p = document.getElementById('pwa-install');
+    if (!p || p.hidden) return;
+    if (e.target.closest('.pwa-x')) { try { localStorage.setItem('sh.pwaOff', '1'); } catch (err) {} p.hidden = true; return; }
+    if (e.target.closest('#pwa-install')) { p.hidden = true; if (pwa && pwa.prompt) pwa.prompt(); }
+  });
+  if ('serviceWorker' in navigator && (location.protocol === 'https:' || location.hostname === 'localhost' || location.hostname === '127.0.0.1')) {
+    window.addEventListener('load', function () { navigator.serviceWorker.register('/sw.js').catch(function () {}); });
+  }
+})();
+</script>
 </body>
 </html>

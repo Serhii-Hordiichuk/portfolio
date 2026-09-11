@@ -116,7 +116,7 @@ const server = http.createServer(async (req, res) => {
     const fp = path.join(__dirname, path.normalize(rel).replace(/^\//, ""));
     if (fp.startsWith(__dirname) && fs.existsSync(fp) && fs.statSync(fp).isFile()) {
       const ext = path.extname(fp);
-      const ct = { ".html": "text/html", ".css": "text/css", ".js": "text/javascript", ".pdf": "application/pdf", ".txt": "text/plain" }[ext] || "application/octet-stream";
+      const ct = { ".html": "text/html", ".css": "text/css", ".js": "text/javascript", ".pdf": "application/pdf", ".txt": "text/plain", ".svg": "image/svg+xml", ".json": "application/json", ".webmanifest": "application/manifest+json", ".png": "image/png" }[ext] || "application/octet-stream";
       res.writeHead(200, { "Content-Type": ct });
       return fs.createReadStream(fp).pipe(res);
     }

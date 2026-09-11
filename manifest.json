@@ -1,0 +1,18 @@
+{
+  "name": "Serhii Hordiichuk — Portfolio",
+  "short_name": "SH",
+  "description": "Портфоліо Сергія Гордійчука: ШІ-асистент, радіо, новини технологій",
+  "id": "/",
+  "start_url": "/",
+  "scope": "/",
+  "display": "standalone",
+  "background_color": "#0a0a0a",
+  "theme_color": "#0a0a0a",
+  "lang": "uk",
+  "categories": ["portfolio", "productivity"],
+  "icons": [
+    { "src": "/icon-192.png", "sizes": "192x192", "type": "image/png" },
+    { "src": "/icon-512.png", "sizes": "512x512", "type": "image/png" },
+    { "src": "/icon-maskable-512.png", "sizes": "512x512", "type": "image/png", "purpose": "maskable" }
+  ]
+}
