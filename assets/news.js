@@ -6,6 +6,8 @@ var HN = 'https://hn.algolia.com/api/v1/search_by_date?tags=front_page,story&hit
 var DEV = 'https://dev.to/api/articles?per_page=12&page=';
 var RED = 'https://www.reddit.com/r/technology/top.json?limit=15&t=day&t=';
 var LOB = 'https://lobste.rs/newest.json?page=';
+var HNW = 'https://api.hackernoon.com/v1/bookmarks?range=published&limit=12&';
+var SMR = 'https://api.allorigins.win/get?url=' + encodeURIComponent('https://www.smashingmagazine.com/feed/');
 var MM = 'https://api.mymemory.translated.net/get?q=';
 var tr = {
   uk:{loading:'\u0417\u0430\u0432\u0430\u043d\u0442\u0430\u0436\u0435\u043d\u043d\u044f\u2026',more:'\u0429\u0435\u2026',done:'\u0426\u0435 \u0432\u0441\u0435 \u2014 \u043a\u0456\u043d\u0435\u0446\u044c \u0441\u0442\u0440\u0456\u0447\u043a\u0438',err:'\u041d\u0435 \u0432\u0434\u0430\u043b\u043e\u0441\u044f \u0437\u0430\u0432\u0430\u043d\u0442\u0430\u0436\u0438\u0442\u0438'},
@@ -86,10 +88,10 @@ function addCard(o){
     img = document.createElement('img');
     img.className = 'nw-img'; img.loading = 'lazy'; img.alt = '';
     img.src = o.image;
-    img.onerror = function () { img.remove(); showPh(it, o.title); };
+        img.onerror = function () { img.remove(); showPh(it, o); };
     it.appendChild(img);
   } else {
-    showPh(it, o.title);
+    showPh(it, o);
   }
   var a = document.createElement('a');
   a.className = 'nw-title'; a.href = o.url; a.target = '_blank'; a.rel = 'noopener noreferrer';
@@ -106,12 +108,15 @@ function addCard(o){
   else pending.push({ a: a, descEl: d, title: o.title, desc: o.desc, fallback: o.fallback || host(o.url) });
 }
 /* deterministic gradient placeholder from title hash */
-function showPh(el, title){
+function showPh(el, o){
   var ph = document.createElement('div'); ph.className = 'nw-img nw-ph';
-  var h = 0, i; for (i = 0; i < title.length; i++) { h = (h * 31 + title.charCodeAt(i)) | 0; }
+  var h = 0, i; for (i = 0; i < o.title.length; i++) { h = (h * 31 + o.title.charCodeAt(i)) | 0; }
   var hue = Math.abs(h) % 360;
-  ph.style.background = 'linear-gradient(135deg, hsl(' + hue + ',12%,22%) 0%, hsl(' + ((hue+40)%360) + ',12%,12%) 100%)';
-  ph.textContent = title.charAt(0).toUpperCase();
+  var c1 = 'hsl(' + hue + ',12%,18%)', c2 = 'hsl(' + ((hue+40)%360) + ',12%,10%)';
+  ph.style.background = 'linear-gradient(135deg,' + c1 + ' 0%,' + c2 + ' 100%)';
+  var tt = document.createElement('span'); tt.className = 'nw-ph-title'; tt.textContent = o.title;
+  var dd = document.createElement('span'); dd.className = 'nw-ph-desc'; dd.textContent = o.desc || el.parentNode && (o.src||'News');
+  ph.appendChild(tt); ph.appendChild(dd);
   el.appendChild(ph);
 }
 function getJSON(u){
@@ -175,16 +180,51 @@ function loadLob(){
       var desc = (s.description || '').replace(/<[^>]*>/g, ' ').trim().slice(0, 220);
       addCard({ title: s.title, url: s.url, image: null, desc: desc,
         meta: (s.score||0) + ' pts \u00b7 ' + (s.comments_count||0) + ' c \u00b7 ' + ago(s.created_at), src: 'Lobsters' });
+            n++;
+    });
+    return n;
+  });
+}
+function loadHN2(){
+  return getJSON(HNW).then(function(d){
+    if (!d || !Array.isArray(d.bookmarks)) return 0;
+    var n = 0;
+    d.bookmarks.slice(0,12).forEach(function(a){
+      if (!a.title) return;
+      var desc = (a.summary || '').replace(/<[^>]*>/g, ' ').trim().slice(0, 220);
+      addCard({ title: a.title, url: a.url, image: a.cover_image || a.author_photo || null,
+        desc: desc, meta: (a.author || '') + ' | ' + ago(a.published_at), src: 'HNRN' });
       n++;
     });
     return n;
+  });
+}
+function loadSmr(){
+  return getJSON(SMR).then(function(d){
+    if (!d || !d.contents) return 0;
+    var html = d.contents, items = [];
+    var m = html.match(/<item[^>]*>([\s\S]*?)<\/item>/g);
+    if (!m) return 0;
+    m.slice(0,12).forEach(function(b){
+      var t = (b.match(/<title[^>]*>([\s\S]*?)<\/title>/i)||[])[1] || '';
+      var u = (b.match(/<link[^>]*>([\s\S]*?)<\/link>/i)||[])[1] || '';
+      var c = (b.match(/<description[^>]*>([\s\S]*?)<\/description>/i)||[])[1] || '';
+      t = t.replace(/<!\[CDATA\[|\]\]>/g,'').trim();
+      u = u.replace(/<!\[CDATA\[|\]\]>/g,'').trim();
+      c = c.replace(/<!\[CDATA\[|\]\]>/g,'').replace(/<[^>]*>/g,' ').trim().slice(0,220);
+      if (!t) return;
+      addCard({ title: t, url: u, image: null, desc: c,
+        meta: 'recent | Smashing', src: 'Smashing' });
+      items.push(1);
+    });
+    return items.length;
   });
 }
 function loadMore(){
   if (busy || done) return Promise.resolve();
   busy = true; fills = 0;
   if (statusEl) statusEl.textContent = T('more');
-  var sources = [loadHN, loadDev, loadRed, loadLob];
+  var sources = [loadHN, loadDev, loadRed, loadLob, loadHN2, loadSmr];
   var i = cycle % sources.length;
   cycle++;
   return sources[i]().catch(function(){ return 0; })
