@@ -1,4 +1,4 @@
-import { cors, chatOAI, chatOllama, streamOAISSE, streamOllamaChat, buildKB, buildLLMMessages } from "../_lib.js";
+import { cors, chatOAI, chatOllama, streamOAISSE, streamOllamaChat, buildKB, buildLLMMessages, detectIntent } from "../_lib.js";
 // Keys ONLY from Vercel env. Client must not send keys. ollamaUrl (not secret) allowed for ollama.
 // Supports: stream:true (SSE) and images in attachments (ChatGPT-like vision).
 export default async function handler(req, res) {
@@ -8,7 +8,7 @@ export default async function handler(req, res) {
   const messages = Array.isArray(b.messages) ? b.messages.slice(-12) : [];
   if (!messages.length) return res.status(400).json({ error: "empty messages" });
   const p = String(b.provider || "auto").toLowerCase();
-  const sysKB = buildKB(b.siteContext, b.attachments);
+  const sysKB = buildKB(b.siteContext, b.attachments, detectIntent(messages));
   const ollamaUrl = String(b.ollamaUrl || "").replace(/\/$/, "");
   const order = p === "auto" ? ["ollama", "openrouter", "groq", "hf"] : [p];
   const full = [{ role: "system", content: sysKB }, ...messages];

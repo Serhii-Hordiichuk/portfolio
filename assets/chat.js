@@ -5,11 +5,49 @@ window.SH_CHAT = window.SH_CHAT || {};
 function box() { return document.getElementById('chat-body'); }
 function inner() { return document.getElementById('chat-inner'); }
 function esc(s) { const d = document.createElement('div'); d.textContent = String(s == null ? '' : s); return d.innerHTML; }
-window.SH_CHAT.scrollBottom = function () {
+window.SH_CHAT.scrollBottom = function (instant) {
   const b = box();
   if (!b) return;
-  try { b.scrollTo({ top: b.scrollHeight, behavior: 'smooth' }); }
+  try { b.scrollTo({ top: b.scrollHeight, behavior: instant ? 'auto' : 'smooth' }); }
   catch (e) { b.scrollTop = b.scrollHeight; }
+};
+/* Safe markdown-lite renderer: escape first, then apply formatting. */
+window.SH_CHAT.formatMsg = function (text) {
+  let t = esc(text);
+  t = t.replace(/```([\s\S]*?)```/g, (m, code) => '<pre class="cx-code">' + esc(code).replace(/\n/g, '<br>') + '</pre>');
+  t = t.replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
+  t = t.replace(/(^|[^*])\*([^*\n]+)\*/g, '$1<i>$2</i>');
+  t = t.replace(/`([^`\n]+)`/g, '<code>$1</code>');
+  t = t.replace(/^#### (.*)$/gm, '<div class="cx-h4">$1</div>');
+  t = t.replace(/^### (.*)$/gm, '<div class="cx-h3">$1</div>');
+  t = t.replace(/^## (.*)$/gm, '<div class="cx-h2">$1</div>');
+  t = t.replace(/^# (.*)$/gm, '<div class="cx-h1">$1</div>');
+  t = t.replace(/^- (.*)$/gm, '&bull; $1');
+  t = t.replace(/^\d+\. (.*)$/gm, '<span class="cx-num">&bull;</span> $1');
+  t = t.replace(/^&gt; (.*)$/gm, '<blockquote>$1</blockquote>');
+  t = t.replace(/\n{2,}/g, '<br><br>').replace(/\n/g, '<br>');
+  return t;
+};
+/* Strip markdown for natural speech synthesis (no stars/code fences). */
+window.SH_CHAT.cleanSpeech = function (text) {
+  return String(text || '')
+    .replace(/```[\s\S]*?```/g, function () { return ' код. '; })
+    .replace(/`([^`\n]+)`/g, '$1')
+    .replace(/\*\*\*([^*]+)\*\*\*/g, '$1')
+    .replace(/\*\*([^*]+)\*\*/g, '$1')
+    .replace(/\*([^*\n]+)\*/g, '$1')
+    .replace(/^#+\s*/gm, '')
+    .replace(/^\s*[-*]\s+/gm, '')
+    .replace(/\[([^\]]+)\]\([^)]+\)/g, '$1')
+    .replace(/[*_~#>]/g, '')
+    .replace(/\s+/g, ' ')
+    .trim()
+    .replace(/([.!?:;])(?=\S)/g, '$1 ');
+};
+/* Detect if a user message is asking about the site/Serhii. */
+window.SH_CHAT.intentFor = function (text) {
+  const s = String(text || '').toLowerCase();
+  return /серг|serhii|резюме|\bcv\b|освіт|досвід прац|контакт|мов\w|хобі|сантех|plumb|sniatyn|снятин|про себе|сайт|портфоліо|portfolio|skills|навичк|education|experience|about you|about serhii|who is|cv\b/.test(s) ? 'site' : 'general';
 };
 window.SH_CHAT.add = function (text, who, via) {
   const host = inner() || box();
@@ -18,7 +56,7 @@ window.SH_CHAT.add = function (text, who, via) {
   d.className = 'cx-msg ' + (who === 'user' ? 'u' : 'b');
   const p = document.createElement('div');
   p.className = 'cx-text';
-  p.innerHTML = esc(text).replace(/\n/g, '<br>');
+  p.innerHTML = window.SH_CHAT.formatMsg(text);
   d.appendChild(p);
   if (via) { const v = document.createElement('span'); v.className = 'cx-via'; v.textContent = 'via ' + via; d.appendChild(v); }
   const acts = document.createElement('div');
@@ -69,10 +107,10 @@ window.SH_CHAT.addFiles = function (files, who) {
 window.SH_CHAT.updateBot = function (node, text, via) {
   if (!node) return window.SH_CHAT.add(text, 'bot', via);
   const p = node.querySelector('.cx-text');
-  if (p) p.innerHTML = esc(text).replace(/\n/g, '<br>');
+  if (p) p.innerHTML = window.SH_CHAT.formatMsg(text);
   let v = node.querySelector('.cx-via');
   if (via) { if (!v) { v = document.createElement('span'); v.className = 'cx-via'; node.appendChild(v); } v.textContent = 'via ' + via; }
-  window.SH_CHAT.scrollBottom();
+  window.SH_CHAT.scrollBottom(true);
   return node;
 };
 window.SH_CHAT.clear = function () { const h = inner(); if (h) h.innerHTML = ''; };
@@ -298,10 +336,13 @@ window.SH_CHAT.fetchModels = async function (provider) {
 window.SH_CHAT.speak = function (text) {
   try {
     if (!('speechSynthesis' in window)) return;
+    const clean = window.SH_CHAT.cleanSpeech(text);
+    if (!clean) return;
     window.speechSynthesis.cancel();
-    const u = new SpeechSynthesisUtterance(String(text || '').slice(0, 800));
+    const u = new SpeechSynthesisUtterance(clean.slice(0, 1600));
     const lang = (window.SH && window.SH.getLang && window.SH.getLang()) || 'uk';
     u.lang = lang === 'uk' ? 'uk-UA' : lang === 'no' ? 'nb-NO' : lang === 'ru' ? 'ru-RU' : lang === 'de' ? 'de-DE' : lang === 'fr' ? 'fr-FR' : lang === 'es' ? 'es-ES' : lang === 'pl' ? 'pl-PL' : lang === 'zh' ? 'zh-CN' : lang === 'ar' ? 'ar-SA' : 'en-US';
+    u.rate = 1.0; u.pitch = 1.0;
     window.speechSynthesis.speak(u);
   } catch (e) {}
 };

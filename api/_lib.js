@@ -22,7 +22,7 @@ export function siteKB() {
   return FALLBACK_KB;
 }
 
-export function buildKB(extra, attachments) {
+export function buildKB(extra, attachments, intent) {
   const x = String(extra || "").trim().slice(0, 4000);
   let att = "";
   const imgs = [];
@@ -38,11 +38,32 @@ export function buildKB(extra, attachments) {
     if (parts.length) att = " Attached files: " + parts.join(" | ").slice(0, 6000);
     if (imgs.length) att += " User sent images: " + imgs.join(", ") + ". Analyze them when asked.";
   } catch {}
+  let mode = "";
+  if (intent === "site") {
+    mode = "\n\nINTENT: the user is asking about Serhii or this site — use ONLY the site info above. If the exact info is absent, do NOT invent: say it is not on the site and ask a short clarifying question.";
+  } else {
+    mode = "\n\nINTENT: general topic — answer freely like ChatGPT. If the question seems possibly about Serhii but you are not sure, ask one short clarifying question first instead of guessing.";
+  }
   return "You are the AI assistant of serhii-portfolio site. DUAL MODE:\n" +
     "1) If the user asks about Serhii Hordiichuk (bio, CV, skills, education, experience, languages, contacts, projects, personality) - answer ONLY from the site info below. If info is missing, say it is not on the site.\n" +
     "2) For ANY other question or request (explanations, coding, writing, ideas, math, research, general chat, image analysis) - act as a capable general AI like ChatGPT / Gemini: answer helpfully, thoroughly and freely.\n" +
+    "When in doubt whether it is a site question or a general question, ask a short clarifying question instead of guessing.\n" +
     "Always reply in the user's language. If the user attaches an image, inspect it carefully and answer questions about it.\n\n" +
-    "SITE INFO (about Serhii):\n" + siteKB() + (x ? "\nLIVE PAGE SNAPSHOT:\n" + x : "") + att;
+    "SITE INFO (about Serhii):\n" + siteKB() + (x ? "\nLIVE PAGE SNAPSHOT:\n" + x : "") + att + mode;
+}
+
+export function detectIntent(messages) {
+  try {
+    const arr = Array.isArray(messages) ? messages : [];
+    for (let i = arr.length - 1; i >= 0; i--) {
+      const m = arr[i];
+      if (m && m.role === "user" && typeof m.content === "string") {
+        const s = m.content.toLowerCase();
+        return /серг|serhii|резюме|\bcv\b|освіт|досвід прац|контакт|мов\w|хобі|сантех|plumb|sniatyn|снятин|про себе|сайт|портфоліо|portfolio|skills|навичк|education|experience|about you|about serhii|who is/.test(s) ? "site" : "general";
+      }
+    }
+  } catch (e) {}
+  return "general";
 }
 
 export function buildLLMMessages(messages, attachments) {

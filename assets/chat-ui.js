@@ -308,12 +308,16 @@ async function send() {
   const msgs = window.SH_CHAT.history(10).concat([{ role: 'user', content: q || ('Analyze attached files: ' + files.map((f) => f.name).join(', ')) }]);
   const botNode = window.SH_CHAT.add('\u2026', 'bot');
   const sysMsgs = [window.SH_CHAT.sysMsg()].concat(msgs);
+  const intent = window.SH_CHAT.intentFor(q || (files.length ? files[0].name : ''));
+  sysMsgs[0].content += ' ' + (intent === 'site'
+    ? 'INTENT: the user is asking about Serhii/this site — use ONLY the site info; if absent, say so and ask a short clarifying question.'
+    : 'INTENT: general topic — answer freely like ChatGPT; if unsure whether it is about Serhii, ask a short clarifying question.');
   let fullTick = 0;
   const onDelta = (d) => {
     fullTick++;
     if (fullTick === 1 && ty) ty.classList.remove('show');
     window.SH_CHAT.updateBot(botNode, botNode._partial = (botNode._partial || '') + d, '');
-    window.SH_CHAT.scrollBottom();
+    window.SH_CHAT.scrollBottom(true);
   };
   try {
     let ans;
@@ -341,26 +345,39 @@ async function send() {
   renderSugs();
   closeSide();
   inp.focus({ preventScroll: true });
+  setTimeout(refreshChatHeight, 380);
 }
 /* ---------- mobile keyboard: keep composer visible ---------- */
+function refreshChatHeight() {
+  try {
+    const chat = document.getElementById('chat');
+    if (!chat) return;
+    const vv = window.visualViewport;
+    const hdrEl = document.querySelector('.header');
+    const hh = hdrEl ? Math.round(hdrEl.getBoundingClientRect().height) : 60;
+    // visualViewport.height = видима область БЕЗ клавіатури; мінус хедер (60/54px), бо body має padding-top.
+    const avail = vv ? vv.height : window.innerHeight;
+    const h = Math.max(280, Math.round(avail - hh));
+    chat.style.setProperty('--vv-h', h + 'px');
+    window.SH_CHAT.scrollBottom(true);
+  } catch (e) {}
+}
 function keyboardFix() {
   try {
     const vv = window.visualViewport;
-    const chat = document.getElementById('chat');
-    if (!vv || !chat) return;
-    const HEADER = 60;
-    const hdrEl = document.querySelector('.header');
-    const onR = () => {
-      // visualViewport.height = видима область БЕЗ клавіатури;
-      // мінус реальна висота хедера (60 десктоп / 54 мобайл), бо body має padding-top, а хедер fixed.
-      const hh = hdrEl ? Math.round(hdrEl.getBoundingClientRect().height) : HEADER;
-      const h = Math.max(320, Math.round(vv.height - hh));
-      chat.style.setProperty('--vv-h', h + 'px');
-      setTimeout(() => window.SH_CHAT.scrollBottom(), 60);
-    };
-    vv.addEventListener('resize', onR);
-    vv.addEventListener('scroll', onR);
-    onR();
+    const onR = () => refreshChatHeight();
+    if (vv) { vv.addEventListener('resize', onR); vv.addEventListener('scroll', onR); }
+    window.addEventListener('resize', onR);
+    window.addEventListener('orientationchange', onR);
+    let last = 0;
+    document.addEventListener('focusin', () => {
+      const now = Date.now();
+      if (now - last < 400) return;
+      last = now;
+      setTimeout(onR, 60);
+      onR();
+    });
+    refreshChatHeight();
   } catch (e) {}
 }
 function boot() {

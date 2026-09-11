@@ -32,6 +32,15 @@
 #chat{position:relative}
 #chat .cx-msg{position:static;max-width:85%;padding:12px 16px;border-radius:14px;font-size:14.5px;line-height:1.65;overflow-wrap:anywhere}
 #chat .cx-msg .cx-text{white-space:pre-wrap}
+#chat .cx-text b{font-weight:700}
+#chat .cx-text i{font-style:italic}
+#chat .cx-text code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;background:var(--soft);border:1px solid var(--line);border-radius:5px;padding:1px 5px}
+#chat .cx-text pre.cx-code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12.5px;line-height:1.6;background:var(--soft);border:1px solid var(--line);border-radius:10px;padding:12px;margin:8px 0;overflow-x:auto;white-space:pre-wrap}
+#chat .cx-text .cx-h1{font-size:17px;font-weight:800;letter-spacing:.4px;margin:12px 0 4px}
+#chat .cx-text .cx-h2{font-size:15.5px;font-weight:800;letter-spacing:.4px;margin:10px 0 4px}
+#chat .cx-text .cx-h3{font-size:14px;font-weight:700;margin:8px 0 3px}
+#chat .cx-text .cx-h4{font-size:13px;font-weight:700;margin:6px 0 2px}
+#chat .cx-text blockquote{border-left:3px solid var(--line);padding-left:10px;color:var(--mut);margin:6px 0}
 #chat .cx-msg.b{background:var(--soft);border:1px solid var(--line);color:var(--fg);align-self:flex-start;border-bottom-left-radius:5px}
 #chat .cx-msg.u{background:#111;color:#fff;align-self:flex-end;border-bottom-right-radius:5px}
 body.dark #chat .cx-msg.u{background:#f5f5f5;color:#111}

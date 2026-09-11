@@ -7,7 +7,7 @@ import http from "node:http";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { siteKB, buildKB, listModels, ollamaBase, ollamaModel, chatOAI, chatOllama, streamOAISSE, streamOllamaChat, buildLLMMessages } from "./api/_lib.js";
+import { siteKB, buildKB, listModels, ollamaBase, ollamaModel, chatOAI, chatOllama, streamOAISSE, streamOllamaChat, buildLLMMessages, detectIntent } from "./api/_lib.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT || 8787);
@@ -70,7 +70,7 @@ const server = http.createServer(async (req, res) => {
     const messages = Array.isArray(b.messages) ? b.messages.slice(-12) : [];
     if (!messages.length) return json(res, 400, { error: "empty messages" });
     const p = String(b.provider || "auto").toLowerCase();
-    const sysKB = buildKB(b.siteContext, b.attachments);
+    const sysKB = buildKB(b.siteContext, b.attachments, detectIntent(messages));
     const ollamaUrl = String(b.ollamaUrl || "").replace(/\/$/, "");
     const order = p === "auto" ? ["ollama", "openrouter", "groq", "hf"] : [p];
     const full = [{ role: "system", content: sysKB }, ...messages];
