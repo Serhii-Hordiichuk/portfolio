@@ -6,7 +6,7 @@
 <title>Serhii Hordiichuk &#x2014; Portfolio</title>
 <meta name="description" content="Serhii Hordiichuk &#x2014; Possibilities are limitless. Portfolio + AI assistant + tech news + radio.">
 <link rel="stylesheet" href="assets/styles.css?v=19">
-<link rel="stylesheet" href="assets/chat.css?v=19">
+<link rel="stylesheet" href="assets/chat.css?v=20">
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -103,6 +103,9 @@
 <div class="cx-opts">
 <select id="provider" aria-label="provider"></select>
 <select id="model" aria-label="model"></select>
+<div class="cx-hint" id="model-hint"></div>
+<div id="key-row"><input id="api-key" type="password" autocomplete="off" spellcheck="false" placeholder="Enter API key..." aria-label="api key"></div>
+<div id="ollama-row"><input id="ollama-url" type="url" autocomplete="off" spellcheck="false" placeholder="Ollama URL, e.g. http://localhost:11434" aria-label="ollama url"></div>
 <div class="cx-row">
 <select id="clang" aria-label="lang"><option value="auto" data-i18n="cAuto">&#x410;&#x432;&#x442;&#x43e;</option><option value="uk">UK</option><option value="en">EN</option><option value="no">NO</option><option value="de">DE</option><option value="fr">FR</option><option value="es">ES</option><option value="pl">PL</option><option value="ru">RU</option><option value="zh">&#x4e2d;&#x6587;</option><option value="ar">AR</option></select>
 <select id="tone" aria-label="tone"><option value="professional" data-i18n="tPro">&#x414;&#x456;&#x43b;&#x43e;&#x432;&#x438;&#x439;</option><option value="friendly" data-i18n="tFr">&#x414;&#x440;&#x443;&#x436;&#x43d;&#x456;&#x439;</option><option value="short" data-i18n="tSh">&#x41a;&#x43e;&#x440;&#x43e;&#x442;&#x43a;&#x43e;</option></select>
@@ -118,7 +121,7 @@
 <textarea id="chat-input" data-i18n-ph="ph" placeholder="&#x2026;" autocomplete="off" rows="1"></textarea>
 <button class="cx-send" id="send" title="Send" aria-label="send"><svg class="ic ic-lg"><use href="#i-send"/></svg></button>
 </div>
-<div class="cx-under"><span class="cx-dot" id="cdot"></span> <span id="ctxt2">demo</span> &#xb7; <span id="ctxt3"></span></div>
+<div class="cx-under"><span class="cx-dot" id="cdot"></span> <span id="ctxt2">offline</span> &#xb7; <span id="ctxt3"></span></div>
 </div>
 </main>
 </div></section>
@@ -169,7 +172,7 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.13/dist/hls.min.js" defer></script>
-<script src="assets/config.js?v=19"></script>
+<script src="assets/config.js?v=20"></script>
 <script src="assets/stations.js?v=19"></script>
 <script src="assets/i18n.js?v=19"></script>
 <script src="assets/i18n2.js?v=19"></script>
@@ -179,7 +182,7 @@
 <script src="assets/news.js?v=19"></script>
 <script src="assets/tv.js?v=19"></script>
 <script src="assets/widgets.js?v=19"></script>
-<script src="assets/chat.js?v=19"></script>
-<script src="assets/chat-ui.js?v=19"></script>
+<script src="assets/chat.js?v=20"></script>
+<script src="assets/chat-ui.js?v=20"></script>
 </body>
 </html>

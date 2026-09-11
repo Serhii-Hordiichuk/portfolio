@@ -1,20 +1,17 @@
 /**
- * Serhii Hordiichuk \u2014 Portfolio AI proxy (no deps, Node 18+).
- * GitHub Pages is static -> keys live here, not in frontend.
- * Endpoints: GET /api/health, POST /api/chat {provider,model,messages}
- * Run: cp .env.example .env && node server.js (port 8787)
+ * SH Portfolio AI proxy (no deps, Node 18+).
+ * Mirrors Vercel /api/* for local dev. Run: node dev-server.js (port 8787)
+ * Endpoints: GET /api/health, POST /api/chat, POST /api/models
  */
 import http from "node:http";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
+import { siteKB, buildKB, listModels, DEFAULT_MODELS, ollamaBase, ollamaModel, chatOAI, chatOllama } from "./api/_lib.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT || 8787);
-const ALLOWED = (process.env.ALLOWED_ORIGINS || "*").split(",").map(s => s.trim());
-const OLLAMA_URL = (process.env.OLLAMA_URL || "http://localhost:11434").replace(/\/$/, "");
-const OLLAMA_MODEL = process.env.OLLAMA_MODEL || "llama3.1:8b";
-const KB = `You are Serhii Hordiichuk's portfolio assistant. Serhii (34), Orsta Norway. Plumber 10+ years (Euro-oppvarming). IT: Full Stack DevOps AI \u2014 Python, JS React/Node, Docker, K8s, CI/CD, AWS, Terraform, LLM. Contacts: serhiihordiichuk@gmail.com, +4796689237. Motto: Possibilities are limitless.`;
+const ALLOWED = (process.env.ALLOWED_ORIGINS || "*").split(",").map((s) => s.trim());
 
 function cors(req, res) {
   const origin = req.headers.origin || "*";
@@ -31,32 +28,8 @@ function json(res, code, obj) {
 }
 async function readBody(req) {
   let s = "";
-  for await (const c of req) { s += c; if (s.length > 200_000) break; }
+  for await (const c of req) { s += c; if (s.length > 200000) break; }
   try { return JSON.parse(s || "{}"); } catch { return {}; }
-}
-async function chatOAI(url, key, model, messages) {
-  const r = await fetch(url, {
-    method: "POST",
-    headers: { "Content-Type": "application/json", ...(key ? { Authorization: "Bearer " + key } : {}) },
-    body: JSON.stringify({ model, messages, temperature: 0.7, max_tokens: 600 })
-  });
-  const d = await r.json().catch(() => ({}));
-  if (!r.ok) throw new Error(d?.error?.message || ("HTTP " + r.status));
-  return d.choices?.[0]?.message?.content || "";
-}
-async function chatOllama(messages) {
-  const all = [{ role: "system", content: KB }, ...messages];
-  try {
-    return await chatOAI(OLLAMA_URL + "/v1/chat/completions", "", OLLAMA_MODEL, all);
-  } catch {
-    const r = await fetch(OLLAMA_URL + "/api/chat", {
-      method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ model: OLLAMA_MODEL, messages: all, stream: false })
-    });
-    const d = await r.json().catch(() => ({}));
-    if (!r.ok) throw new Error(d?.error || ("Ollama HTTP " + r.status));
-    return d.message?.content || "";
-  }
 }
 
 const server = http.createServer(async (req, res) => {
@@ -64,40 +37,47 @@ const server = http.createServer(async (req, res) => {
   const u = new URL(req.url, "http://x");
   if (u.pathname === "/api/health" && req.method === "GET") {
     let ollama = false;
-    try { const r = await fetch(OLLAMA_URL + "/api/tags"); ollama = r.ok; } catch {}
-    return json(res, 200, { ok: true, ollamaModel: OLLAMA_MODEL,
-      providers: { ollama, openrouter: !!process.env.OPENROUTER_API_KEY,
-        groq: !!process.env.GROQ_API_KEY, hf: !!process.env.HF_TOKEN,
-        openai: !!process.env.OPENAI_API_KEY } });
+    try {
+      const base = ollamaBase("");
+      if (base) { const r = await fetch(base + "/api/tags"); ollama = r.ok; }
+    } catch {}
+    return json(res, 200, { ok: true, ollamaModel: ollamaModel(""),
+      providers: { ollama, openrouter: !!process.env.OPENROUTER_API_KEY, groq: !!process.env.GROQ_API_KEY, hf: !!process.env.HF_TOKEN } });
+  }
+  if (u.pathname === "/api/models" && (req.method === "POST" || req.method === "GET")) {
+    let provider = "", key = "", ollamaUrl = "";
+    if (req.method === "POST") { const b = await readBody(req); provider = b.provider || ""; key = b.key || ""; ollamaUrl = b.ollamaUrl || ""; }
+    else provider = u.searchParams.get("provider") || "";
+    provider = String(provider).toLowerCase();
+    try {
+      const out = await listModels(provider, key, ollamaUrl);
+      return json(res, 200, { provider, models: out.models, via: out.via });
+    } catch (e) {
+      const p = provider === "huggingface" ? "hf" : provider;
+      return json(res, 200, { provider, models: (DEFAULT_MODELS[p] || []).slice(), via: "fallback", error: String((e && e.message) || e) });
+    }
   }
   if (u.pathname === "/api/chat" && req.method === "POST") {
     const b = await readBody(req);
     const messages = Array.isArray(b.messages) ? b.messages.slice(-12) : [];
     if (!messages.length) return json(res, 400, { error: "empty messages" });
     const p = String(b.provider || "auto").toLowerCase();
-    const order = p === "auto" ? ["ollama", "openrouter", "groq", "hf", "openai"] : [p];
+    const sysKB = buildKB(b.siteContext);
+    const order = p === "auto" ? ["ollama", "openrouter", "groq", "hf"] : [p];
+    const byok = b.key || "";
+    const ollamaUrl = b.ollamaUrl || "";
     let lastErr = "no provider configured";
     for (const name of order) {
       try {
         let reply = "";
-        if (name === "ollama") reply = await chatOllama(messages);
-        else if (name === "openrouter" && process.env.OPENROUTER_API_KEY)
-          reply = await chatOAI("https://openrouter.ai/api/v1/chat/completions",
-            process.env.OPENROUTER_API_KEY,
-            b.model || "meta-llama/llama-3.1-8b-instruct:free",
-            [{ role: "system", content: KB }, ...messages]);
-        else if (name === "groq" && process.env.GROQ_API_KEY)
-          reply = await chatOAI("https://api.groq.com/openai/v1/chat/completions",
-            process.env.GROQ_API_KEY, b.model || "llama-3.1-8b-instant",
-            [{ role: "system", content: KB }, ...messages]);
-        else if ((name === "hf" || name === "huggingface") && process.env.HF_TOKEN)
-          reply = await chatOAI("https://router.huggingface.co/v1/chat/completions",
-            process.env.HF_TOKEN, b.model || "meta-llama/Llama-3.1-8B-Instruct",
-            [{ role: "system", content: KB }, ...messages]);
-        else if (name === "openai" && process.env.OPENAI_API_KEY)
-          reply = await chatOAI("https://api.openai.com/v1/chat/completions",
-            process.env.OPENAI_API_KEY, b.model || "gpt-4o-mini",
-            [{ role: "system", content: KB }, ...messages]);
+        if (name === "ollama") reply = await chatOllama([{ role: "system", content: sysKB }, ...messages], ollamaUrl, b.model);
+        else if (name === "openrouter" && (process.env.OPENROUTER_API_KEY || byok))
+          reply = await chatOAI("https://openrouter.ai/api/v1/chat/completions", byok || process.env.OPENROUTER_API_KEY, b.model || "meta-llama/llama-3.1-8b-instruct:free", [{ role: "system", content: sysKB }, ...messages]);
+        else if (name === "groq" && (process.env.GROQ_API_KEY || byok))
+          reply = await chatOAI("https://api.groq.com/openai/v1/chat/completions", byok || process.env.GROQ_API_KEY, b.model || "llama-3.1-8b-instant", [{ role: "system", content: sysKB }, ...messages]);
+        else if ((name === "hf" || name === "huggingface") && (process.env.HF_TOKEN || byok))
+          reply = await chatOAI("https://router.huggingface.co/v1/chat/completions", byok || process.env.HF_TOKEN, b.model || "meta-llama/Llama-3.1-8B-Instruct", [{ role: "system", content: sysKB }, ...messages]);
+        else { lastErr = name + ": missing key"; continue; }
         if (reply) return json(res, 200, { reply, via: name });
       } catch (e) { lastErr = name + ": " + (e.message || e); }
     }
@@ -108,13 +88,11 @@ const server = http.createServer(async (req, res) => {
     const fp = path.join(__dirname, path.normalize(rel).replace(/^\//, ""));
     if (fp.startsWith(__dirname) && fs.existsSync(fp) && fs.statSync(fp).isFile()) {
       const ext = path.extname(fp);
-      const ct = { ".html": "text/html", ".css": "text/css",
-        ".js": "text/javascript", ".pdf": "application/pdf" }[ext] || "application/octet-stream";
+      const ct = { ".html": "text/html", ".css": "text/css", ".js": "text/javascript", ".pdf": "application/pdf", ".txt": "text/plain" }[ext] || "application/octet-stream";
       res.writeHead(200, { "Content-Type": ct });
       return fs.createReadStream(fp).pipe(res);
     }
   }
   return json(res, 404, { error: "not found" });
 });
-server.listen(PORT, () => console.log("AI proxy on :" + PORT));
-
+server.listen(PORT, () => console.log("AI proxy on :" + PORT + " | KB chars: " + siteKB().length));

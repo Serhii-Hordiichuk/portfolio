@@ -186,3 +186,8 @@ body.dark .nw-item a:hover{color:#fff}
 .ni-close{border:1px solid var(--line);background:var(--bg);color:var(--fg);width:32px;height:32px;border-radius:8px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0}
 .ni-close:hover{border-color:var(--fg)}
 @media(max-width:720px){.ni-head{top:54px}}
+
+#chat .cx-opts input{width:100%;max-width:100%;padding:9px 10px;border:1px solid var(--line);border-radius:8px;background:var(--soft);color:var(--fg);font:500 12px inherit;outline:none}
+#chat .cx-opts input:focus{border-color:var(--fg)}
+#chat .cx-hint{font-size:10px;letter-spacing:1px;text-transform:uppercase;color:var(--mut)}
+#chat .cx-msg .cx-via{display:block;margin-top:6px;font-size:9.5px;letter-spacing:1.2px;text-transform:uppercase;opacity:.5}

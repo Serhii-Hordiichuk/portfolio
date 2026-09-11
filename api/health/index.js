@@ -18,7 +18,5 @@ export default async function handler(req, res) {
     providers: { ollama,
       openrouter: !!process.env.OPENROUTER_API_KEY,
       groq: !!process.env.GROQ_API_KEY,
-      hf: !!process.env.HF_TOKEN,
-      openai: !!process.env.OPENAI_API_KEY } });
+      hf: !!process.env.HF_TOKEN } });
 }
-
