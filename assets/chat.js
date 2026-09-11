@@ -5,7 +5,12 @@ window.SH_CHAT = window.SH_CHAT || {};
 function box() { return document.getElementById('chat-body'); }
 function inner() { return document.getElementById('chat-inner'); }
 function esc(s) { const d = document.createElement('div'); d.textContent = String(s == null ? '' : s); return d.innerHTML; }
-window.SH_CHAT.scrollBottom = function () { const b = box(); if (b) b.scrollTop = b.scrollHeight; };
+window.SH_CHAT.scrollBottom = function () {
+  const b = box();
+  if (!b) return;
+  try { b.scrollTo({ top: b.scrollHeight, behavior: 'smooth' }); }
+  catch (e) { b.scrollTop = b.scrollHeight; }
+};
 window.SH_CHAT.add = function (text, who, via) {
   const host = inner() || box();
   if (!host) return null;
@@ -121,10 +126,12 @@ window.SH_CHAT.sysMsg = function () {
 window.SH_CHAT.history = function (limit) {
   const host = inner() || box();
   if (!host) return [];
-  return Array.from(host.querySelectorAll('.cx-msg')).slice(-limit).map((m) => ({
-    role: m.classList.contains('u') ? 'user' : 'assistant',
-    content: ((m.querySelector('.cx-text') || m.firstChild || {}).textContent) || m.textContent
-  })).filter((m) => m.content && m.content.trim());
+  return Array.from(host.querySelectorAll('.cx-msg'))
+    .filter((m) => !m.classList.contains('cx-filesmsg'))
+    .slice(-limit).map((m) => ({
+      role: m.classList.contains('u') ? 'user' : 'assistant',
+      content: ((m.querySelector('.cx-text') || m.firstChild || {}).textContent) || m.textContent
+    })).filter((m) => m.content && m.content.trim() && m.content.trim() !== '…');
 };
 function lsGet(k, d) { try { const v = localStorage.getItem(k); return v == null ? d : v; } catch (e) { return d; } }
 function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }

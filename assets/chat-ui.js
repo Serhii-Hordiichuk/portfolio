@@ -73,11 +73,13 @@ function renderSessions() {
 function snapshot() {
   const host = document.getElementById('chat-inner') || document.getElementById('chat-body');
   if (!host) return [];
-  return Array.from(host.querySelectorAll('.cx-msg')).map((m) => ({
-    role: m.classList.contains('u') ? 'user' : 'assistant',
-    content: ((m.querySelector('.cx-text') || m.firstChild || {}).textContent) || m.textContent,
-    via: ((m.querySelector('.cx-via') || {}).textContent) || ''
-  })).filter((m) => m.content && m.content.trim());
+  return Array.from(host.querySelectorAll('.cx-msg'))
+    .filter((m) => !m.classList.contains('cx-filesmsg'))
+    .map((m) => ({
+      role: m.classList.contains('u') ? 'user' : 'assistant',
+      content: ((m.querySelector('.cx-text') || m.firstChild || {}).textContent) || m.textContent,
+      via: ((m.querySelector('.cx-via') || {}).textContent) || ''
+    })).filter((m) => m.content && m.content.trim() && m.content.trim() !== '…');
 }
 function persist() {
   const id = curId();
@@ -95,7 +97,34 @@ function greet() {
   if (window.SH_CHAT.count() === 0) {
     const T = window.SH_I18N[window.SH.getLang()] || window.SH_I18N.uk;
     window.SH_CHAT.add(T.welcome || 'Hi!', 'bot');
+    renderSugs();
   }
+}
+function sugQuestions() {
+  const lang = (window.SH && window.SH.getLang && window.SH.getLang()) || 'uk';
+  const Q = {
+    uk: ['Хто такий Сергій?', 'Розкажи про досвід роботи', 'Яка освіта?', 'Які мови знає?', 'Чим захоплюється?'],
+    en: ['Who is Serhii?', 'Tell me about work experience', 'What is his education?', 'Which languages?', 'What are his hobbies?'],
+    no: ['Hvem er Serhii?', 'Fortell om arbeidserfaring', 'Hvilken utdanning?', 'Hvilke språk?', 'Hvilke hobbyer?']
+  };
+  return Q[lang] || Q.en;
+}
+function renderSugs() {
+  const bar = document.getElementById('cx-sugs');
+  if (!bar) return;
+  bar.innerHTML = '';
+  if (window.SH_CHAT.count() > 1) { bar.style.display = 'none'; return; }
+  bar.style.display = '';
+  sugQuestions().forEach((q) => {
+    const b = document.createElement('button');
+    b.type = 'button'; b.className = 'cx-sug'; b.textContent = q;
+    b.addEventListener('click', () => {
+      const ta = document.getElementById('chat-input');
+      if (ta) { ta.value = q; autoresize(); }
+      send();
+    });
+    bar.appendChild(b);
+  });
 }
 function closeSide() { const s = document.getElementById('cx-side'); if (s) s.classList.remove('open'); }
 function openSession(id) {
@@ -104,7 +133,7 @@ function openSession(id) {
   window.SH_CHAT.clear();
   const s = sessions().find((x) => x.id === id);
   ((s && s.msgs) || []).forEach((m) => window.SH_CHAT.add(m.content, m.role === 'user' ? 'user' : 'bot', (m.via || '').replace(/^via /, '')));
-  greet(); renderSessions();
+  greet(); renderSessions(); renderSugs();
 }
 function newSession() {
   const id = 's' + Date.now();
@@ -293,6 +322,7 @@ async function send() {
   if (btn) btn.disabled = false;
   sending = false;
   persist();
+  renderSugs();
   closeSide();
   inp.focus({ preventScroll: true });
 }
@@ -373,7 +403,7 @@ function boot() {
   });
   document.addEventListener('keydown', (e) => { if (e.key === 'Escape') { closeSide(); stopRec(); window.SH_CHAT.stopSpeak(); } });
   document.addEventListener('sh:proxy', () => { health(); refreshModels(true); });
-  document.addEventListener('sh:lang', () => { greet(); });
+  document.addEventListener('sh:lang', () => { greet(); renderSugs(); });
   const all = sessions();
   const cur = curId();
   if (all.length && cur && all.some((s) => s.id === cur)) openSession(cur);

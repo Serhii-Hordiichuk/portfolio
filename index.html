@@ -6,7 +6,7 @@
 <title>Serhii Hordiichuk &#x2014; Portfolio</title>
 <meta name="description" content="Serhii Hordiichuk &#x2014; Possibilities are limitless. Portfolio + AI assistant + tech news + radio.">
 <link rel="stylesheet" href="assets/styles.css?v=19">
-<link rel="stylesheet" href="assets/chat.css?v=22">
+<link rel="stylesheet" href="assets/chat.css?v=23">
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -98,7 +98,7 @@
 
 <section id="chat" class="section"><div class="cx">
 <aside class="cx-side" id="cx-side">
-<div class="cx-side-top"><span class="cx-brand">&#x25fc; Chats</span><div class="cx-topbtns"><button class="cx-icon" id="cx-export" title="Copy chat" aria-label="copy chat"><svg class="ic"><use href="#i-copy"/></svg></button><button class="cx-new" id="new-chat"><svg class="ic"><use href="#i-plus"/></svg><span data-i18n="newChat">&#x41d;&#x43e;&#x432;&#x438;&#x439; &#x447;&#x430;&#x442;</span></button></div>
+<div class="cx-side-top"><span class="cx-brand">&#x25fc; Chats</span><div class="cx-topbtns"><button class="cx-icon" id="cx-export" title="Copy chat" aria-label="copy chat"><svg class="ic"><use href="#i-copy"/></svg></button><button class="cx-new" id="new-chat"><svg class="ic"><use href="#i-plus"/></svg><span data-i18n="newChat">&#x41d;&#x43e;&#x432;&#x438;&#x439; &#x447;&#x430;&#x442;</span></button></div></div>
 <div class="cx-list" id="sessions"></div>
 <div class="cx-opts">
 <select id="provider" aria-label="provider"></select>
@@ -107,16 +107,17 @@
 <div id="ollama-row"><input id="ollama-url" type="url" inputmode="url" autocomplete="off" autocapitalize="off" spellcheck="false" placeholder="Ollama URL, e.g. http://localhost:11434" aria-label="ollama url"><div class="cx-hint">local PC only &mdash; browser connects directly</div></div>
 <div class="cx-row">
 <select id="clang" aria-label="lang"><option value="auto" data-i18n="cAuto">&#x410;&#x432;&#x442;&#x43e;</option><option value="uk">UK</option><option value="en">EN</option><option value="no">NO</option><option value="de">DE</option><option value="fr">FR</option><option value="es">ES</option><option value="pl">PL</option><option value="ru">RU</option><option value="zh">&#x4e2d;&#x6587;</option><option value="ar">AR</option></select>
-<label class="cx-check"><input type="checkbox" id="tts"><span>Voice answers</span></label>
 <select id="tone" aria-label="tone"><option value="professional" data-i18n="tPro">&#x414;&#x456;&#x43b;&#x43e;&#x432;&#x438;&#x439;</option><option value="friendly" data-i18n="tFr">&#x414;&#x440;&#x443;&#x436;&#x43d;&#x456;&#x439;</option><option value="short" data-i18n="tSh">&#x41a;&#x43e;&#x440;&#x43e;&#x442;&#x43a;&#x43e;</option></select>
+<label class="cx-check"><input type="checkbox" id="tts"><span>Voice answers</span></label>
 </div>
 </div>
 </aside>
 <main class="cx-main">
 <div class="cx-topbar"><button class="cx-menu" id="cx-menu" aria-label="menu"><svg class="ic ic-lg"><use href="#i-menu"/></svg></button><span>&#x2709; Assistant</span></div>
 <div class="cx-msgs" id="chat-body"><div class="cx-inner" id="chat-inner"></div></div>
-<div class="cx-typing" id="typing" data-i18n="typing">&#x2026;</div>
 <div class="cx-center">
+<div class="cx-sugs" id="cx-sugs" aria-label="quick questions"></div>
+<div class="cx-typing" id="typing" data-i18n="typing">&#x2026;</div>
 <div class="cx-files" id="cx-files" style="display:none"></div>
 <div class="cx-box">
 <textarea id="chat-input" data-i18n-ph="ph" placeholder="&#x2026;" autocomplete="off" autocapitalize="sentences" rows="1" enterkeyhint="send"></textarea>
@@ -186,7 +187,7 @@
 <script src="assets/news.js?v=19"></script>
 <script src="assets/tv.js?v=19"></script>
 <script src="assets/widgets.js?v=19"></script>
-<script src="assets/chat.js?v=22"></script>
-<script src="assets/chat-ui.js?v=22"></script>
+<script src="assets/chat.js?v=23"></script>
+<script src="assets/chat-ui.js?v=23"></script>
 </body>
 </html>
