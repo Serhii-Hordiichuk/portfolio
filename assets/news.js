@@ -261,6 +261,20 @@ function unmountInline(){
     if (statusEl) root.appendChild(statusEl);
   }
 }
+/* Custom smooth scroll: completes even while the DOM mutates (cards loading). */
+var glideRaf = null;
+function glide(to){
+  if (glideRaf) cancelAnimationFrame(glideRaf);
+  var from = window.scrollY || window.pageYOffset || 0, t0 = null, D = 700;
+  function step(ts){
+    if (t0 === null) t0 = ts;
+    var k = Math.min(1, (ts - t0) / D);
+    k = 1 - Math.pow(1 - k, 3); /* ease-out cubic */
+    window.scrollTo(0, Math.round(from + (to - from) * k));
+    if (k < 1) glideRaf = requestAnimationFrame(step); else glideRaf = null;
+  }
+  glideRaf = requestAnimationFrame(step);
+}
 function openFeed(m){
   mode = m || 'page';
   lang = currentLang();
@@ -273,6 +287,12 @@ function openFeed(m){
   } else {
     mountInline();
     inlineEl.classList.add('open');
+    /* slide in from the bottom, then dock right below the header */
+    requestAnimationFrame(function () {
+      var top = 0, el = inlineEl; /* offsetTop ignores the slide-in transform */
+      while (el) { top += el.offsetTop; el = el.offsetParent; }
+      glide(Math.max(0, top - 60));
+    });
     var act = document.querySelector('.section.active');
     document.body.classList.toggle('locked', !!(act && act.id === 'chat'));
   }

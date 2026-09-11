@@ -5,8 +5,8 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
 <title>Serhii Hordiichuk &#x2014; Portfolio</title>
 <meta name="description" content="Serhii Hordiichuk &#x2014; Possibilities are limitless. Portfolio + AI assistant + tech news + radio.">
-<link rel="stylesheet" href="assets/styles.css?v=18">
-<link rel="stylesheet" href="assets/chat.css?v=18">
+<link rel="stylesheet" href="assets/styles.css?v=19">
+<link rel="stylesheet" href="assets/chat.css?v=19">
 </head>
 <body>
 <svg width="0" height="0" style="position:absolute" aria-hidden="true">
@@ -15,7 +15,10 @@
 <symbol id="i-cv" viewBox="0 0 24 24"><path d="M7 3h7l4 4v14H7z"/><path d="M14 3v4h4"/><path d="M9.7 12.5h4.6M9.7 16h4.6"/></symbol>
 <symbol id="i-hobby" viewBox="0 0 24 24"><circle cx="12" cy="12" r="7.5"/><circle cx="12" cy="12" r="1.6" fill="currentColor" stroke="none"/></symbol>
 <symbol id="i-chat" viewBox="0 0 24 24"><path d="M4 5.5h16v10.5H9.5L4 20z"/><path d="M8 9.5h8M8 12.5h5"/></symbol>
-<symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3.2"/><path d="M12 2.8v2.8M12 18.4v2.8M2.8 12h2.8M18.4 12h2.8M5.5 5.5l2 2M16.5 16.5l2 2M18.5 5.5l-2 2M7.5 16.5l-2 2"/></symbol>
+<symbol id="i-code" viewBox="0 0 24 24"><path d="m8.5 8-4.5 4 4.5 4"/><path d="m15.5 8 4.5 4-4.5 4"/><path d="M13.2 5.5 10.8 18.5"/></symbol>
+<symbol id="i-mail" viewBox="0 0 24 24"><rect x="3" y="5" width="18" height="14" rx="1.5"/><path d="m3.5 6.5 8.5 6 8.5-6"/></symbol>
+<symbol id="i-ai" viewBox="0 0 24 24"><rect x="5" y="8" width="14" height="11" rx="2.5"/><path d="M12 8V5"/><circle cx="12" cy="3.6" r="1.1"/><path d="M9 12.4v1.6M15 12.4v1.6"/><path d="M9.4 16.3c1.7 1.1 3.5 1.1 5.2 0"/></symbol>
+<symbol id="i-gear" viewBox="0 0 24 24"><circle cx="12" cy="12" r="3"/><path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 0 1 0 2.83 2 2 0 0 1-2.83 0l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-2 2 2 2 0 0 1-2-2v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 0 1-2.83 0 2 2 0 0 1 0-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1-2-2 2 2 0 0 1 2-2h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 0 1 0-2.83 2 2 0 0 1 2.83 0l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 2-2 2 2 0 0 1 2 2v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 0 1 2.83 0 2 2 0 0 1 0 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 2 2 2 2 0 0 1-2 2h-.09a1.65 1.65 0 0 0-1.51 1z"/></symbol>
 <symbol id="i-prev" viewBox="0 0 24 24"><path d="M17.5 5.5 9 12l8.5 6.5z"/><path d="M6.5 5v14"/></symbol>
 <symbol id="i-play" viewBox="0 0 24 24"><path d="M8 5.3v13.4L19 12z" fill="currentColor" stroke="none"/></symbol>
 <symbol id="i-pause" viewBox="0 0 24 24"><path d="M8 5h3v14H8zM13.5 5h3v14h-3z" fill="currentColor" stroke="none"/></symbol>
@@ -39,9 +42,9 @@
 <nav class="nav">
 <button class="nav-btn active" data-nav="cover"><svg class="ic"><use href="#i-home"/></svg><span data-i18n="navHome">&#x413;&#x43e;&#x43b;&#x43e;&#x432;&#x43d;&#x430;</span></button>
 <button class="nav-btn" data-nav="official"><svg class="ic"><use href="#i-cv"/></svg><span data-i18n="navResume">&#x420;&#x435;&#x437;&#x44e;&#x43c;&#x435;</span></button>
-<button class="nav-btn" data-nav="contacts"><svg class="ic"><use href="#i-gear"/></svg><span data-i18n="navContacts">&#x41a;&#x43e;&#x43d;&#x442;&#x430;&#x43a;&#x442;&#x438;</span></button>
-<button class="nav-btn" data-nav="hobby"><svg class="ic"><use href="#i-hobby"/></svg><span data-i18n="navHobby">&#x420;&#x43e;&#x437;&#x440;&#x43e;&#x431;&#x43a;&#x438;</span></button>
-<button class="nav-btn" data-nav="chat"><svg class="ic"><use href="#i-chat"/></svg><span data-i18n="navChat">&#x410;&#x441;&#x438;&#x441;&#x442;&#x435;&#x43d;&#x442;</span></button>
+<button class="nav-btn" data-nav="hobby"><svg class="ic"><use href="#i-code"/></svg><span data-i18n="navHobby">&#x420;&#x43e;&#x437;&#x440;&#x43e;&#x431;&#x43a;&#x438;</span></button>
+<button class="nav-btn" data-nav="contacts"><svg class="ic"><use href="#i-mail"/></svg><span data-i18n="navContacts">&#x41a;&#x43e;&#x43d;&#x442;&#x430;&#x43a;&#x442;&#x438;</span></button>
+<button class="nav-btn" data-nav="chat"><svg class="ic"><use href="#i-ai"/></svg><span data-i18n="navChat">&#x410;&#x441;&#x438;&#x441;&#x442;&#x435;&#x43d;&#x442;</span></button>
 </nav>
 <button id="gear" class="gear" title="Settings" aria-label="settings"><svg class="ic ic-lg"><use href="#i-gear"/></svg></button>
 </header>
@@ -61,7 +64,7 @@
 <h1 class="hero" data-i18n="hero">&#x421;&#x435;&#x440;&#x433;&#x456;&#x439; &#x413;&#x43e;&#x440;&#x434;&#x456;&#x439;&#x447;&#x443;&#x43a;</h1>
 <div class="motto" data-i18n="motto">&#x41c;&#x43e;&#x436;&#x43b;&#x438;&#x432;&#x43e;&#x441;&#x442;&#x456; &#x431;&#x435;&#x437;&#x43c;&#x435;&#x436;&#x43d;&#x456;</div>
 <div class="actions center">
-<button class="btn big" data-nav="chat"><svg class="ic"><use href="#i-chat"/></svg><span data-i18n="goAssist">&#x417;&#x430;&#x43f;&#x438;&#x442;&#x430;&#x442;&#x438; &#x430;&#x441;&#x438;&#x441;&#x442;&#x435;&#x43d;&#x442;&#x430;</span></button>
+<button class="btn big" data-nav="chat"><svg class="ic"><use href="#i-ai"/></svg><span data-i18n="goAssist">&#x417;&#x430;&#x43f;&#x438;&#x442;&#x430;&#x442;&#x438; &#x430;&#x441;&#x438;&#x441;&#x442;&#x435;&#x43d;&#x442;&#x430;</span></button>
 </div>
 <div class="actions center sub">
 <button class="btn big ghost" id="news-open"><svg class="ic"><use href="#i-news"/></svg><span data-i18n="newsBtn">&#x41d;&#x43e;&#x432;&#x438;&#x43d;&#x438; &#x442;&#x435;&#x445;&#x43d;&#x43e;&#x43b;&#x43e;&#x433;&#x456;&#x439;</span></button>
@@ -123,10 +126,9 @@
 <button id="fab" class="fab" aria-label="widgets"><svg class="ic ic-lg"><use href="#i-widgets"/></svg></button>
 <div id="widgets" class="widgets">
 <div class="wg-head"><b data-i18n="widgets">&#x412;&#x456;&#x434;&#x436;&#x435;&#x442;&#x438;</b><button class="wg-close" id="wg-close" aria-label="close"><svg class="ic"><use href="#i-x"/></svg></button></div>
-<div class="wg-cards wg-cards-3">
+<div class="wg-cards">
 <button class="wg-card" id="wg-card-radio"><svg class="ic"><use href="#i-radio"/></svg><span data-i18n="radioT">&#x420;&#x430;&#x434;&#x456;&#x43e;</span></button>
 <button class="wg-card" id="wg-card-tv"><svg class="ic"><use href="#i-tv"/></svg><span data-i18n="tv">&#x422;&#x412;</span></button>
-<button class="wg-card" id="wg-card-news"><svg class="ic"><use href="#i-news"/></svg><span data-i18n="newsBtn">&#x41d;&#x43e;&#x432;&#x438;&#x43d;&#x438;</span></button>
 </div>
 <div class="wg-body" id="wg-body">
 <div id="player" class="player">
@@ -167,17 +169,17 @@
 </div>
 
 <script src="https://cdn.jsdelivr.net/npm/hls.js@1.5.13/dist/hls.min.js" defer></script>
-<script src="assets/config.js?v=18"></script>
-<script src="assets/stations.js?v=18"></script>
-<script src="assets/i18n.js?v=18"></script>
-<script src="assets/i18n2.js?v=18"></script>
-<script src="assets/i18n3.js?v=18"></script>
-<script src="assets/app.js?v=18"></script>
-<script src="assets/radio.js?v=18"></script>
-<script src="assets/news.js?v=18"></script>
-<script src="assets/tv.js?v=18"></script>
-<script src="assets/widgets.js?v=18"></script>
-<script src="assets/chat.js?v=18"></script>
-<script src="assets/chat-ui.js?v=18"></script>
+<script src="assets/config.js?v=19"></script>
+<script src="assets/stations.js?v=19"></script>
+<script src="assets/i18n.js?v=19"></script>
+<script src="assets/i18n2.js?v=19"></script>
+<script src="assets/i18n3.js?v=19"></script>
+<script src="assets/app.js?v=19"></script>
+<script src="assets/radio.js?v=19"></script>
+<script src="assets/news.js?v=19"></script>
+<script src="assets/tv.js?v=19"></script>
+<script src="assets/widgets.js?v=19"></script>
+<script src="assets/chat.js?v=19"></script>
+<script src="assets/chat-ui.js?v=19"></script>
 </body>
 </html>

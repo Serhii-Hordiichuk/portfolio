@@ -37,12 +37,6 @@ function boot() {
     closeWidgets();
     setTimeout(function () { if (window.SH_TV) window.SH_TV.open(); }, 60);
   });
-  /* News widget: modal feed */
-  var wgNews = $_('#wg-card-news');
-  if (wgNews) wgNews.addEventListener('click', function () {
-    closeWidgets();
-    setTimeout(function () { if (window.SH_NEWS) window.SH_NEWS.open('modal'); }, 60);
-  });
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closeWidgets(); });
 }
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
