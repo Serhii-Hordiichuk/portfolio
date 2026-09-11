@@ -4,6 +4,8 @@
 'use strict';
 var HN = 'https://hn.algolia.com/api/v1/search_by_date?tags=front_page,story&hitsPerPage=12&page=';
 var DEV = 'https://dev.to/api/articles?per_page=12&page=';
+var RED = 'https://www.reddit.com/r/technology/top.json?limit=15&t=day&t=';
+var LOB = 'https://lobste.rs/newest.json?page=';
 var MM = 'https://api.mymemory.translated.net/get?q=';
 var tr = {
   uk:{loading:'\u0417\u0430\u0432\u0430\u043d\u0442\u0430\u0436\u0435\u043d\u043d\u044f\u2026',more:'\u0429\u0435\u2026',done:'\u0426\u0435 \u0432\u0441\u0435 \u2014 \u043a\u0456\u043d\u0435\u0446\u044c \u0441\u0442\u0440\u0456\u0447\u043a\u0438',err:'\u041d\u0435 \u0432\u0434\u0430\u043b\u043e\u0441\u044f \u0437\u0430\u0432\u0430\u043d\u0442\u0430\u0436\u0438\u0442\u0438'},
@@ -62,6 +64,10 @@ function processQueue(){
   var batch = pending.splice(0, 3);
   batch.forEach(function (item) {
     if (!document.body.contains(item.a)) return;
+    if (lang === 'en') {
+      if (item.descEl) item.descEl.textContent = (item.desc || item.fallback || '');
+      return;
+    }
     translateText(item.title, function (t1) {
       item.a.textContent = t1;
       if (item.descEl) {
@@ -96,7 +102,8 @@ function addCard(o){
   m.appendChild(s); m.appendChild(mt);
   it.appendChild(m);
   feed.insertBefore(it, sentinel);
-  pending.push({ a: a, descEl: d, title: o.title, desc: o.desc, fallback: o.fallback || host(o.url) });
+  if (lang === 'en' && o.desc) d.textContent = o.desc;
+  else pending.push({ a: a, descEl: d, title: o.title, desc: o.desc, fallback: o.fallback || host(o.url) });
 }
 /* deterministic gradient placeholder from title hash */
 function showPh(el, title){
@@ -144,15 +151,43 @@ function loadDev(){
     return n;
   });
 }
+function loadRed(){
+  return getJSON(RED + Date.now()).then(function(d){
+    if (!d || !d.data || !Array.isArray(d.data.children)) return 0;
+    var n = 0;
+    d.data.children.forEach(function(c){
+      var r = c.data; if (!r || !r.title) return;
+      var url = 'https://www.reddit.com' + (r.permalink || '');
+      var desc = (r.selftext || '').replace(/<[^>]*>/g, ' ').trim().slice(0, 220);
+      addCard({ title: r.title, url: url, image: r.thumbnail && r.thumbnail.startsWith('http') ? r.thumbnail : null,
+        desc: desc, meta: (r.ups||0) + ' ups \u00b7 ' + (r.num_comments||0) + ' c \u00b7 ' + ago(r.created_utc*1000), src: 'Reddit' });
+      n++;
+    });
+    return n;
+  });
+}
+function loadLob(){
+  return getJSON(LOB + (devPage+1)).then(function(d){
+    if (!Array.isArray(d)) return 0;
+    devPage++; var n = 0;
+    d.forEach(function(s){
+      if (!s.title) return;
+      var desc = (s.description || '').replace(/<[^>]*>/g, ' ').trim().slice(0, 220);
+      addCard({ title: s.title, url: s.url, image: null, desc: desc,
+        meta: (s.score||0) + ' pts \u00b7 ' + (s.comments_count||0) + ' c \u00b7 ' + ago(s.created_at), src: 'Lobsters' });
+      n++;
+    });
+    return n;
+  });
+}
 function loadMore(){
   if (busy || done) return Promise.resolve();
   busy = true; fills = 0;
   if (statusEl) statusEl.textContent = T('more');
-  var first = (cycle % 2 === 0) ? loadHN : loadDev;
-  var second = (cycle % 2 === 0) ? loadDev : loadHN;
+  var sources = [loadHN, loadDev, loadRed, loadLob];
+  var i = cycle % sources.length;
   cycle++;
-  return first().catch(function(){ return 0; })
-    .then(function(n){ if (n) return n; return second().catch(function(){ return 0; }); })
+  return sources[i]().catch(function(){ return 0; })
     .then(function(n){
       busy = false;
       if (!n) { done = true; if (statusEl) statusEl.textContent = T('done'); }
