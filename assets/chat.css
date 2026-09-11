@@ -1,6 +1,6 @@
 /* ===== Assistant v3 - ChatGPT-like, strict B/W/G, no page scroll ===== */
-#chat{display:none}
-#chat.active{display:block;height:calc(100vh - 60px);height:calc(100dvh - 60px);overflow:hidden;background:var(--bg)}
+#chat{display:none;--vv-h:calc(100dvh - 60px)}
+#chat.active{display:block;height:calc(100vh - 60px);height:calc(100dvh - 60px);height:var(--vv-h);overflow:hidden;background:var(--bg)}
 #chat .cx{display:flex;height:100%;min-height:0}
 /* --- sidebar --- */
 #chat .cx-side{width:280px;min-width:280px;max-width:280px;display:flex;flex-direction:column;min-height:0;background:var(--card);border-right:1px solid var(--line)}
@@ -47,7 +47,8 @@ body.dark #chat .cx-msg.u{background:#f5f5f5;color:#111}
 #chat .cx-box{max-width:760px;margin:0 auto;display:flex;gap:10px;align-items:flex-end}
 #chat .cx-box textarea{flex:1 1 auto;width:auto;min-width:0;resize:none;max-height:140px;min-height:52px;padding:14px 16px;border:1px solid var(--line);border-radius:12px;background:var(--bg);color:var(--fg);font:500 14px/1.5 inherit;outline:none}
 #chat .cx-box textarea:focus{border-color:var(--fg)}
-#chat .cx-send{flex-shrink:0;width:52px;height:52px;border-radius:12px;border:1px solid #111;background:#111;color:#fff;font-size:19px;line-height:1;cursor:pointer}
+#chat .cx-send{flex-shrink:0;width:52px;height:52px;border-radius:12px;border:1px solid #111;background:#111;color:#fff;font-size:19px;line-height:1;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0}
+#chat .cx-send .ic{margin:0}
 body.dark #chat .cx-send{background:#f5f5f5;border-color:#f5f5f5;color:#111}
 #chat .cx-send:hover{opacity:.85}
 #chat .cx-send:disabled{opacity:.35;cursor:default}
