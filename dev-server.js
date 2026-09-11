@@ -7,7 +7,7 @@ import http from "node:http";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { siteKB, buildKB, listModels, ollamaBase, ollamaModel, chatOAI, chatOllama } from "./api/_lib.js";
+import { siteKB, buildKB, listModels, ollamaBase, ollamaModel, chatOAI, chatOllama, streamOAISSE, streamOllamaChat, buildLLMMessages } from "./api/_lib.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PORT = Number(process.env.PORT || 8787);
@@ -73,17 +73,38 @@ const server = http.createServer(async (req, res) => {
     const sysKB = buildKB(b.siteContext, b.attachments);
     const ollamaUrl = String(b.ollamaUrl || "").replace(/\/$/, "");
     const order = p === "auto" ? ["ollama", "openrouter", "groq", "hf"] : [p];
+    const full = [{ role: "system", content: sysKB }, ...messages];
+    const llm = buildLLMMessages(full, b.attachments);
     let lastErr = "no provider configured (set keys in Vercel env)";
+    if (b.stream === true) {
+      for (const name of order) {
+        try {
+          if (name === "ollama") await streamOllamaChat(full, b.attachments, ollamaUrl, b.model, res, name);
+          else if (name === "openrouter" && process.env.OPENROUTER_API_KEY)
+            await streamOAISSE("https://openrouter.ai/api/v1/chat/completions", process.env.OPENROUTER_API_KEY, b.model || "meta-llama/llama-3.1-8b-instruct:free", llm.messages, res, { via: name, extraHeaders: { "HTTP-Referer": "https://portfolio", "X-Title": "SH Portfolio" } });
+          else if (name === "groq" && process.env.GROQ_API_KEY)
+            await streamOAISSE("https://api.groq.com/openai/v1/chat/completions", process.env.GROQ_API_KEY, b.model || "llama-3.1-8b-instant", llm.messages, res, { via: name });
+          else if ((name === "hf" || name === "huggingface") && process.env.HF_TOKEN)
+            await streamOAISSE("https://router.huggingface.co/v1/chat/completions", process.env.HF_TOKEN, b.model || "meta-llama/Llama-3.1-8B-Instruct", llm.messages, res, { via: name });
+          else { lastErr = name + ": key not set in Vercel env"; continue; }
+          return;
+        } catch (e) {
+          lastErr = name + ": " + (e.message || e);
+          if (res.headersSent) { try { res.write("data: " + JSON.stringify({ err: String((e && e.message) || e) }) + "\n\n"); res.end(); } catch (_) {} return; }
+        }
+      }
+      return json(res, 502, { error: "All providers failed. " + lastErr });
+    }
     for (const name of order) {
       try {
         let reply = "";
-        if (name === "ollama") reply = await chatOllama([{ role: "system", content: sysKB }, ...messages], ollamaUrl, b.model);
+        if (name === "ollama") reply = await chatOllama(full, b.attachments, ollamaUrl, b.model);
         else if (name === "openrouter" && process.env.OPENROUTER_API_KEY)
-          reply = await chatOAI("https://openrouter.ai/api/v1/chat/completions", process.env.OPENROUTER_API_KEY, b.model || "meta-llama/llama-3.1-8b-instruct:free", [{ role: "system", content: sysKB }, ...messages]);
+          reply = await chatOAI("https://openrouter.ai/api/v1/chat/completions", process.env.OPENROUTER_API_KEY, b.model || "meta-llama/llama-3.1-8b-instruct:free", llm.messages);
         else if (name === "groq" && process.env.GROQ_API_KEY)
-          reply = await chatOAI("https://api.groq.com/openai/v1/chat/completions", process.env.GROQ_API_KEY, b.model || "llama-3.1-8b-instant", [{ role: "system", content: sysKB }, ...messages]);
+          reply = await chatOAI("https://api.groq.com/openai/v1/chat/completions", process.env.GROQ_API_KEY, b.model || "llama-3.1-8b-instant", llm.messages);
         else if ((name === "hf" || name === "huggingface") && process.env.HF_TOKEN)
-          reply = await chatOAI("https://router.huggingface.co/v1/chat/completions", process.env.HF_TOKEN, b.model || "meta-llama/Llama-3.1-8B-Instruct", [{ role: "system", content: sysKB }, ...messages]);
+          reply = await chatOAI("https://router.huggingface.co/v1/chat/completions", process.env.HF_TOKEN, b.model || "meta-llama/Llama-3.1-8B-Instruct", llm.messages);
         else { lastErr = name + ": key not set in Vercel env"; continue; }
         if (reply) return json(res, 200, { reply, via: name });
       } catch (e) { lastErr = name + ": " + (e.message || e); }

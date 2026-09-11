@@ -14,16 +14,15 @@ Frontend + API в одному проєкті Vercel (same origin). Домен �
 ## Чому локальних моделей не було видно
 Vercel-сервер не бачить твій `localhost` — це різна мережа. Тому:
 - Хмарні моделі (OpenRouter/Groq/HF): тільки з Vercel env, `GET /api/models` повертає живі списки.
-- Локальна Ollama: браузер сам опитує `твій Ollama URL + /api/tags` (direct probe) і моделі з'являються автоматично. Поле `Ollama URL` в сайдбарі чату (не секрет, зберігається в localStorage). Vercel env `OLLAMA_URL` — опційно, для серверного шляху.
-- Умови для локалки: `OLLAMA_ORIGINS=* ollama serve` (інакше браузер заблокує CORS), `ollama list` показує скачані, URL доступний з цього пристрою (`http://localhost:11434` — тільки на тому ж ПК; з телефона — URL тунелю: ngrok / Cloudflare Tunnel / Tailscale Funnel).
-- Чат: якщо proxy недоступний — фронт говорить з Ollama напряму (`/v1/chat/completions` → fallback `/api/chat`).
+- Локальна Ollama: браузер сам опитує `твій Ollama URL + /api/tags` і моделі з'являються автоматично. Поле `Ollama URL` в сайдбарі чату (не секрет, localStorage). `OLLAMA_URL` в env — опційно.
+- Умови локалки: `OLLAMA_ORIGINS=* ollama serve`, `ollama list` показує скачані, з телефона — URL тунелю (ngrok / Cloudflare Tunnel / Tailscale Funnel).
 
-## Chat (повноцінний)
-- Історії чатів (30, localStorage), перейменування-автозаголовок, видалення, копія всього чату, копія/озвучка кожної відповіді.
-- Голос: ввід мікрофоном (Web Speech Recognition) + озвучка відповідей (TTS, перемикач Voice answers).
-- Файли: скріпка (txt/md/pdf/json/csv/code до 2MB як текст + картинки-превʼю), текст файлів йде в system KB.
-- Мобільна клавіатура: висота через visualViewport (`--vv-h`), композер не ховається, автодоставка вниз.
-- Знання: тільки з сайту (живий DOM + `docs/cv.txt`).
+## Chat — повноцінний ШІ (як ChatGPT / Gemini)
+- **Будь-які теми**: система працює в dual mode — про Сергія/сайт відповідає тільки з інформації сайту (DOM + docs/cv.txt), на всі інші питання (код, пояснення, творчість, математика, плани тощо) відповідає вільно як загальний ШІ.
+- **Зображення (vision)**: прикріплюй картинки скріпкою — вони стискаються до 1024px (canvas) і шлються моделі в OpenAI-форматі `image_url` (OpenRouter/Groq/HF) або `images` (Ollama). Для аналізу зображень обери vision-модель: Ollama `llama3.2-vision` / `llava`, Groq `llama-3.2-11b-vision-preview`, OpenRouter `meta-llama/llama-3.2-11b-vision-instruct:free`. Підказка з'являється при прикріпленні картинки.
+- **Стрімінг**: відповіді йдуть токен-за-токеном (SSE через /api/chat; для Ollama — напряму з браузера, fallback на non-stream). `api/chat` maxDuration 60s.
+- Файли (txt/md/pdf/json/csv/code до 4MB → текст у контекст), голосовий ввід, озвучка відповідей, історія чатів.
+- Знання про Сергія тільки із сайту; ключі тільки в Vercel env; Ollama URL в полі сайдбара.
 
 ## Local
-node dev-server.js (:8787, /api/health, /api/chat, /api/models).
+node dev-server.js (:8787, /api/health, /api/chat (stream+non-stream), /api/models).

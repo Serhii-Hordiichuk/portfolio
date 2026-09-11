@@ -121,7 +121,7 @@ window.SH_CHAT.sysMsg = function () {
   if (lang === 'no') l = 'Reply ONLY in Norwegian bokmal.';
   const rest = { de: 'German', fr: 'French', es: 'Spanish', pl: 'Polish', ru: 'Russian', zh: 'Chinese', ar: 'Arabic' };
   if (rest[lang]) l = 'Reply ONLY in ' + rest[lang] + '.';
-  return { role: 'system', content: "You are Serhii's portfolio assistant. Answer ONLY from the site info. If not on the site, say so honestly. " + l + ' ' + t + ' ' + window.SH_CHAT.siteFactsSync() };
+  return { role: 'system', content: "You are the AI assistant of serhii-portfolio. DUAL MODE: answer about Serhii from the site info, for any other topic act as a general AI like ChatGPT. " + l + ' ' + t + ' ' + window.SH_CHAT.siteFactsSync() };
 };
 window.SH_CHAT.history = function (limit) {
   const host = inner() || box();
@@ -142,6 +142,9 @@ window.SH_CHAT.setOllamaUrl = function (u) { lsSet('sh.ollamaUrl', String(u || '
 window.SH_CHAT.proxyBase = function () {
   try { return (window.SH.store.get('sh.proxy', '') || '').replace(/\/$/, ''); } catch (e) { return ''; }
 };
+function attFor(attachments) {
+  return (attachments || []).slice(0, 3).map((a) => ({ name: a.name, text: a.text, image: a.image ? a.image : undefined }));
+}
 window.SH_CHAT.viaProxy = async function (provider, model, messages, attachments) {
   const b = window.SH_CHAT.proxyBase();
   const ctl = new AbortController();
@@ -154,12 +157,63 @@ window.SH_CHAT.viaProxy = async function (provider, model, messages, attachments
         provider: provider, model: (model === 'auto' ? undefined : model),
         messages: messages, siteContext: siteContext,
         ollamaUrl: provider === 'ollama' || provider === 'auto' ? window.SH_CHAT.ollamaUrl() : '',
-        attachments: (attachments || []).map((a) => ({ name: a.name, text: a.text })).slice(0, 3)
+        attachments: attFor(attachments)
       }), signal: ctl.signal
     });
     const d = await r.json().catch(() => ({}));
     if (r.ok && d.reply) return { reply: d.reply, via: 'proxy:' + (d.via || provider) };
     throw new Error(d.error || ('HTTP ' + r.status));
+  } finally { clearTimeout(t); }
+};
+function readStreamLines(r, onLine) {
+  const dec = new TextDecoder();
+  let buf = '';
+  return new Promise((resolve, reject) => {
+    const reader = r.body.getReader();
+    (function pump() {
+      return reader.read().then((chunk) => {
+        if (chunk.done) { if (buf.trim()) onLine(buf); resolve(); return; }
+        buf += dec.decode(chunk.value, { stream: true });
+        const lines = buf.split('\n'); buf = lines.pop();
+        for (const line of lines) onLine(line);
+        pump();
+      }).catch((e) => reject(e));
+    })();
+  });
+}
+window.SH_CHAT.viaProxyStream = async function (provider, model, messages, attachments, onDelta) {
+  const b = window.SH_CHAT.proxyBase();
+  const ctl = new AbortController();
+  const t = setTimeout(() => ctl.abort(), 90000);
+  try {
+    const siteContext = await window.SH_CHAT.siteContext();
+    const r = await fetch(b + '/api/chat', {
+      method: 'POST', headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        stream: true, provider: provider, model: (model === 'auto' ? undefined : model),
+        messages: messages, siteContext: siteContext,
+        ollamaUrl: provider === 'ollama' || provider === 'auto' ? window.SH_CHAT.ollamaUrl() : '',
+        attachments: attFor(attachments)
+      }), signal: ctl.signal
+    });
+    if (!r.ok || !r.body) { const d = await r.json().catch(() => ({})); throw new Error(d.error || ('HTTP ' + r.status)); }
+    let full = '', via = provider, streamErr = null, done = false;
+    await readStreamLines(r, (line) => {
+      const x = String(line).trim();
+      if (!x.startsWith('data:')) return;
+      const data = x.slice(5).trim();
+      if (!data || data === '[DONE]') return;
+      try {
+        const j = JSON.parse(data);
+        if (j.via) via = j.via;
+        if (j.d) { full += j.d; if (onDelta) onDelta(j.d); }
+        if (j.err) streamErr = j.err;
+        if (j.done) done = true;
+      } catch (e) {}
+    });
+    if (streamErr) throw new Error(streamErr);
+    if (!full || !done) throw new Error(full ? 'stream closed early' : 'empty response');
+    return { reply: full, via: 'proxy:' + via };
   } finally { clearTimeout(t); }
 };
 async function probeOllamaTags(base, timeoutMs) {
@@ -173,33 +227,33 @@ async function probeOllamaTags(base, timeoutMs) {
   } finally { clearTimeout(t); }
 }
 window.SH_CHAT.probeOllama = function (base) { return probeOllamaTags(base || window.SH_CHAT.ollamaUrl(), 6000); };
-window.SH_CHAT.ollamaDirect = async function (model, messages) {
+window.SH_CHAT.ollamaDirectStream = async function (model, messages, attachments, onDelta) {
   const base = window.SH_CHAT.ollamaUrl();
   if (!base) throw new Error('set Ollama URL first');
   const md = model && model !== 'auto' ? model : (lsGet('sh.model:ollama', '') || '');
   if (!md) throw new Error('pick an Ollama model first');
   const all = [window.SH_CHAT.sysMsg()].concat(messages);
-  try {
-    const r = await fetch(base + '/v1/chat/completions', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model: md, messages: all, temperature: 0.7, max_tokens: 800 })
-    });
-    const d = await r.json().catch(() => ({}));
-    if (!r.ok) throw new Error((d && d.error) || ('HTTP ' + r.status));
-    const txt = d && d.choices && d.choices[0] && d.choices[0].message && d.choices[0].message.content;
-    if (txt) return { reply: txt, via: 'ollama local' };
-    throw new Error('empty answer');
-  } catch (e1) {
-    const r2 = await fetch(base + '/api/chat', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ model: md, messages: all, stream: false })
-    });
-    const d2 = await r2.json().catch(() => ({}));
-    if (!r2.ok) throw new Error((d2 && d2.error) || ('Ollama HTTP ' + r2.status));
-    const txt2 = d2 && d2.message && d2.message.content;
-    if (!txt2) throw new Error('empty answer from Ollama');
-    return { reply: txt2, via: 'ollama local' };
-  }
+  const images = (attachments || []).filter((a) => a && a.image).slice(0, 2)
+    .map((a) => String(a.image).replace(/^data:image\/[^;]+;base64,/, ''));
+  const r = await fetch(base + '/api/chat', {
+    method: 'POST', headers: { 'Content-Type': 'application/json' },
+    body: JSON.stringify({ model: md, messages: all, images: images.length ? images : undefined, stream: true })
+  });
+  if (!r.ok) { const d = await r.json().catch(() => ({})); throw new Error((d && d.error) || ('Ollama HTTP ' + r.status)); }
+  let full = '', streamErr = null, done = false;
+  await readStreamLines(r, (line) => {
+    const t = String(line).trim();
+    if (!t) return;
+    try {
+      const j = JSON.parse(t);
+      if (j.error) streamErr = j.error;
+      if (j.message && j.message.content) { full += j.message.content; if (onDelta) onDelta(j.message.content); }
+      if (j.done) done = true;
+    } catch (e) {}
+  });
+  if (streamErr) throw new Error(streamErr);
+  if (!full || !done) throw new Error(full ? 'stream closed early' : 'empty answer from Ollama');
+  return { reply: full, via: 'ollama local' };
 };
 var modelsBulk = null;
 var modelsBulkAt = 0;
@@ -252,19 +306,46 @@ window.SH_CHAT.speak = function (text) {
   } catch (e) {}
 };
 window.SH_CHAT.stopSpeak = function () { try { if ('speechSynthesis' in window) window.speechSynthesis.cancel(); } catch (e) {} };
+window.SH_CHAT.compressImage = function (dataUrl, maxSize, quality) {
+  maxSize = maxSize || 1024; quality = quality || 0.85;
+  return new Promise((resolve) => {
+    try {
+      const img = new Image();
+      img.onload = () => {
+        try {
+          let w = img.naturalWidth || img.width, h = img.naturalHeight || img.height;
+          const sc = Math.min(1, maxSize / Math.max(w, h));
+          w = Math.max(1, Math.round(w * sc)); h = Math.max(1, Math.round(h * sc));
+          const c = document.createElement('canvas');
+          c.width = w; c.height = h;
+          const ctx = c.getContext('2d');
+          ctx.drawImage(img, 0, 0, w, h);
+          resolve(c.toDataURL('image/jpeg', quality));
+        } catch (e) { resolve(dataUrl); }
+      };
+      img.onerror = () => resolve(dataUrl);
+      img.src = dataUrl;
+    } catch (e) { resolve(dataUrl); }
+  });
+};
 window.SH_CHAT.readFile = function (file) {
   return new Promise((resolve) => {
     const name = file.name || 'file';
     const size = file.size || 0;
     const isImg = /^image\//.test(file.type || '');
-    if (size > 2 * 1024 * 1024) { resolve({ name: name, size: size, kind: isImg ? 'image' : 'file', text: '', skipped: 'too big (>2MB)' }); return; }
+    if (size > 4 * 1024 * 1024) { resolve({ name: name, size: size, kind: isImg ? 'image' : 'file', text: '', skipped: 'too big (>4MB)' }); return; }
     const fr = new FileReader();
     fr.onload = () => {
       const res = String(fr.result || '');
-      if (isImg) { resolve({ name: name, size: size, kind: 'image', dataUrl: res, text: '[image attached: ' + name + ']' }); return; }
+      if (isImg) {
+        window.SH_CHAT.compressImage(res, 1024, 0.85).then((small) => {
+          resolve({ name: name, size: size, kind: 'image', image: small, dataUrl: small, text: '' });
+        });
+        return;
+      }
       resolve({ name: name, size: size, kind: 'text', text: res.slice(0, 8000) });
     };
-    fr.onerror = () => resolve({ name: name, size: size, kind: 'file', text: '' });
+    fr.onerror = () => resolve({ name: name, size: size, kind: isImg ? 'image' : 'file', text: '' });
     if (isImg) fr.readAsDataURL(file);
     else fr.readAsText(file);
   });

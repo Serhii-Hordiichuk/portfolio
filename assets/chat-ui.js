@@ -103,9 +103,9 @@ function greet() {
 function sugQuestions() {
   const lang = (window.SH && window.SH.getLang && window.SH.getLang()) || 'uk';
   const Q = {
-    uk: ['Хто такий Сергій?', 'Розкажи про досвід роботи', 'Яка освіта?', 'Які мови знає?', 'Чим захоплюється?'],
-    en: ['Who is Serhii?', 'Tell me about work experience', 'What is his education?', 'Which languages?', 'What are his hobbies?'],
-    no: ['Hvem er Serhii?', 'Fortell om arbeidserfaring', 'Hvilken utdanning?', 'Hvilke språk?', 'Hvilke hobbyer?']
+    uk: ['Хто такий Сергій?', 'Розкажи про досвід роботи', 'Яка освіта?', 'Чим захоплюється?', 'Придумай план посту для Instagram', 'Поясни як працює штучний інтелект'],
+    en: ['Who is Serhii?', 'Tell me about his work experience', 'What is his education?', 'What are his hobbies?', 'Write a poem about spring', 'Explain how AI works simply'],
+    no: ['Hvem er Serhii?', 'Fortell om arbeidserfaring', 'Hvilken utdanning?', 'Hvilke hobbyer?', 'Skriv et dikt om v\u00e5ren', 'Forklar hvordan AI fungerer']
   };
   return Q[lang] || Q.en;
 }
@@ -240,6 +240,9 @@ function renderPending() {
     bar.appendChild(c);
   });
   bar.style.display = pendingFiles.length ? 'flex' : 'none';
+  const hasImg = pendingFiles.some((f) => f.kind === 'image');
+  if (hasImg) setModelHint('Image attached — choose a vision model for image analysis (e.g. llama-3.2-11b-vision / llava / gemini)');
+  else if (pendingFiles.length) setModelHint('');
 }
 function clearPending() { pendingFiles = []; renderPending(); const fi = document.getElementById('file'); if (fi) fi.value = ''; }
 async function onFiles(files) {
@@ -304,13 +307,26 @@ async function send() {
   updateStatusSub();
   const msgs = window.SH_CHAT.history(10).concat([{ role: 'user', content: q || ('Analyze attached files: ' + files.map((f) => f.name).join(', ')) }]);
   const botNode = window.SH_CHAT.add('\u2026', 'bot');
+  const sysMsgs = [window.SH_CHAT.sysMsg()].concat(msgs);
+  let fullTick = 0;
+  const onDelta = (d) => {
+    fullTick++;
+    if (fullTick === 1 && ty) ty.classList.remove('show');
+    window.SH_CHAT.updateBot(botNode, botNode._partial = (botNode._partial || '') + d, '');
+    window.SH_CHAT.scrollBottom();
+  };
   try {
     let ans;
-    if (provider === 'ollama' && window.SH_CHAT.ollamaUrl() && !files.length) {
-      try { ans = await window.SH_CHAT.viaProxy(provider, model, [window.SH_CHAT.sysMsg()].concat(msgs), files); }
-      catch (pe) { ans = await window.SH_CHAT.ollamaDirect(model, msgs); }
+    const useLocal = provider === 'ollama' && window.SH_CHAT.ollamaUrl();
+    if (useLocal) {
+      try { ans = await window.SH_CHAT.viaProxyStream(provider, model, sysMsgs, files, onDelta); }
+      catch (pe) { ans = await window.SH_CHAT.ollamaDirectStream(model, msgs, files, onDelta); }
     } else {
-      ans = await window.SH_CHAT.viaProxy(provider, model, [window.SH_CHAT.sysMsg()].concat(msgs), files);
+      try { ans = await window.SH_CHAT.viaProxyStream(provider, model, sysMsgs, files, onDelta); }
+      catch (pe) {
+        try { ans = await window.SH_CHAT.viaProxy(provider, model, sysMsgs, files); }
+        catch (pe2) { throw pe2; }
+      }
     }
     if (ty) ty.classList.remove('show');
     window.SH_CHAT.updateBot(botNode, ans.reply, ans.via);

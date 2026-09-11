@@ -25,17 +25,40 @@ export function siteKB() {
 export function buildKB(extra, attachments) {
   const x = String(extra || "").trim().slice(0, 4000);
   let att = "";
+  const imgs = [];
   try {
     const arr = Array.isArray(attachments) ? attachments.slice(0, 3) : [];
     const parts = [];
     for (const a of arr) {
       const nm = String((a && a.name) || "file").slice(0, 80);
+      if (a && a.image) imgs.push(nm);
       const tx = String((a && a.text) || "").slice(0, 3000);
-      if (tx) parts.push("["+nm+"] "+tx);
+      if (tx) parts.push("[" + nm + "] " + tx);
     }
-    if (parts.length) att = " Attached files: "+parts.join(" | ").slice(0,6000);
+    if (parts.length) att = " Attached files: " + parts.join(" | ").slice(0, 6000);
+    if (imgs.length) att += " User sent images: " + imgs.join(", ") + ". Analyze them when asked.";
   } catch {}
-  return "You are Serhii Hordiichuk's portfolio assistant. " + "Answer only from the site info below. " + "If not on the site, say so honestly. Site info: " + siteKB() + (x ? " Live page snapshot: " + x : "") + att;
+  return "You are the AI assistant of serhii-portfolio site. DUAL MODE:\n" +
+    "1) If the user asks about Serhii Hordiichuk (bio, CV, skills, education, experience, languages, contacts, projects, personality) - answer ONLY from the site info below. If info is missing, say it is not on the site.\n" +
+    "2) For ANY other question or request (explanations, coding, writing, ideas, math, research, general chat, image analysis) - act as a capable general AI like ChatGPT / Gemini: answer helpfully, thoroughly and freely.\n" +
+    "Always reply in the user's language. If the user attaches an image, inspect it carefully and answer questions about it.\n\n" +
+    "SITE INFO (about Serhii):\n" + siteKB() + (x ? "\nLIVE PAGE SNAPSHOT:\n" + x : "") + att;
+}
+
+export function buildLLMMessages(messages, attachments) {
+  const arr = Array.isArray(messages) ? messages.slice() : [];
+  const images = (Array.isArray(attachments) ? attachments : []).filter((a) => a && a.image).slice(0, 2);
+  if (images.length && arr.length) {
+    const last = arr[arr.length - 1];
+    if (last && last.role === "user") {
+      const text = String(last.content || "");
+      const parts = [{ type: "text", text: text || "Analyze the attached image(s)." }];
+      for (const im of images) parts.push({ type: "image_url", image_url: { url: String(im.image) } });
+      const trimmed = arr.slice(0, -1).concat([{ role: "user", content: parts }]);
+      return { messages: trimmed, ollamaImages: images.map((i) => String(i.image).replace(/^data:image\/[^;]+;base64,/, "")) };
+    }
+  }
+  return { messages: arr, ollamaImages: [] };
 }
 
 export function ollamaBase(u) { return String(u || process.env.OLLAMA_URL || "").replace(/\/$/, ""); }
@@ -55,28 +78,111 @@ export async function chatOAI(url, key, model, messages, extraHeaders) {
   const r = await fetch(url, {
     method: "POST",
     headers: Object.assign({ "Content-Type": "application/json" }, key ? { Authorization: "Bearer " + key } : {}, extraHeaders || {}),
-    body: JSON.stringify({ model, messages, temperature: 0.7, max_tokens: 600 })
+    body: JSON.stringify({ model, messages, temperature: 0.7, max_tokens: 1024 })
   });
   const d = await r.json().catch(() => ({}));
   if (!r.ok) throw new Error((d && d.error && d.error.message) || d.error || ("HTTP " + r.status));
   return (d.choices && d.choices[0] && d.choices[0].message && d.choices[0].message.content) || "";
 }
 
-export async function chatOllama(messages, url, model) {
+export async function chatOllama(messages, attachments, url, model) {
   const base = ollamaBase(url);
   const md = ollamaModel(model);
   if (!base) throw new Error("OLLAMA_URL not set");
+  const llm = buildLLMMessages(messages, attachments);
   try {
-    return await chatOAI(base + "/v1/chat/completions", "", md, messages);
+    return await chatOAI(base + "/v1/chat/completions", "", md, llm.messages);
   } catch (e1) {
     const r = await fetch(base + "/api/chat", {
       method: "POST", headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ model: md, messages, stream: false })
+      body: JSON.stringify({ model: md, messages: llm.messages.map((m) => ({ role: m.role, content: typeof m.content === "string" ? m.content : ((m.content.find((p) => p.type === "text") || {}).text || "") })), images: llm.ollamaImages.length ? llm.ollamaImages : undefined, stream: false })
     });
     const d = await r.json().catch(() => ({}));
     if (!r.ok) throw new Error(d.error || ("Ollama HTTP " + r.status));
     return (d.message && d.message.content) || "";
   }
+}
+
+function sseHeaders(res) {
+  res.writeHead(200, {
+    "Content-Type": "text/event-stream; charset=utf-8",
+    "Cache-Control": "no-cache",
+    "Connection": "keep-alive",
+    "X-Accel-Buffering": "no"
+  });
+}
+function writeSSE(res, obj) {
+  if (res.writableEnded) return;
+  res.write("data: " + JSON.stringify(obj) + "\n\n");
+}
+export async function streamOAISSE(url, key, model, messages, res, opts) {
+  const o = opts || {};
+  const r = await fetch(url, {
+    method: "POST",
+    headers: Object.assign({ "Content-Type": "application/json" }, key ? { Authorization: "Bearer " + key } : {}, o.extraHeaders || {}),
+    body: JSON.stringify({ model, messages, stream: true, temperature: 0.7, max_tokens: 1024 })
+  });
+  if (!r.ok) { const d = await r.json().catch(() => ({})); throw new Error((d && d.error && d.error.message) || d.error || ("HTTP " + r.status)); }
+  sseHeaders(res);
+  writeSSE(res, { via: o.via || "server" });
+  const reader = r.body.getReader();
+  const dec = new TextDecoder();
+  let buf = "";
+  while (true) {
+    const chunk = await reader.read();
+    if (chunk.done) break;
+    buf += dec.decode(chunk.value, { stream: true });
+    const lines = buf.split("\n"); buf = lines.pop();
+    for (const line of lines) {
+      const t = String(line).trim();
+      if (!t.startsWith("data:")) continue;
+      const data = t.slice(5).trim();
+      if (data === "[DONE]") continue;
+      try {
+        const j = JSON.parse(data);
+        const d = j.choices && j.choices[0] && j.choices[0].delta && j.choices[0].delta.content;
+        if (d) writeSSE(res, { d: d });
+      } catch (e) {}
+    }
+  }
+  writeSSE(res, { done: true });
+  try { res.end(); } catch (e) {}
+}
+export async function streamOllamaChat(messages, attachments, url, model, res, via) {
+  const base = ollamaBase(url);
+  const md = ollamaModel(model);
+  if (!base) throw new Error("OLLAMA_URL not set");
+  const llm = buildLLMMessages(messages, attachments);
+  const r = await fetch(base + "/api/chat", {
+    method: "POST", headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ model: md, messages: llm.messages.map((m) => ({ role: m.role, content: typeof m.content === "string" ? m.content : ((m.content.find((p) => p.type === "text") || {}).text || "") })), images: llm.ollamaImages.length ? llm.ollamaImages : undefined, stream: true })
+  });
+  if (!r.ok) { const d = await r.json().catch(() => ({})); throw new Error(d.error || ("Ollama HTTP " + r.status)); }
+  sseHeaders(res);
+  writeSSE(res, { via: via || "ollama" });
+  const reader = r.body.getReader();
+  const dec = new TextDecoder();
+  let buf = "";
+  let done = false;
+  while (true) {
+    const chunk = await reader.read();
+    if (chunk.done) break;
+    buf += dec.decode(chunk.value, { stream: true });
+    const nl = buf.lastIndexOf("\n");
+    if (nl === -1) continue;
+    const lineBatch = buf.slice(0, nl); buf = buf.slice(nl + 1);
+    for (const raw of lineBatch.split("\n")) {
+      const t = raw.trim(); if (!t) continue;
+      try {
+        const j = JSON.parse(t);
+        if (j.message && j.message.content) writeSSE(res, { d: j.message.content });
+        if (j.done) { done = true; break; }
+      } catch (e) {}
+    }
+    if (done) break;
+  }
+  writeSSE(res, { done: true });
+  try { res.end(); } catch (e) {}
 }
 
 export async function fetchJSON(url, key, timeoutMs) {
