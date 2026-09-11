@@ -80,9 +80,37 @@ try {
   var h = () => { if ((store.get("sh.theme", "auto")) === "auto") applyTheme("auto"); };
   if (mq.addEventListener) mq.addEventListener("change", h); else if (mq.addListener) mq.addListener(h);
 } catch (e) {}
+function renderCV() {
+const el = document.getElementById("cv-content");
+if (!el || !window.SH_CV) return;
+const T = window.SH_CV[lang] || window.SH_CV["UK"] || [];
+const esc = (s) => { const d = document.createElement("div"); d.textContent = s; return d.innerHTML; };
+const [navResume, sumT, sumX, aboutT, aboutX, workT, w1r, w1o, w1x, w2r, w2o, w2x, eduT, ed1s, ed1d, ed1f, ed2s, ed2d, ed2f, ed3s, ed3d, ed3f, ed4s, ed4f, ed5s, ed5f, langT, lgUk, lgEn, lgNo, lgRu, oralT, writT, lvGood, lvBeg, compT, compX] = T;
+el.innerHTML = `
+<h2>${esc(sumT)}</h2><p>${esc(sumX)}</p>
+<h2>${esc(aboutT)}</h2><p>${esc(aboutX)}</p>
+<h2>${esc(workT)}</h2>
+<p><strong>${esc(w1r)}</strong> &mdash; ${esc(w1o)}<br>${esc(w1x)}</p>
+<p><strong>${esc(w2r)}</strong> &mdash; ${esc(w2o)}<br>${esc(w2x)}</p>
+<h2>${esc(eduT)}</h2>
+<p><strong>${esc(ed1s)}</strong><br>${esc(ed1d)} &mdash; ${esc(ed1f)}</p>
+<p><strong>${esc(ed2s)}</strong><br>${esc(ed2d)} &mdash; ${esc(ed2f)}</p>
+<p><strong>${esc(ed3s)}</strong><br>${esc(ed3d)} &mdash; ${esc(ed3f)}</p>
+<p><strong>${esc(ed4s)}</strong><br>${esc(ed4f)}</p>
+<p><strong>${esc(ed5s)}</strong><br>${esc(ed5f)}</p>
+<h2>${esc(langT)}</h2>
+<p>${esc(lgUk)} &mdash; ${esc(oralT)} ${esc(lvGood)}, ${esc(writT)} ${esc(lvGood)}<br>
+${esc(lgEn)} &mdash; ${esc(oralT)} ${esc(lvBeg)}, ${esc(writT)} ${esc(lvBeg)}<br>
+${esc(lgNo)} &mdash; ${esc(oralT)} ${esc(lvBeg)}, ${esc(writT)} ${esc(lvBeg)}<br>
+${esc(lgRu)} &mdash; ${esc(oralT)} ${esc(lvBeg)}, ${esc(writT)} ${esc(lvBeg)}</p>
+<h2>${esc(compT)}</h2><p>${esc(compX)}</p>
+`;
+}
+document.addEventListener("sh:lang", renderCV);
 window.SH.show = show;
 window.SH.getLang = () => lang;
 applyLang(lang);
 applyTheme(store.get("sh.theme", "auto"));
 show(store.get("sh.tab", "cover"));
+renderCV();
 })();

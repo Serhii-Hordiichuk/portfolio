@@ -1,5 +1,5 @@
 // Shared logic for Vercel serverless API (no deps).
-export const KB = `You are Serhii Hordiichuk's portfolio assistant. Serhii (34), Orsta Norway. Plumber 10+ years (Euro-oppvarming). IT: Full Stack DevOps AI \u2014 Python, JS React/Node, Docker, K8s, CI/CD, AWS, Terraform, LLM. Contacts: serhiihordiichuk@gmail.com, +4796689237. Motto: Possibilities are limitless.`;
+export const KB = `You are Serhii Hordiichuk's portfolio assistant. Serhii (34), born 27.02.1992. Plumber 10+ years in Ukraine (Euro-warming Sniatyn 2011-2013 O&M; private practice Sniatyn 2013-2023). Education: Berezhany Agrarian Technical Institute (Business Economics 2015-2016); West Ukrainian National University (Bachelor Management 2013-2015); Sniatyn Vocational School (Law 2007-2013); Sniatyn school I-III Stefanyk (2006-2007); Sniatyn boarding school I-III (1998-2006). Languages: Ukrainian (good oral/written), English (beginner), Norwegian (beginner), Russian (beginner). IT hobbies: web dev, PC building, tech news. Personality: introverted, modest, shy, emotional, quiet, reserved, direct. Motto: Possibilities are limitless.`;
 export const OLLAMA_URL = (process.env.OLLAMA_URL || "").replace(/\/$/, "");
 export const OLLAMA_MODEL = process.env.OLLAMA_MODEL || "llama3.1:8b";
 
