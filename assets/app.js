@@ -83,13 +83,13 @@ try {
 function renderCV() {
 const el = document.getElementById("cv-content");
 if (!el || !window.SH_CV) return;
-const T = window.SH_CV[lang] || window.SH_CV["UK"] || [];
+const T = window.SH_CV[lang.toUpperCase()] || window.SH_CV["UK"] || [];
 const esc = (s) => { const d = document.createElement("div"); d.textContent = s; return d.innerHTML; };
 const mp = (s) => esc(s).replace(/\n{2}/g, '</p><p>').replace(/\n/g, '<br>');
 const [navResume, sumT, sumX, aboutT, aboutX, workT, w1r, w1o, w1x, w2r, w2o, w2x, eduT, ed1s, ed1d, ed1f, ed2s, ed2d, ed2f, ed3s, ed3d, ed3f, ed4s, ed4f, ed5s, ed5f, langT, lgUk, lgEn, lgNo, lgRu, oralT, writT, lvGood, lvBeg, compT, compX] = T;
+const allSummary = aboutX ? sumX + '\n\n' + aboutX : sumX;
 el.innerHTML = `
-<h2>${esc(sumT)}</h2><p>${mp(sumX)}</p>
-<h2>${esc(aboutT)}</h2><p>${mp(aboutX)}</p>
+<h2>${esc(sumT)}</h2><p>${mp(allSummary)}</p>
 <h2>${esc(workT)}</h2>
 <p><strong>${esc(w1r)}</strong> &mdash; ${esc(w1o)}<br>${esc(w1x)}</p>
 <p><strong>${esc(w2r)}</strong> &mdash; ${esc(w2o)}<br>${esc(w2x)}</p>
