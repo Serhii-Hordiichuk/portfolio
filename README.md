@@ -3,6 +3,13 @@
 Frontend + API в одному проєкті Vercel (same origin). Домен уже підключений там.
 Автодеплой: push в `main` → Vercel redeploy.
 
+## Dev / Stack сторінка («Розробки»)
+
+- 38 технологій у 9 групах (мови, системи/Shell, P2P, приватні мережі, AI, API, формати даних, Identity/Web3, інструменти).
+- 38 кастомні SVG-іконки (symbol `t-*`), monoline-стиль сайту, theme-aware (light/dark).
+- Чіпси-фільтри + живий пошук + лічильники (`assets/stack.js`), повні переклади uk/en/no, назви груп ще для 7 мов.
+- Стек автоматично потрапляє в knowledge асистента (siteContext → «Tech stack: …»).
+
 ## Deploy (1 раз)
 1. Vercel → Add New Project → Import `portfolio` repo → Framework: Other.
 2. Environment Variables (Production + Preview):

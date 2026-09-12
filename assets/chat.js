@@ -135,7 +135,16 @@ function domText() {
     if (hero) parts.push('Name: ' + hero.innerText.trim().slice(0, 120));
     const motto = document.querySelector('.motto');
     if (motto) parts.push('Motto: ' + motto.innerText.trim().slice(0, 120));
-    return parts.join('\n').slice(0, 3500);
+    const st = document.getElementById('st-groups');
+    if (st) {
+      const pairs = [].slice.call(st.querySelectorAll('.st-tile')).map(function (t) {
+        const b = t.querySelector('b');
+        const sp = t.querySelector('span');
+        return b ? (b.textContent + (sp ? ' - ' + sp.textContent : '')) : t.textContent.trim();
+      });
+      if (pairs.length) parts.push('Tech stack: ' + pairs.join('; '));
+    }
+    return parts.join('\n').slice(0, 4800);
   } catch (e) { return ''; }
 }
 window.SH_CHAT.siteContext = async function () {
