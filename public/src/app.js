@@ -104,9 +104,20 @@ function renderCV() {
   const el = document.getElementById("cv-content");
   if (!el || !window.SH_CV) return;
   const T = window.SH_CV[lang.toUpperCase()] || window.SH_CV["UK"] || [];
-  const esc = (s) => { const d = document.createElement("div"); d.textContent = s; return d.innerHTML; };
+  const esc = (s) => { const d = document.createElement("div"); d.textContent = s ?? ""; return d.innerHTML; };
   const mp = (s) => esc(s).replace(/\n{2}/g, '</p><p>').replace(/\n/g, '<br>');
-  const [navResume, sumT, sumX, aboutT, aboutX, workT, w1r, w1o, w1x, w2r, w2o, w2x, eduT, ed1s, ed1d, ed1f, ed2s, ed2d, ed2f, ed3s, ed3d, ed3f, ed4s, ed4f, ed5s, ed5f, langT, lgUk, lgEn, lgNo, lgRu, oralT, writT, lvGood, lvBeg, compT, compX] = T;
+  const head = T.slice(0, 22);
+  const [navResume, sumT, sumX, aboutT, aboutX, workT, w1r, w1o, w1x, w2r, w2o, w2x, eduT, ed1s, ed1d, ed1f, ed2s, ed2d, ed2f, ed3s, ed3d, ed3f] = head;
+  const tail = T.slice(-11);
+  const [ed5s, ed5f, langT, lgUk, lgEn, lgNo, lgRu, skillT, skillX] = tail;
+  const mid = T.slice(22, Math.max(22, T.length - 11)).map((s) => String(s ?? "").trim()).filter(Boolean);
+  const ed4Html = mid.length ? `<p><strong>${esc(mid[0])}</strong>${mid[1] ? `<br>${esc(mid[1])}` : ""}</p>` : "";
+  const selfItems = String(ed5f ?? "").split(";").map((s) => s.trim()).filter(Boolean);
+  const selfHtml = selfItems.length > 1
+    ? `<ul class="cv-learn">${selfItems.map((i) => `<li>${esc(i)}</li>`).join("")}</ul>`
+    : `<p>${esc(ed5f ?? "")}</p>`;
+  const langItems = [lgUk, lgEn, lgNo, lgRu].map((s) => String(s ?? "").trim()).filter(Boolean);
+  const langHtml = `<ul class="cv-learn">${langItems.map((i) => `<li>${esc(i)}</li>`).join("")}</ul>`;
   const allSummary = aboutX ? sumX + '\n\n' + aboutX : sumX;
   el.innerHTML = `
 <h2>${esc(sumT)}</h2><p>${mp(allSummary)}</p>
@@ -117,14 +128,10 @@ function renderCV() {
 <p><strong>${esc(ed1s)}</strong><br>${esc(ed1d)} &mdash; ${esc(ed1f)}</p>
 <p><strong>${esc(ed2s)}</strong><br>${esc(ed2d)} &mdash; ${esc(ed2f)}</p>
 <p><strong>${esc(ed3s)}</strong><br>${esc(ed3d)} &mdash; ${esc(ed3f)}</p>
-<p><strong>${esc(ed4s)}</strong><br>${esc(ed4f)}</p>
-<p><strong>${esc(ed5s)}</strong><br>${esc(ed5f)}</p>
-<h2>${esc(langT)}</h2>
-<p>${esc(lgUk)} &mdash; ${esc(oralT)} ${esc(lvGood)}, ${esc(writT)} ${esc(lvGood)}<br>
-${esc(lgEn)} &mdash; ${esc(oralT)} ${esc(lvBeg)}, ${esc(writT)} ${esc(lvBeg)}<br>
-${esc(lgNo)} &mdash; ${esc(oralT)} ${esc(lvBeg)}, ${esc(writT)} ${esc(lvBeg)}<br>
-${esc(lgRu)} &mdash; ${esc(oralT)} ${esc(lvBeg)}, ${esc(writT)} ${esc(lvBeg)}</p>
-<h2>${esc(compT)}</h2><p>${esc(compX)}</p>
+${ed4Html}
+<h2>${esc(ed5s)}</h2>${selfHtml}
+<h2>${esc(langT)}</h2>${langHtml}
+<h2>${esc(skillT)}</h2><p>${esc(skillX)}</p>
 `;
 }
 
