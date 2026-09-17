@@ -1,9 +1,34 @@
-import { cors, chatOAI, chatOllama, streamOAISSE, streamOllamaChat, buildKB, buildLLMMessages, detectIntent } from "../_lib.js";
+import { cors, chatOAI, chatOllama, streamOAISSE, streamOllamaChat, buildKB, buildLLMMessages, detectIntent, checkRateLimit, getClientIp } from "../_lib.js";
 // Keys ONLY from Vercel env. Client must not send keys. ollamaUrl (not secret) allowed for ollama.
 // Supports: stream:true (SSE) and images in attachments (ChatGPT-like vision).
+
+/** @type {import('../_lib.js').RateLimitConfig} */
+const CHAT_RATE_LIMIT = {
+  windowMs: 60 * 1000, // 1 minute
+  maxRequests: 30,     // 30 requests per minute
+  keyPrefix: 'chat'
+};
+
 export default async function handler(req, res) {
   if (cors(req, res)) return;
   if (req.method !== "POST") return res.status(405).json({ error: "POST only" });
+  
+  // Rate limiting
+  const clientIp = getClientIp(req);
+  const rateLimitKey = `${CHAT_RATE_LIMIT.keyPrefix}:${clientIp}`;
+  const rateLimit = checkRateLimit(rateLimitKey, CHAT_RATE_LIMIT);
+  
+  res.setHeader('X-RateLimit-Limit', CHAT_RATE_LIMIT.maxRequests);
+  res.setHeader('X-RateLimit-Remaining', rateLimit.remaining);
+  res.setHeader('X-RateLimit-Reset', Math.ceil(rateLimit.resetAt / 1000));
+  
+  if (!rateLimit.allowed) {
+    return res.status(429).json({ 
+      error: "Rate limit exceeded. Please try again later.",
+      retryAfter: Math.ceil((rateLimit.resetAt - Date.now()) / 1000)
+    });
+  }
+
   const b = req.body || {};
   const messages = Array.isArray(b.messages) ? b.messages.slice(-12) : [];
   if (!messages.length) return res.status(400).json({ error: "empty messages" });

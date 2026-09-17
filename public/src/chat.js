@@ -44,16 +44,17 @@
  * @property {boolean} configured
  */
 
-/** @type {Object<string, Function>} */
-window.SH_CHAT = window.SH_CHAT || {};
+const SH_CHAT = {};
+
 function box() { return document.getElementById('chat-body'); }
 function inner() { return document.getElementById('chat-inner'); }
 function esc(s) { const d = document.createElement('div'); d.textContent = String(s == null ? '' : s); return d.innerHTML; }
+
 /**
  * Scroll chat to bottom.
  * @param {boolean} [instant=false] - Scroll instantly without animation
  */
-window.SH_CHAT.scrollBottom = function (instant) {
+SH_CHAT.scrollBottom = function (instant) {
   const b = box();
   if (!b) return;
   try { b.scrollTo({ top: b.scrollHeight, behavior: instant ? 'auto' : 'smooth' }); }
@@ -65,7 +66,7 @@ window.SH_CHAT.scrollBottom = function (instant) {
  * @param {string} text - Raw message text
  * @returns {string} HTML-formatted message
  */
-window.SH_CHAT.formatMsg = function (text) {
+SH_CHAT.formatMsg = function (text) {
   let t = esc(text);
   t = t.replace(/```([\s\S]*?)```/g, (m, code) => '<pre class="cx-code">' + esc(code).replace(/\n/g, '<br>') + '</pre>');
   t = t.replace(/\*\*([^*]+)\*\*/g, '<b>$1</b>');
@@ -87,7 +88,7 @@ window.SH_CHAT.formatMsg = function (text) {
  * @param {string} text - Raw message text
  * @returns {string} Clean text for TTS
  */
-window.SH_CHAT.cleanSpeech = function (text) {
+SH_CHAT.cleanSpeech = function (text) {
   return String(text || '')
     .replace(/```[\s\S]*?```/g, function () { return ' код. '; })
     .replace(/`([^`\n]+)`/g, '$1')
@@ -108,7 +109,7 @@ window.SH_CHAT.cleanSpeech = function (text) {
  * @param {string} text - User message
  * @returns {'site'|'general'} Intent type
  */
-window.SH_CHAT.intentFor = function (text) {
+SH_CHAT.intentFor = function (text) {
   const s = String(text || '').toLowerCase();
   return /серг|serhii|резюме|\bcv\b|освіт|досвід прац|контакт|мов\w|хобі|сантех|plumb|sniatyn|снятин|про себе|сайт|портфоліо|portfolio|skills|навичк|education|experience|about you|about serhii|who is|cv\b/.test(s) ? 'site' : 'general';
 };
@@ -120,14 +121,14 @@ window.SH_CHAT.intentFor = function (text) {
  * @param {string} [via] - Provider name for attribution
  * @returns {HTMLElement|null} Created message element
  */
-window.SH_CHAT.add = function (text, who, via) {
+SH_CHAT.add = function (text, who, via) {
   const host = inner() || box();
   if (!host) return null;
   const d = document.createElement('div');
   d.className = 'cx-msg ' + (who === 'user' ? 'u' : 'b');
   const p = document.createElement('div');
   p.className = 'cx-text';
-  p.innerHTML = window.SH_CHAT.formatMsg(text);
+  p.innerHTML = SH_CHAT.formatMsg(text);
   d.appendChild(p);
   if (via) { const v = document.createElement('span'); v.className = 'cx-via'; v.textContent = 'via ' + via; d.appendChild(v); }
   const acts = document.createElement('div');
@@ -141,21 +142,22 @@ window.SH_CHAT.add = function (text, who, via) {
     const sp = document.createElement('button');
     sp.type = 'button'; sp.className = 'cx-act'; sp.title = 'Read aloud'; sp.setAttribute('aria-label', 'Read aloud');
     sp.innerHTML = '<svg class="ic"><use href="#i-vol"/></svg>';
-    sp.addEventListener('click', () => window.SH_CHAT.speak(String(text || '')));
+    sp.addEventListener('click', () => SH_CHAT.speak(String(text || '')));
     acts.appendChild(sp);
   }
   d.appendChild(acts);
   host.appendChild(d);
-  window.SH_CHAT.scrollBottom();
+  SH_CHAT.scrollBottom();
   return d;
 };
+
 /**
  * Add file attachments to the chat UI.
  * @param {Attachment[]} files - Array of file objects
  * @param {'user'|'bot'} who - Message author
  * @returns {HTMLElement|null} Created message element
  */
-window.SH_CHAT.addFiles = function (files, who) {
+SH_CHAT.addFiles = function (files, who) {
   const host = inner() || box();
   if (!host || !files || !files.length) return null;
   const d = document.createElement('div');
@@ -178,7 +180,7 @@ window.SH_CHAT.addFiles = function (files, who) {
     d.appendChild(chip);
   });
   host.appendChild(d);
-  window.SH_CHAT.scrollBottom();
+  SH_CHAT.scrollBottom();
   return d;
 };
 
@@ -189,28 +191,28 @@ window.SH_CHAT.addFiles = function (files, who) {
  * @param {string} [via] - Provider name for attribution
  * @returns {HTMLElement} Updated or new message element
  */
-window.SH_CHAT.updateBot = function (node, text, via) {
-  if (!node) return window.SH_CHAT.add(text, 'bot', via);
+SH_CHAT.updateBot = function (node, text, via) {
+  if (!node) return SH_CHAT.add(text, 'bot', via);
   const p = node.querySelector('.cx-text');
-  if (p) p.innerHTML = window.SH_CHAT.formatMsg(text);
+  if (p) p.innerHTML = SH_CHAT.formatMsg(text);
   let v = node.querySelector('.cx-via');
   if (via) { if (!v) { v = document.createElement('span'); v.className = 'cx-via'; node.appendChild(v); } v.textContent = 'via ' + via; }
-  window.SH_CHAT.scrollBottom(true);
+  SH_CHAT.scrollBottom(true);
   return node;
 };
 
 /**
  * Clear all messages from the chat.
  */
-window.SH_CHAT.clear = function () { const h = inner(); if (h) h.innerHTML = ''; };
+SH_CHAT.clear = function () { const h = inner(); if (h) h.innerHTML = ''; };
 
 /**
  * Get the number of messages in the chat.
  * @returns {number} Message count
  */
-window.SH_CHAT.count = function () { return (inner() || box() || { children: [] }).children.length; };
+SH_CHAT.count = function () { return (inner() || box() || { children: [] }).children.length; };
 
-var cvCache = null;
+let cvCache = null;
 /**
  * Fetch and cache CV text.
  * @returns {Promise<string>} CV text (max 4000 chars)
@@ -241,7 +243,7 @@ function domText() {
     if (motto) parts.push('Motto: ' + motto.innerText.trim().slice(0, 120));
     const st = document.getElementById('st-groups');
     if (st) {
-      const pairs = [].slice.call(st.querySelectorAll('.st-tile')).map(function (t) {
+      const pairs = Array.from(st.querySelectorAll('.st-tile')).map((t) => {
         const b = t.querySelector('b');
         const sp = t.querySelector('span');
         return b ? (b.textContent + (sp ? ' - ' + sp.textContent : '')) : t.textContent.trim();
@@ -251,11 +253,12 @@ function domText() {
     return parts.join('\n').slice(0, 4800);
   } catch (e) { return ''; }
 }
+
 /**
  * Get full site context for AI (live DOM + CV file).
  * @returns {Promise<string>} Combined context (max 6000 chars)
  */
-window.SH_CHAT.siteContext = async function () {
+SH_CHAT.siteContext = async function () {
   const live = domText();
   const cv = await cvText();
   return ('SITE SNAPSHOT (this website is the source of truth):\n' + live + '\n\nCV FILE:\n' + cv).slice(0, 6000);
@@ -265,7 +268,7 @@ window.SH_CHAT.siteContext = async function () {
  * Get sync site facts for system prompt.
  * @returns {string} Site facts (max 3000 chars)
  */
-window.SH_CHAT.siteFactsSync = function () {
+SH_CHAT.siteFactsSync = function () {
   const t = domText();
   return t ? ('Facts from this site: ' + t).slice(0, 3000) : 'Facts: Serhii Hordiichuk, plumber 10+ years, into web dev. Motto: Possibilities are limitless.';
 };
@@ -274,7 +277,7 @@ window.SH_CHAT.siteFactsSync = function () {
  * Build system message for AI with tone and language settings.
  * @returns {{role: 'system', content: string}} System message object
  */
-window.SH_CHAT.sysMsg = function () {
+SH_CHAT.sysMsg = function () {
   const tone = ((document.getElementById('tone') || {}).value) || 'professional';
   let t = 'Be polite and professional.';
   if (tone === 'friendly') t = 'Be friendly and warm.';
@@ -286,7 +289,7 @@ window.SH_CHAT.sysMsg = function () {
   if (lang === 'no') l = 'Reply ONLY in Norwegian bokmal.';
   const rest = { de: 'German', fr: 'French', es: 'Spanish', pl: 'Polish', ru: 'Russian', zh: 'Chinese', ar: 'Arabic' };
   if (rest[lang]) l = 'Reply ONLY in ' + rest[lang] + '.';
-  return { role: 'system', content: "You are the AI assistant of serhii-portfolio. DUAL MODE: answer about Serhii from the site info, for any other topic act as a general AI like ChatGPT. " + l + ' ' + t + ' ' + window.SH_CHAT.siteFactsSync() };
+  return { role: 'system', content: "You are the AI assistant of serhii-portfolio. DUAL MODE: answer about Serhii from the site info, for any other topic act as a general AI like ChatGPT. " + l + ' ' + t + ' ' + SH_CHAT.siteFactsSync() };
 };
 
 /**
@@ -294,7 +297,7 @@ window.SH_CHAT.sysMsg = function () {
  * @param {number} [limit] - Maximum messages to return
  * @returns {ChatMessage[]} Chat history
  */
-window.SH_CHAT.history = function (limit) {
+SH_CHAT.history = function (limit) {
   const host = inner() || box();
   if (!host) return [];
   return Array.from(host.querySelectorAll('.cx-msg'))
@@ -312,7 +315,7 @@ function lsSet(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
  * Get stored Ollama URL from localStorage.
  * @returns {string} Ollama base URL
  */
-window.SH_CHAT.ollamaUrl = function () {
+SH_CHAT.ollamaUrl = function () {
   return (lsGet('sh.ollamaUrl', '') || '').trim().replace(/\/$/, '');
 };
 
@@ -320,13 +323,13 @@ window.SH_CHAT.ollamaUrl = function () {
  * Set Ollama URL in localStorage.
  * @param {string} u - Ollama base URL
  */
-window.SH_CHAT.setOllamaUrl = function (u) { lsSet('sh.ollamaUrl', String(u || '').trim()); };
+SH_CHAT.setOllamaUrl = function (u) { lsSet('sh.ollamaUrl', String(u || '').trim()); };
 
 /**
  * Get proxy base URL from SH store.
  * @returns {string} Proxy base URL
  */
-window.SH_CHAT.proxyBase = function () {
+SH_CHAT.proxyBase = function () {
   try { return (window.SH.store.get('sh.proxy', '') || '').replace(/\/$/, ''); } catch (e) { return ''; }
 };
 
@@ -342,18 +345,18 @@ function attFor(attachments) {
  * @param {Attachment[]} [attachments] - File attachments
  * @returns {Promise<ProxyResponse>} Response with reply and provider info
  */
-window.SH_CHAT.viaProxy = async function (provider, model, messages, attachments) {
-  const b = window.SH_CHAT.proxyBase();
+SH_CHAT.viaProxy = async function (provider, model, messages, attachments) {
+  const b = SH_CHAT.proxyBase();
   const ctl = new AbortController();
   const t = setTimeout(() => ctl.abort(), 60000);
   try {
-    const siteContext = await window.SH_CHAT.siteContext();
+    const siteContext = await SH_CHAT.siteContext();
     const r = await fetch(b + '/api/chat', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         provider: provider, model: (model === 'auto' ? undefined : model),
         messages: messages, siteContext: siteContext,
-        ollamaUrl: provider === 'ollama' || provider === 'auto' ? window.SH_CHAT.ollamaUrl() : '',
+        ollamaUrl: provider === 'ollama' || provider === 'auto' ? SH_CHAT.ollamaUrl() : '',
         attachments: attFor(attachments)
       }), signal: ctl.signal
     });
@@ -361,7 +364,8 @@ window.SH_CHAT.viaProxy = async function (provider, model, messages, attachments
     if (r.ok && d.reply) return { reply: d.reply, via: 'proxy:' + (d.via || provider) };
     throw new Error(d.error || ('HTTP ' + r.status));
   } finally { clearTimeout(t); }
-};
+}
+
 function readStreamLines(r, onLine) {
   const dec = new TextDecoder();
   let buf = '';
@@ -378,6 +382,7 @@ function readStreamLines(r, onLine) {
     })();
   });
 }
+
 /**
  * Send streaming chat request via proxy.
  * @param {string} provider - Provider name (auto, openrouter, groq, hf, ollama)
@@ -387,18 +392,18 @@ function readStreamLines(r, onLine) {
  * @param {Function} onDelta - Callback for each token delta
  * @returns {Promise<ProxyResponse>} Response with full reply and provider info
  */
-window.SH_CHAT.viaProxyStream = async function (provider, model, messages, attachments, onDelta) {
-  const b = window.SH_CHAT.proxyBase();
+SH_CHAT.viaProxyStream = async function (provider, model, messages, attachments, onDelta) {
+  const b = SH_CHAT.proxyBase();
   const ctl = new AbortController();
   const t = setTimeout(() => ctl.abort(), 90000);
   try {
-    const siteContext = await window.SH_CHAT.siteContext();
+    const siteContext = await SH_CHAT.siteContext();
     const r = await fetch(b + '/api/chat', {
       method: 'POST', headers: { 'Content-Type': 'application/json' },
       body: JSON.stringify({
         stream: true, provider: provider, model: (model === 'auto' ? undefined : model),
         messages: messages, siteContext: siteContext,
-        ollamaUrl: provider === 'ollama' || provider === 'auto' ? window.SH_CHAT.ollamaUrl() : '',
+        ollamaUrl: provider === 'ollama' || provider === 'auto' ? SH_CHAT.ollamaUrl() : '',
         attachments: attFor(attachments)
       }), signal: ctl.signal
     });
@@ -421,7 +426,7 @@ window.SH_CHAT.viaProxyStream = async function (provider, model, messages, attac
     if (!full || !done) throw new Error(full ? 'stream closed early' : 'empty response');
     return { reply: full, via: 'proxy:' + via };
   } finally { clearTimeout(t); }
-};
+}
 
 /**
  * Probe Ollama /api/tags endpoint for available models.
@@ -445,7 +450,7 @@ async function probeOllamaTags(base, timeoutMs) {
  * @param {string} [base] - Ollama base URL (uses stored URL if not provided)
  * @returns {Promise<string[]>} Array of model names
  */
-window.SH_CHAT.probeOllama = function (base) { return probeOllamaTags(base || window.SH_CHAT.ollamaUrl(), 6000); };
+SH_CHAT.probeOllama = function (base) { return probeOllamaTags(base || SH_CHAT.ollamaUrl(), 6000); };
 
 /**
  * Stream chat directly with local Ollama (bypassing proxy).
@@ -455,12 +460,12 @@ window.SH_CHAT.probeOllama = function (base) { return probeOllamaTags(base || wi
  * @param {Function} onDelta - Callback for each token delta
  * @returns {Promise<ProxyResponse>} Response with full reply
  */
-window.SH_CHAT.ollamaDirectStream = async function (model, messages, attachments, onDelta) {
-  const base = window.SH_CHAT.ollamaUrl();
+SH_CHAT.ollamaDirectStream = async function (model, messages, attachments, onDelta) {
+  const base = SH_CHAT.ollamaUrl();
   if (!base) throw new Error('set Ollama URL first');
   const md = model && model !== 'auto' ? model : (lsGet('sh.model:ollama', '') || '');
   if (!md) throw new Error('pick an Ollama model first');
-  const all = [window.SH_CHAT.sysMsg()].concat(messages);
+  const all = [SH_CHAT.sysMsg()].concat(messages);
   const images = (attachments || []).filter((a) => a && a.image).slice(0, 2)
     .map((a) => String(a.image).replace(/^data:image\/[^;]+;base64,/, ''));
   const r = await fetch(base + '/api/chat', {
@@ -483,56 +488,19 @@ window.SH_CHAT.ollamaDirectStream = async function (model, messages, attachments
   if (!full || !done) throw new Error(full ? 'stream closed early' : 'empty answer from Ollama');
   return { reply: full, via: 'ollama local' };
 };
-var modelsBulk = null;
-var modelsBulkAt = 0;
-window.SH_CHAT.fetchAllModels = async function (ollamaUrl) {
-  const now = Date.now();
-  if (modelsBulk && (now - modelsBulkAt) < 60000 && !ollamaUrl) return modelsBulk;
-  const b = window.SH_CHAT.proxyBase();
-  const ctl = new AbortController();
-  const t = setTimeout(() => ctl.abort(), 15000);
-  try {
-    const r = await fetch(b + '/api/models', {
-      method: 'POST', headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify(ollamaUrl ? { ollamaUrl: ollamaUrl } : {}), signal: ctl.signal
-    });
-    const d = await r.json().catch(() => ({}));
-    if (!r.ok) throw new Error((d && d.error) || ('HTTP ' + r.status));
-    if (!ollamaUrl) { modelsBulk = (d && d.providers) || {}; modelsBulkAt = now; }
-    return (d && d.providers) || {};
-  } finally { clearTimeout(t); }
-};
-window.SH_CHAT.fetchModels = async function (provider) {
-  const p = String(provider || '').toLowerCase();
-  if (p === 'auto') return { models: ['auto'], via: 'auto', configured: true };
-  if (p === 'ollama') {
-    const base = window.SH_CHAT.ollamaUrl();
-    if (base) {
-      try {
-        const names = await probeOllamaTags(base, 6000);
-        if (names.length) return { models: names, via: 'ollama local', configured: true };
-      } catch (e) { /* fall through to server check for a clear error */ }
-    }
-    const all = await window.SH_CHAT.fetchAllModels(base || '');
-    const e = all.ollama || {};
-    if (e.configured && e.models && e.models.length) return { models: e.models, via: e.via || 'server', configured: true };
-    throw new Error((e && e.error) || ('Ollama: no models. Open chat settings and set Ollama URL (e.g. http://localhost:11434), allow CORS via OLLAMA_ORIGINS, and pull a model.'));
-  }
-  const all = await window.SH_CHAT.fetchAllModels();
-  const e = all[p] || {};
-  if (e.configured && Array.isArray(e.models) && e.models.length) return { models: e.models, via: e.via || 'server', configured: true };
-  throw new Error((e && e.error) || ('no models: key for ' + p + ' not set in Vercel env'));
-};
+
+let modelsBulk = null;
+let modelsBulkAt = 0;
 
 /**
  * Fetch all available models from all providers (cached for 60s).
  * @param {string} [ollamaUrl] - Optional Ollama URL for direct probe
  * @returns {Promise<ProvidersMap>} Models for all providers
  */
-window.SH_CHAT.fetchAllModels = async function (ollamaUrl) {
+SH_CHAT.fetchAllModels = async function (ollamaUrl) {
   const now = Date.now();
   if (modelsBulk && (now - modelsBulkAt) < 60000 && !ollamaUrl) return modelsBulk;
-  const b = window.SH_CHAT.proxyBase();
+  const b = SH_CHAT.proxyBase();
   const ctl = new AbortController();
   const t = setTimeout(() => ctl.abort(), 15000);
   try {
@@ -552,23 +520,23 @@ window.SH_CHAT.fetchAllModels = async function (ollamaUrl) {
  * @param {string} provider - Provider name (auto, openrouter, groq, hf, ollama)
  * @returns {Promise<OllamaModelResult>} Models and provider info
  */
-window.SH_CHAT.fetchModels = async function (provider) {
+SH_CHAT.fetchModels = async function (provider) {
   const p = String(provider || '').toLowerCase();
   if (p === 'auto') return { models: ['auto'], via: 'auto', configured: true };
   if (p === 'ollama') {
-    const base = window.SH_CHAT.ollamaUrl();
+    const base = SH_CHAT.ollamaUrl();
     if (base) {
       try {
         const names = await probeOllamaTags(base, 6000);
         if (names.length) return { models: names, via: 'ollama local', configured: true };
       } catch (e) { /* fall through to server check for a clear error */ }
     }
-    const all = await window.SH_CHAT.fetchAllModels(base || '');
+    const all = await SH_CHAT.fetchAllModels(base || '');
     const e = all.ollama || {};
     if (e.configured && e.models && e.models.length) return { models: e.models, via: e.via || 'server', configured: true };
     throw new Error((e && e.error) || ('Ollama: no models. Open chat settings and set Ollama URL (e.g. http://localhost:11434), allow CORS via OLLAMA_ORIGINS, and pull a model.'));
   }
-  const all = await window.SH_CHAT.fetchAllModels();
+  const all = await SH_CHAT.fetchAllModels();
   const e = all[p] || {};
   if (e.configured && Array.isArray(e.models) && e.models.length) return { models: e.models, via: e.via || 'server', configured: true };
   throw new Error((e && e.error) || ('no models: key for ' + p + ' not set in Vercel env'));
@@ -578,10 +546,10 @@ window.SH_CHAT.fetchModels = async function (provider) {
  * Speak text using Web Speech API.
  * @param {string} text - Text to speak
  */
-window.SH_CHAT.speak = function (text) {
+SH_CHAT.speak = function (text) {
   try {
     if (!('speechSynthesis' in window)) return;
-    const clean = window.SH_CHAT.cleanSpeech(text);
+    const clean = SH_CHAT.cleanSpeech(text);
     if (!clean) return;
     window.speechSynthesis.cancel();
     const u = new SpeechSynthesisUtterance(clean.slice(0, 1600));
@@ -595,7 +563,7 @@ window.SH_CHAT.speak = function (text) {
 /**
  * Stop current speech synthesis.
  */
-window.SH_CHAT.stopSpeak = function () { try { if ('speechSynthesis' in window) window.speechSynthesis.cancel(); } catch (e) {} };
+SH_CHAT.stopSpeak = function () { try { if ('speechSynthesis' in window) window.speechSynthesis.cancel(); } catch (e) {} };
 
 /**
  * Compress image data URL to max size.
@@ -604,7 +572,7 @@ window.SH_CHAT.stopSpeak = function () { try { if ('speechSynthesis' in window) 
  * @param {number} [quality=0.85] - JPEG quality (0-1)
  * @returns {Promise<string>} Compressed data URL
  */
-window.SH_CHAT.compressImage = function (dataUrl, maxSize, quality) {
+SH_CHAT.compressImage = function (dataUrl, maxSize, quality) {
   maxSize = maxSize || 1024; quality = quality || 0.85;
   return new Promise((resolve) => {
     try {
@@ -632,7 +600,7 @@ window.SH_CHAT.compressImage = function (dataUrl, maxSize, quality) {
  * @param {File} file - File object
  * @returns {Promise<Attachment>} Attachment object with text or image data
  */
-window.SH_CHAT.readFile = function (file) {
+SH_CHAT.readFile = function (file) {
   return new Promise((resolve) => {
     const name = file.name || 'file';
     const size = file.size || 0;
@@ -642,7 +610,7 @@ window.SH_CHAT.readFile = function (file) {
     fr.onload = () => {
       const res = String(fr.result || '');
       if (isImg) {
-        window.SH_CHAT.compressImage(res, 1024, 0.85).then((small) => {
+        SH_CHAT.compressImage(res, 1024, 0.85).then((small) => {
           resolve({ name: name, size: size, kind: 'image', image: small, dataUrl: small, text: '' });
         });
         return;
@@ -654,4 +622,8 @@ window.SH_CHAT.readFile = function (file) {
     else fr.readAsText(file);
   });
 };
-})();
+
+// Export for ESM
+export { SH_CHAT };
+// Also expose on window for backward compatibility
+window.SH_CHAT = SH_CHAT;

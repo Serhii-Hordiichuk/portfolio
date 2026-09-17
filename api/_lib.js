@@ -4,9 +4,76 @@ import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
 
+/**
+ * Simple in-memory rate limiter for serverless functions.
+ * Uses a Map with automatic cleanup of old entries.
+ * @typedef {Object} RateLimitConfig
+ * @property {number} windowMs - Time window in milliseconds
+ * @property {number} maxRequests - Maximum requests per window
+ * @property {string} keyPrefix - Prefix for the rate limit key
+ */
+
+/**
+ * @type {Map<string, {count: number, resetAt: number}>}
+ */
+const rateLimitStore = new Map();
+
+/**
+ * Clean up expired entries periodically
+ */
+setInterval(() => {
+  const now = Date.now();
+  for (const [key, value] of rateLimitStore.entries()) {
+    if (value.resetAt < now) {
+      rateLimitStore.delete(key);
+    }
+  }
+}, 60000);
+
+/**
+ * Check and increment rate limit for a key
+ * @param {string} key - Unique identifier (e.g., IP address)
+ * @param {RateLimitConfig} config - Rate limit configuration
+ * @returns {{allowed: boolean, remaining: number, resetAt: number}}
+ */
+export function checkRateLimit(key, config) {
+  const now = Date.now();
+  const windowStart = now - config.windowMs;
+  const entry = rateLimitStore.get(key);
+  
+  if (!entry || entry.resetAt < now) {
+    // First request or window expired
+    rateLimitStore.set(key, { count: 1, resetAt: now + config.windowMs });
+    return { allowed: true, remaining: config.maxRequests - 1, resetAt: now + config.windowMs };
+  }
+  
+  if (entry.count >= config.maxRequests) {
+    return { allowed: false, remaining: 0, resetAt: entry.resetAt };
+  }
+  
+  entry.count++;
+  return { allowed: true, remaining: config.maxRequests - entry.count, resetAt: entry.resetAt };
+}
+
+/**
+ * Get client IP from request headers (works with Vercel, proxies)
+ * @param {Object} req - HTTP request object
+ * @returns {string}
+ */
+export function getClientIp(req) {
+  return req.headers['x-forwarded-for']?.split(',')[0]?.trim() ||
+         req.headers['x-real-ip'] ||
+         req.socket?.remoteAddress ||
+         'unknown';
+}
+
 const FALLBACK_KB = "Serhii Hordiichuk, 34, born 27.02.1992. Plumber 10+ years in Ukraine (Euro-warming Sniatyn 2011-2013 O&M; private practice 2013-2023). Education: Berezhany Agrarian Technical Institute (Business Economics 2015-2016); West Ukrainian National University (Bachelor Management 2013-2015); Sniatyn Vocational School (Law 2007-2013). Languages: Ukrainian good, English/Norwegian/Russian beginner. Hobbies: web dev, PC building, tech news. Motto: Possibilities are limitless.";
 export const KB = FALLBACK_KB;
 
+/**
+ * Get the site knowledge base from environment or file system.
+ * @returns {string} The knowledge base text (max 6000 chars)
+ */
 export function siteKB() {
   if (process.env.SITE_KB) return String(process.env.SITE_KB).slice(0, 6000);
   try {
@@ -22,6 +89,13 @@ export function siteKB() {
   return FALLBACK_KB;
 }
 
+/**
+ * Build the complete system prompt for the AI assistant.
+ * @param {string} [extra] - Additional context from the live page (max 4000 chars)
+ * @param {Array<{name?: string, text?: string, image?: string}>} [attachments] - File attachments
+ * @param {"site"|"general"} intent - Detected intent: "site" for questions about Serhii/portfolio, "general" for everything else
+ * @returns {string} Complete system prompt with knowledge base, attachments, and intent instructions
+ */
 export function buildKB(extra, attachments, intent) {
   const x = String(extra || "").trim().slice(0, 4000);
   let att = "";
@@ -52,6 +126,11 @@ export function buildKB(extra, attachments, intent) {
     "SITE INFO (about Serhii):\n" + siteKB() + (x ? "\nLIVE PAGE SNAPSHOT:\n" + x : "") + att + mode;
 }
 
+/**
+ * Detect if the user is asking about the site/Serhii or a general topic.
+ * @param {Array<{role: string, content: string}>} messages - Chat message history
+ * @returns {"site"|"general"} "site" if asking about Serhii/portfolio, "general" otherwise
+ */
 export function detectIntent(messages) {
   try {
     const arr = Array.isArray(messages) ? messages : [];
@@ -66,6 +145,12 @@ export function detectIntent(messages) {
   return "general";
 }
 
+/**
+ * Build messages array for LLM API, handling image attachments.
+ * @param {Array<{role: string, content: string|Array}>} messages - Chat history
+ * @param {Array<{name?: string, text?: string, image?: string}>} [attachments] - File attachments
+ * @returns {{messages: Array, ollamaImages: string[]}} Formatted messages and extracted base64 images for Ollama
+ */
 export function buildLLMMessages(messages, attachments) {
   const arr = Array.isArray(messages) ? messages.slice() : [];
   const images = (Array.isArray(attachments) ? attachments : []).filter((a) => a && a.image).slice(0, 2);
@@ -82,9 +167,26 @@ export function buildLLMMessages(messages, attachments) {
   return { messages: arr, ollamaImages: [] };
 }
 
+/**
+ * Get Ollama base URL from parameter or environment.
+ * @param {string} [u] - Ollama URL
+ * @returns {string} Base URL without trailing slash
+ */
 export function ollamaBase(u) { return String(u || process.env.OLLAMA_URL || "").replace(/\/$/, ""); }
+
+/**
+ * Get Ollama model name from parameter or environment.
+ * @param {string} [m] - Model name
+ * @returns {string} Model name (default: llama3.1:8b)
+ */
 export function ollamaModel(m) { return m || process.env.OLLAMA_MODEL || "llama3.1:8b"; }
 
+/**
+ * Handle CORS headers for serverless functions.
+ * @param {Object} req - HTTP request object
+ * @param {Object} res - HTTP response object
+ * @returns {boolean} True if OPTIONS request was handled
+ */
 export function cors(req, res) {
   const allowed = (process.env.ALLOWED_ORIGINS || "*").split(",").map((s) => s.trim());
   const origin = req.headers.origin || "*";
@@ -95,6 +197,15 @@ export function cors(req, res) {
   return false;
 }
 
+/**
+ * Chat with OpenAI-compatible API (non-streaming).
+ * @param {string} url - API endpoint URL
+ * @param {string} key - API key
+ * @param {string} model - Model name
+ * @param {Array<{role: string, content: string|Array}>} messages - Chat messages
+ * @param {Object} [extraHeaders] - Additional headers
+ * @returns {Promise<string>} Assistant response
+ */
 export async function chatOAI(url, key, model, messages, extraHeaders) {
   const r = await fetch(url, {
     method: "POST",
@@ -106,6 +217,14 @@ export async function chatOAI(url, key, model, messages, extraHeaders) {
   return (d.choices && d.choices[0] && d.choices[0].message && d.choices[0].message.content) || "";
 }
 
+/**
+ * Chat with Ollama API (non-streaming), with fallback to /api/chat.
+ * @param {Array<{role: string, content: string|Array}>} messages - Chat messages
+ * @param {Array<{name?: string, text?: string, image?: string}>} [attachments] - File attachments
+ * @param {string} [url] - Ollama base URL
+ * @param {string} [model] - Model name
+ * @returns {Promise<string>} Assistant response
+ */
 export async function chatOllama(messages, attachments, url, model) {
   const base = ollamaBase(url);
   const md = ollamaModel(model);
@@ -124,6 +243,10 @@ export async function chatOllama(messages, attachments, url, model) {
   }
 }
 
+/**
+ * Write SSE headers for streaming response.
+ * @param {Object} res - HTTP response object
+ */
 function sseHeaders(res) {
   res.writeHead(200, {
     "Content-Type": "text/event-stream; charset=utf-8",
@@ -132,10 +255,29 @@ function sseHeaders(res) {
     "X-Accel-Buffering": "no"
   });
 }
+
+/**
+ * Write a single SSE event.
+ * @param {Object} res - HTTP response object
+ * @param {Object} obj - Data to send
+ */
 function writeSSE(res, obj) {
   if (res.writableEnded) return;
   res.write("data: " + JSON.stringify(obj) + "\n\n");
 }
+
+/**
+ * Stream chat with OpenAI-compatible API via SSE.
+ * @param {string} url - API endpoint URL
+ * @param {string} key - API key
+ * @param {string} model - Model name
+ * @param {Array<{role: string, content: string|Array}>} messages - Chat messages
+ * @param {Object} res - HTTP response object (for streaming)
+ * @param {Object} [opts] - Options
+ * @param {string} [opts.via] - Provider name for tracking
+ * @param {Object} [opts.extraHeaders] - Additional headers
+ * @returns {Promise<void>}
+ */
 export async function streamOAISSE(url, key, model, messages, res, opts) {
   const o = opts || {};
   const r = await fetch(url, {
@@ -169,6 +311,17 @@ export async function streamOAISSE(url, key, model, messages, res, opts) {
   writeSSE(res, { done: true });
   try { res.end(); } catch (e) {}
 }
+
+/**
+ * Stream chat with Ollama API via SSE.
+ * @param {Array<{role: string, content: string|Array}>} messages - Chat messages
+ * @param {Array<{name?: string, text?: string, image?: string}>} [attachments] - File attachments
+ * @param {string} [url] - Ollama base URL
+ * @param {string} [model] - Model name
+ * @param {Object} res - HTTP response object (for streaming)
+ * @param {string} [via] - Provider name for tracking
+ * @returns {Promise<void>}
+ */
 export async function streamOllamaChat(messages, attachments, url, model, res, via) {
   const base = ollamaBase(url);
   const md = ollamaModel(model);
@@ -206,6 +359,13 @@ export async function streamOllamaChat(messages, attachments, url, model, res, v
   try { res.end(); } catch (e) {}
 }
 
+/**
+ * Fetch JSON from URL with timeout and optional auth.
+ * @param {string} url - URL to fetch
+ * @param {string} [key] - Bearer token
+ * @param {number} [timeoutMs=12000] - Timeout in milliseconds
+ * @returns {Promise<Object>} Parsed JSON response
+ */
 export async function fetchJSON(url, key, timeoutMs) {
   const ctl = new AbortController();
   const t = setTimeout(() => ctl.abort(), timeoutMs || 12000);
@@ -217,6 +377,12 @@ export async function fetchJSON(url, key, timeoutMs) {
   } finally { clearTimeout(t); }
 }
 
+/**
+ * List available models for a provider.
+ * @param {"openrouter"|"groq"|"hf"|"huggingface"|"ollama"} provider - Provider name
+ * @param {string} [clientUrl] - Ollama URL (only used for ollama provider)
+ * @returns {Promise<{models: string[], via: string}>} Available models and source
+ */
 export async function listModels(provider, clientUrl) {
   const p = String(provider || "").toLowerCase();
   if (p === "openrouter") {

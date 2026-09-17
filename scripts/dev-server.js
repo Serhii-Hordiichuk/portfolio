@@ -1,18 +1,51 @@
 /**
- * SH Portfolio AI proxy (no deps, Node 18+).
- * Mirrors Vercel /api/* for local dev. Run: node dev-server.js (port 8787)
+ * SH Portfolio AI proxy (no deps, Node 20+).
+ * Mirrors Vercel /api/* for local dev. Run: node dev-server.js (port 8788).
+ * NOTE: must NOT be 8787 — that port belongs to the Vite frontend.
  * Endpoints: GET /api/health, POST /api/chat, POST /api/models
  */
 import http from "node:http";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { siteKB, buildKB, listModels, ollamaBase, ollamaModel, chatOAI, chatOllama, streamOAISSE, streamOllamaChat, buildLLMMessages, detectIntent } from "../api/_lib.js";
+import { siteKB, buildKB, listModels, ollamaBase, ollamaModel, chatOAI, chatOllama, streamOAISSE, streamOllamaChat, buildLLMMessages, detectIntent, checkRateLimit, getClientIp } from "../api/_lib.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
 const PUBLIC = path.join(__dirname, "..", "public");
-const PORT = Number(process.env.PORT || 8787);
+
+// Minimal .env loader (no deps): reads repo-root .env, does not override real env.
+// Handles leading spaces, `export KEY=`, quotes, comments.
+function loadDotEnv() {
+  try {
+    const p = path.join(__dirname, "..", ".env");
+    if (!fs.existsSync(p)) return;
+    const text = fs.readFileSync(p, "utf8");
+    for (const raw of text.split("\n")) {
+      const line = raw.trim();
+      if (!line || line.startsWith("#")) continue;
+      const m = line.match(/^(?:export\s+)?([A-Za-z_][A-Za-z0-9_]*)\s*=\s*(.*)$/);
+      if (!m) continue;
+      let [, k, v] = m;
+      v = v.trim();
+      // strip inline comment not inside quotes
+      if (!/^["']/.test(v)) v = v.split(/\s+#/)[0].trim();
+      if ((v.startsWith('"') && v.endsWith('"')) || (v.startsWith("'") && v.endsWith("'"))) v = v.slice(1, -1);
+      if (!(k in process.env)) process.env[k] = v;
+    }
+  } catch {}
+}
+loadDotEnv();
+
+// API must NOT use PORT=8787 (Vite frontend). Use API_PORT or fixed 8788.
+const PORT = Number(process.env.API_PORT || 8788);
 const ALLOWED = (process.env.ALLOWED_ORIGINS || "*").split(",").map((s) => s.trim());
+
+/** @type {import('../api/_lib.js').RateLimitConfig} */
+const CHAT_RATE_LIMIT = {
+  windowMs: 60 * 1000,
+  maxRequests: 30,
+  keyPrefix: 'chat'
+};
 
 function cors(req, res) {
   const origin = req.headers.origin || "*";
@@ -67,6 +100,22 @@ const server = http.createServer(async (req, res) => {
     }
   }
   if (u.pathname === "/api/chat" && req.method === "POST") {
+    // Rate limiting
+    const clientIp = getClientIp(req);
+    const rateLimitKey = `${CHAT_RATE_LIMIT.keyPrefix}:${clientIp}`;
+    const rateLimit = checkRateLimit(rateLimitKey, CHAT_RATE_LIMIT);
+    
+    res.setHeader('X-RateLimit-Limit', CHAT_RATE_LIMIT.maxRequests);
+    res.setHeader('X-RateLimit-Remaining', rateLimit.remaining);
+    res.setHeader('X-RateLimit-Reset', Math.ceil(rateLimit.resetAt / 1000));
+    
+    if (!rateLimit.allowed) {
+      return json(res, 429, { 
+        error: "Rate limit exceeded. Please try again later.",
+        retryAfter: Math.ceil((rateLimit.resetAt - Date.now()) / 1000)
+      });
+    }
+
     const b = await readBody(req);
     const messages = Array.isArray(b.messages) ? b.messages.slice(-12) : [];
     if (!messages.length) return json(res, 400, { error: "empty messages" });

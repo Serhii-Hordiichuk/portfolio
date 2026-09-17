@@ -1,63 +1,118 @@
-# Serhii Hordiichuk — Portfolio (B/W/G) + AI on Vercel
+# Serhii Hordiichuk — Portfolio + AI Assistant (Vercel)
 
-Frontend + API in one Vercel project (same origin). Domain is already connected there.
-Auto-deploy: push to `main` → Vercel redeploy.
+Frontend + API in one Vercel project (same origin). Auto-deploy on push to `main`.
 
-## Project layout
+## Project Layout
 
 ```
 portfolio/
-├── public/            # static frontend served by Vercel (outputDirectory)
-│   ├── index.html     # SPA: cover, CV, stack, contacts, chat, widgets
-│   ├── assets/        # app.js, chat.js, chat-ui.js, stack.js, radio.js, news.js,
-│   │                 # tv.js, widgets.js, config.js, stations.js, i18n*.js, styles.css, chat.css
-│   ├── docs/          # CV-Serhii.Hordiichuk.pdf, cv.txt (knowledge base for the AI)
+├── public/              # static frontend (Vercel outputDirectory)
+│   ├── index.html       # SPA: cover, CV, stack, contacts, chat, widgets
+│   ├── src/             # ESM source (built by Vite)
+│   ├── assets/          # legacy assets (kept for reference)
+│   ├── docs/            # CV-Serhii.Hordiichuk.pdf, cv.txt (AI knowledge base)
 │   └── sw.js, manifest.json, favicon*.svg/png, apple-touch-icon.png, icon-*.png
-├── api/               # Vercel serverless functions
-│   ├── _lib.js        # shared logic (KB, providers, streaming, model listing)
-│   ├── chat/index.js  # POST /api/chat (stream + non-stream)
-│   ├── health/index.js # GET /api/health
-│   └── models/index.js # GET|POST /api/models
+├── api/                 # Vercel serverless functions (Node 20, ESM)
+│   ├── _lib.js          # shared logic (KB, providers, streaming, model listing, rate limiting)
+│   ├── chat/index.js    # POST /api/chat (streaming + non-streaming, vision, rate limited)
+│   ├── health/index.js  # GET /api/health
+│   └── models/index.js  # GET|POST /api/models
 ├── scripts/
-│   └── dev-server.js  # local dev server mirroring Vercel /api/* (port 8787)
-├── vercel.json        # Vercel config (outputDirectory=public, function timeouts, headers)
-├── .env.example       # env vars template
-├── package.json
+│   └── dev-server.js    # local dev API mirror (port 8788; NEVER 8787 — that's Vite)
+├── tests/
+│   └── _lib.test.js     # Vitest unit tests (51 tests)
+├── vite.config.js       # Vite build config (ESM, code splitting)
+├── vercel.json          # Vercel config (build command, outputDirectory=dist, function timeouts, headers)
+├── api/openapi.yaml     # OpenAPI 3.0 specification
+├── .env.example         # environment variables template
+├── package.json         # Node ≥20, scripts: dev, build, test, lint
 └── .github/workflows/smoke.yml
 ```
 
-## Dev / Stack page ("Hobby")
+## Tech Stack Page
 
-- 38 technologies in 9 groups (languages, systems/Shell, P2P, private networks, AI, API, data formats, Identity/Web3, tools).
-- 38 custom SVG icons (symbols `t-*`), monoline style of the site, theme-aware (light/dark).
-- Filter chips + live search + counters (`public/assets/stack.js`), full translations uk/en/no, group labels also for 7 more languages.
-- The stack flows automatically into the AI assistant's knowledge base (siteContext → "Tech stack: …").
+- 38 technologies in 9 groups (Languages, Systems/Shell, P2P, Private Networks, AI/ML, APIs, Data Formats, Identity/Web3, Tools).
+- 38 custom SVG icons (`t-*`), monoline style, theme-aware (light/dark).
+- Filter chips + live search + counters (`src/stack.js`).
+- Full i18n: 10 languages (ar, de, en, es, fr, no, pl, ru, uk, zh), sorted alphabetically in the language selector with "Auto" option.
+- Stack automatically feeds into AI assistant's knowledge base (`siteContext → "Tech stack: …"`).
 
-## Deploy (once)
+## Contacts Page
 
-1. Vercel → Add New Project → import `portfolio` repo → Framework: Other.
-2. Environment Variables (Production + Preview):
+- 9 contact buttons rendered by `public/src/contacts.js` into `#contacts-content`:
+  LinkedIn, X, Facebook, Reddit, Discord, Telegram, Gmail (with copy-email button), FINN, Frilansbasen.
+- 9 custom monoline SVG icons (`c-linkedin`, `c-x`, `c-fb`, `c-reddit`, `c-discord`,
+  `c-tg`, `c-gmail`, `c-finn`, `c-frilans`) in `public/index.html`, theme-aware (light/dark).
+- Subtitle in 10 languages (re-rendered on `sh:lang` event).
+- Placeholder links (`href: "#"`) don't navigate — the card just shakes.
+  Replace them with real profile URLs in the `SH_CONTACTS` array (`public/src/contacts.js`):
+  `linkedin`, `x`, `facebook`, `reddit`, `discord`, `telegram`,
+  `gmail` (`href: "mailto:..."` + `copy` + `handle`), `finn`, `frilansbasen`.
+- Contacts text automatically feeds into the AI assistant's knowledge base
+  (`siteContext → "Contacts: …"`).
+
+## Deploy (One-time)
+
+1. Vercel → Add New Project → import `portfolio` repo → Framework: **Other**.
+2. Build Command: `npm run build` | Output Directory: `dist`
+3. Environment Variables (Production + Preview):
    - `OPENROUTER_API_KEY`, `GROQ_API_KEY`, `HF_TOKEN` (whichever you have)
-   - `OLLAMA_URL=https://your-public-ollama` (or empty — then local models go directly from the browser)
+   - `OLLAMA_URL=https://your-public-ollama` (optional — browser connects directly to local Ollama)
    - `OLLAMA_MODEL=llama3.1:8b`, `ALLOWED_ORIGINS=https://your-domain`
-3. Deploy. Verify: `https://your-domain/api/models`.
+4. Deploy. Verify: `https://your-domain/api/models`.
 
-## Why local models weren't visible
+## Local Models (Ollama)
 
-The Vercel server cannot see your `localhost` — different network. So:
+Vercel cannot reach your `localhost`. The browser probes `Ollama URL + /api/tags` directly:
+- Cloud models (OpenRouter/Groq/HF): via Vercel env; `GET /api/models` returns live lists.
+- Local Ollama: set URL in chat sidebar (localStorage, not a secret). `OLLAMA_URL` in env is optional.
+- Requirements: `OLLAMA_ORIGINS=* ollama serve`, `ollama pull llama3.1:8b`.
+- Mobile access: use a tunnel (ngrok, Cloudflare Tunnel, Tailscale Funnel).
 
-- Cloud models (OpenRouter/Groq/HF): only via Vercel env; `GET /api/models` returns live lists.
-- Local Ollama: the browser probes `your Ollama URL + /api/tags` directly and models appear automatically. The `Ollama URL` field in the chat sidebar (not a secret, localStorage). `OLLAMA_URL` in env is optional.
-- Local conditions: `OLLAMA_ORIGINS=* ollama serve`, `ollama list` shows installed ones; from a phone use a tunnel URL (ngrok / Cloudflare Tunnel / Tailscale Funnel).
+## AI Chat — Full Assistant (ChatGPT/Gemini-like)
 
-## Chat — full AI (like ChatGPT / Gemini)
+- **Dual mode**: questions about Serhii/the site → answered only from site info (DOM + `docs/cv.txt`); all other topics → general AI.
+- **Vision**: attach images (paperclip) → resized to 1024px, sent as `image_url` (OpenRouter/Groq/HF) or `images` (Ollama). Vision models: `llama3.2-vision`, `llava`, `llama-3.2-11b-vision-preview`, `meta-llama/llama-3.2-11b-vision-instruct:free`.
+- **Streaming**: token-by-token via SSE (`/api/chat`, maxDuration 60s); Ollama direct from browser with fallback.
+- **Files**: txt/md/pdf/json/csv/code up to 4MB → text in context.
+- **Voice**: speech-to-text input, text-to-speech output.
+- **History**: persistent sessions (localStorage), export/copy.
+- **Rate limiting**: 30 requests/minute per IP on `/api/chat`.
 
-- **Any topic**: the system runs in dual mode — questions about Serhii/the site are answered only from site info (DOM + `docs/cv.txt`); all other questions (code, explanations, creativity, math, plans, etc.) are answered freely as a general AI.
-- **Images (vision)**: attach a picture with the paperclip — it is resized to 1024px (canvas) and sent to the model in OpenAI `image_url` format (OpenRouter/Groq/HF) or `images` (Ollama). For image analysis pick a vision model: Ollama `llama3.2-vision` / `llava`, Groq `llama-3.2-11b-vision-preview`, OpenRouter `meta-llama/llama-3.2-11b-vision-instruct:free`. A hint appears when you attach an image.
-- **Streaming**: replies arrive token-by-token (SSE via `/api/chat`; for Ollama — directly from the browser, fallback to non-stream). `api/chat` maxDuration 60s.
-- Files (txt/md/pdf/json/csv/code up to 4MB → text in context), voice input, text-to-speech, chat history.
-- Knowledge about Serhii comes only from the site; keys only in Vercel env; Ollama URL in the sidebar field.
+## Local Development
 
-## Local
+```bash
+npm install          # install deps (Vite, Vitest, ESLint)
+npm run dev          # concurrent: API (8788) + Vite frontend (8787)
+npm run dev:api      # API only
+npm run dev:frontend # Vite only
+npm run build        # production build to dist/
+npm run test         # Vitest (51 tests)
+npm run lint         # ESLint
+```
 
-`node scripts/dev-server.js` (:8787, `/api/health`, `/api/chat` (stream+non-stream), `/api/models`).
+## API Endpoints
+
+| Endpoint | Method | Description |
+|----------|--------|-------------|
+| `/api/chat` | POST | Streaming/non-streaming chat, vision, multi-provider fallback, rate limited |
+| `/api/models` | GET/POST | List models for all or specific provider |
+| `/api/health` | GET | Health check + provider status |
+
+See `api/openapi.yaml` for full OpenAPI 3.0 specification.
+
+## Widgets
+
+- **Radio**: 6 curated classical/ambient streams, geo-ordered, keyboard controls.
+- **TV**: 4 live HLS channels (DW, TRT World, France 24, Red Bull TV), PiP + fullscreen.
+- **News**: Infinite feed from HN, dev.to, Reddit, Lobsters, HackerNoon, Smashing Magazine; MyMemory translation, IntersectionObserver lazy load.
+
+## Architecture Highlights
+
+- **Zero runtime deps** in API (pure Node 20 `fetch`, `fs`, `path`).
+- **Rate limiting** in-memory with automatic cleanup (works on Vercel & local).
+- **JSDoc types** for all public APIs (`api/_lib.js`, `src/chat.js`).
+- **Vitest** unit tests for core logic (intent detection, KB building, message formatting).
+- **ESM + Vite** frontend with code splitting (vendor, i18n, chat, widgets, stack, news, app).
+- **PWA** ready: manifest, service worker, install prompt.
+- **Security headers**: CSP-ready, `X-Content-Type-Options`, `X-Frame-Options`, `Referrer-Policy`.

@@ -1,0 +1,405 @@
+openapi: 3.0.3
+info:
+  title: SH Portfolio API
+  version: 1.0.0
+  description: |
+    API for Serhii Hordiichuk's portfolio site with AI assistant.
+    Provides chat completion, model listing, and health check endpoints.
+  contact:
+    name: Serhii Hordiichuk
+    url: https://serhii-portfolio.example.com
+servers:
+  - url: https://your-domain.vercel.app
+    description: Production (Vercel)
+  - url: http://localhost:8787
+    description: Local development
+components:
+  securitySchemes:
+    ApiKeyAuth:
+      type: apiKey
+      in: header
+      name: Authorization
+      description: Bearer token for API authentication (set in Vercel env, not sent by client)
+  schemas:
+    Error:
+      type: object
+      properties:
+        error:
+          type: string
+          example: "All providers failed. openrouter: key not set in Vercel env"
+    ChatMessage:
+      type: object
+      required:
+        - role
+        - content
+      properties:
+        role:
+          type: string
+          enum: [system, user, assistant]
+          example: "user"
+        content:
+          oneOf:
+            - type: string
+              example: "Hello, how are you?"
+            - type: array
+              items:
+                type: object
+                properties:
+                  type:
+                    type: string
+                    enum: [text, image_url]
+                  text:
+                    type: string
+                  image_url:
+                    type: object
+                    properties:
+                      url:
+                        type: string
+                        format: uri
+                        example: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
+    Attachment:
+      type: object
+      properties:
+        name:
+          type: string
+          example: "document.pdf"
+        text:
+          type: string
+          example: "File content here..."
+        image:
+          type: string
+          format: uri
+          example: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAA..."
+        kind:
+          type: string
+          enum: [text, image, file]
+        size:
+          type: integer
+          example: 102400
+    ChatRequest:
+      type: object
+      required:
+        - messages
+      properties:
+        messages:
+          type: array
+          items:
+            $ref: '#/components/schemas/ChatMessage'
+          maxItems: 12
+          description: "Chat history (last 12 messages used)"
+        provider:
+          type: string
+          enum: [auto, openrouter, groq, hf, huggingface, ollama]
+          default: auto
+          description: "AI provider to use. 'auto' tries ollama, openrouter, groq, hf in order"
+        model:
+          type: string
+          default: "auto"
+          description: "Model name. Use 'auto' for provider default"
+        stream:
+          type: boolean
+          default: false
+          description: "Enable Server-Sent Events streaming"
+        siteContext:
+          type: string
+          description: "Live page snapshot for context (injected by client)"
+        ollamaUrl:
+          type: string
+          format: uri
+          description: "Ollama base URL (for ollama provider, not a secret)"
+        attachments:
+          type: array
+          items:
+            $ref: '#/components/schemas/Attachment'
+          maxItems: 3
+          description: "File attachments (max 3, images auto-compressed to 1024px)"
+    ChatResponse:
+      type: object
+      properties:
+        reply:
+          type: string
+          example: "Hello! I'm doing well, thank you for asking."
+        via:
+          type: string
+          example: "proxy:openrouter"
+    ModelInfo:
+      type: object
+      properties:
+        models:
+          type: array
+          items:
+            type: string
+          example: ["meta-llama/llama-3.1-8b-instruct:free", "google/gemma-2-9b-it:free"]
+        via:
+          type: string
+          example: "openrouter-api"
+        configured:
+          type: boolean
+          example: true
+        error:
+          type: string
+          example: "OPENROUTER_API_KEY not set in Vercel env"
+    ModelsResponse:
+      type: object
+      properties:
+        provider:
+          type: string
+        configured:
+          type: boolean
+        models:
+          type: array
+          items:
+            type: string
+        via:
+          type: string
+        error:
+          type: string
+    ProvidersResponse:
+      type: object
+      properties:
+        providers:
+          type: object
+          additionalProperties:
+            $ref: '#/components/schemas/ModelInfo'
+    HealthResponse:
+      type: object
+      properties:
+        ok:
+          type: boolean
+          example: true
+        ollamaModel:
+          type: string
+          example: "llama3.1:8b"
+        providers:
+          type: object
+          properties:
+            ollama:
+              type: boolean
+            openrouter:
+              type: boolean
+            groq:
+              type: boolean
+            hf:
+              type: boolean
+  parameters:
+    providerQuery:
+      name: provider
+      in: query
+      schema:
+        type: string
+        enum: [openrouter, groq, hf, huggingface, ollama]
+      description: "Provider to query (optional, returns all if omitted)"
+    ollamaUrlQuery:
+      name: ollamaUrl
+      in: query
+      schema:
+        type: string
+        format: uri
+      description: "Ollama base URL (for ollama provider)"
+paths:
+  /api/chat:
+    post:
+      summary: Chat completion (streaming or non-streaming)
+      description: |
+        Send a chat completion request. Supports multiple AI providers with automatic fallback.
+        For streaming, returns Server-Sent Events (text/event-stream).
+        For non-streaming, returns JSON.
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/ChatRequest'
+      responses:
+        '200':
+          description: Successful response (non-streaming)
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/ChatResponse'
+        '200':
+          description: Streaming response (text/event-stream)
+          content:
+            text/event-stream:
+              schema:
+                type: string
+              example: |
+                data: {"via":"openrouter"}
+                data: {"d":"Hello"}
+                data: {"d":"!"}
+                data: {"done":true}
+        '400':
+          description: Bad request
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: "empty messages"
+        '405':
+          description: Method not allowed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '429':
+          description: Rate limited (30 requests/minute per IP)
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  error:
+                    type: string
+                  retryAfter:
+                    type: integer
+              example:
+                error: "Rate limit exceeded. Please try again later."
+                retryAfter: 45
+        '502':
+          description: All providers failed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: "All providers failed. openrouter: key not set in Vercel env"
+      x-vercel-max-duration: 60
+  /api/models:
+    get:
+      summary: List available models for all or specific provider
+      description: |
+        Returns available models from configured providers. Cloud models require API keys in Vercel env.
+        Ollama models are probed from the server (Vercel cannot reach localhost) or client can pass ollamaUrl.
+      security:
+        - ApiKeyAuth: []
+      parameters:
+        - $ref: '#/components/parameters/providerQuery'
+        - $ref: '#/components/parameters/ollamaUrlQuery'
+      responses:
+        '200':
+          description: Models list
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ProvidersResponse'
+                  - $ref: '#/components/schemas/ModelsResponse'
+              examples:
+                all-providers:
+                  summary: All providers (no provider specified)
+                  value:
+                    providers:
+                      openrouter:
+                        configured: true
+                        models:
+                          - meta-llama/llama-3.1-8b-instruct:free
+                          - google/gemma-2-9b-it:free
+                        via: openrouter-api
+                      groq:
+                        configured: true
+                        models:
+                          - llama-3.1-8b-instant
+                        via: groq-api
+                      hf:
+                        configured: false
+                        models: []
+                        via: none
+                        error: "HF_TOKEN not set in Vercel env"
+                      ollama:
+                        configured: false
+                        models: []
+                        via: none
+                        error: "OLLAMA_URL not set in Vercel env"
+                single-provider:
+                  summary: Single provider (provider=openrouter)
+                  value:
+                    provider: openrouter
+                    configured: true
+                    models:
+                      - meta-llama/llama-3.1-8b-instruct:free
+                    via: openrouter-api
+        '400':
+          description: Unknown provider
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+              example:
+                error: "unknown provider"
+                providers:
+                  - openrouter
+                  - groq
+                  - hf
+                  - huggingface
+                  - ollama
+        '405':
+          description: Method not allowed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-vercel-max-duration: 20
+    post:
+      summary: List available models (POST variant)
+      description: Same as GET but accepts provider and ollamaUrl in request body
+      security:
+        - ApiKeyAuth: []
+      requestBody:
+        content:
+          application/json:
+            schema:
+              type: object
+              properties:
+                provider:
+                  type: string
+                  enum: [openrouter, groq, hf, huggingface, ollama]
+                ollamaUrl:
+                  type: string
+                  format: uri
+      responses:
+        '200':
+          description: Models list
+          content:
+            application/json:
+              schema:
+                oneOf:
+                  - $ref: '#/components/schemas/ProvidersResponse'
+                  - $ref: '#/components/schemas/ModelsResponse'
+        '400':
+          description: Unknown provider
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+        '405':
+          description: Method not allowed
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+      x-vercel-max-duration: 20
+  /api/health:
+    get:
+      summary: Health check
+      description: |
+        Returns service health status and configured providers.
+        Checks Ollama connectivity if OLLAMA_URL is set.
+      responses:
+        '200':
+          description: Health status
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/HealthResponse'
+              example:
+                ok: true
+                ollamaModel: llama3.1:8b
+                providers:
+                  ollama: false
+                  openrouter: true
+                  groq: true
+                  hf: false
+      x-vercel-max-duration: 10
