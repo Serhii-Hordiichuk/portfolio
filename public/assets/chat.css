@@ -111,11 +111,11 @@ html[dir=rtl] .pl-row{flex-direction:row-reverse}
   #chat .cx-center{padding:10px 12px calc(14px + env(safe-area-inset-bottom))}
 }
 @media(max-width:640px){:root{--hdr:54px}}
-/* ---- mobile: burger menu ---- */
+/* ---- mobile: burger menu (tablets only) ---- */
 #menu-btn{display:none}
 .menu-btn{width:38px;height:38px;border-radius:9px;border:1px solid var(--line);background:var(--bg);color:var(--fg);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;padding:0}
 .menu-btn:hover{border-color:var(--fg)}
-@media(max-width:720px){
+@media(max-width:760px) and (min-width:641px){
 #menu-btn{display:inline-flex}
 .nav{display:none}
 .nav.open{display:flex;position:absolute;left:0;right:0;top:54px;background:var(--bg);border-bottom:1px solid var(--line);flex-direction:column;align-items:stretch;padding:6px;z-index:1500;box-shadow:0 10px 30px rgba(0,0,0,.12)}

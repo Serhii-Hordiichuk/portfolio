@@ -1,6 +1,6 @@
 {
   "buildCommand": null,
-  "outputDirectory": ".",
+  "outputDirectory": "public",
   "framework": null,
   "functions": {
     "api/chat/index.js": {

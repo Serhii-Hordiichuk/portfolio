@@ -56,18 +56,22 @@ const fab = $("#fab"); if (fab) fab.classList.remove("on");
 const nw = $("#news"); if (nw) nw.classList.remove("open");
 try { if (window.SH_NEWS) window.SH_NEWS.close(); } catch (e) {}
 const nav = $(".nav"); if (nav) nav.classList.remove("open");
+const mb = $("#menu-btn"); if (mb) mb.setAttribute("aria-expanded", "false");
 document.body.classList.toggle("locked", id === "chat");
 window.scrollTo(0, 0); store.set("sh.tab", id);
 }
 $$("[data-nav]").forEach((b) => b.addEventListener("click", (e) => { e.preventDefault(); show(b.getAttribute("data-nav")); }));
 const menuBtn = $("#menu-btn");
-if (menuBtn) menuBtn.addEventListener("click", (e) => { e.stopPropagation(); const nav = $(".nav"); if (nav) nav.classList.toggle("open"); });
-var gear = $("#gear");
-if (gear) gear.addEventListener("click", (e) => { e.stopPropagation(); $("#panel").classList.toggle("open"); });
+if (menuBtn) menuBtn.addEventListener("click", (e) => { e.stopPropagation(); const nav = $(".nav"); if (nav) { nav.classList.toggle("open"); menuBtn.setAttribute("aria-expanded", nav.classList.contains("open") ? "true" : "false"); } });
 document.addEventListener("click", (e) => {
+  const nav = $(".nav");
+  if (nav && nav.classList.contains("open") && !nav.contains(e.target) && e.target.id !== "menu-btn") nav.classList.remove("open");
+  const mb = $("#menu-btn"); if (mb) mb.setAttribute("aria-expanded", nav && nav.classList.contains("open") ? "true" : "false");
   var p = $("#panel");
   if (p && !p.contains(e.target) && e.target.id !== "gear" && !e.target.closest("#gear")) p.classList.remove("open");
 });
+var gear = $("#gear");
+if (gear) gear.addEventListener("click", (e) => { e.stopPropagation(); $("#panel").classList.toggle("open"); });
 var langSel = $("#lang-select");
 if (langSel) {
   if (!window.SH_I18N[langSel.value]) langSel.value = lang;

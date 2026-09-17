@@ -11,7 +11,7 @@ export function siteKB() {
   if (process.env.SITE_KB) return String(process.env.SITE_KB).slice(0, 6000);
   try {
     const here = path.dirname(fileURLToPath(import.meta.url));
-    const cands = [path.join(here, "..", "docs", "cv.txt"), path.join(process.cwd(), "docs", "cv.txt")];
+    const cands = [path.join(here, "..", "public", "docs", "cv.txt"), path.join(process.cwd(), "public", "docs", "cv.txt"), path.join(process.cwd(), "docs", "cv.txt")];
     for (const p of cands) {
       if (fs.existsSync(p)) {
         const t = fs.readFileSync(p, "utf8").trim();

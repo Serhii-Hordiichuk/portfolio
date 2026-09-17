@@ -7,9 +7,10 @@ import http from "node:http";
 import fs from "node:fs";
 import path from "node:path";
 import { fileURLToPath } from "node:url";
-import { siteKB, buildKB, listModels, ollamaBase, ollamaModel, chatOAI, chatOllama, streamOAISSE, streamOllamaChat, buildLLMMessages, detectIntent } from "./api/_lib.js";
+import { siteKB, buildKB, listModels, ollamaBase, ollamaModel, chatOAI, chatOllama, streamOAISSE, streamOllamaChat, buildLLMMessages, detectIntent } from "../api/_lib.js";
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
+const PUBLIC = path.join(__dirname, "..", "public");
 const PORT = Number(process.env.PORT || 8787);
 const ALLOWED = (process.env.ALLOWED_ORIGINS || "*").split(",").map((s) => s.trim());
 
@@ -113,8 +114,8 @@ const server = http.createServer(async (req, res) => {
   }
   if (req.method === "GET") {
     const rel = u.pathname === "/" ? "/index.html" : u.pathname;
-    const fp = path.join(__dirname, path.normalize(rel).replace(/^\//, ""));
-    if (fp.startsWith(__dirname) && fs.existsSync(fp) && fs.statSync(fp).isFile()) {
+    const fp = path.join(PUBLIC, path.normalize(rel).replace(/^\//, ""));
+    if (fp.startsWith(PUBLIC) && fs.existsSync(fp) && fs.statSync(fp).isFile()) {
       const ext = path.extname(fp);
       const ct = { ".html": "text/html", ".css": "text/css", ".js": "text/javascript", ".pdf": "application/pdf", ".txt": "text/plain", ".svg": "image/svg+xml", ".json": "application/json", ".webmanifest": "application/manifest+json", ".png": "image/png" }[ext] || "application/octet-stream";
       res.writeHead(200, { "Content-Type": ct });

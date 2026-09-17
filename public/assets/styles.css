@@ -35,8 +35,13 @@ a:hover{text-decoration:underline}
 .nav-btn{display:inline-flex;align-items:center;gap:8px;padding:9px 15px;border:0;border-radius:6px;background:transparent;color:var(--mut);font:600 13px inherit;cursor:pointer;white-space:nowrap}
 .nav-btn:hover{background:var(--soft);color:var(--fg)}
 .nav-btn.active{background:var(--fg);color:var(--bg)}
-.gear{width:40px;height:40px;border-radius:50%;border:0;background:transparent;color:var(--fg);cursor:pointer;font-size:18px}
+.gear{width:40px;height:40px;border-radius:50%;border:0;background:transparent;color:var(--fg);cursor:pointer;font-size:18px;margin-left:auto;flex-shrink:0}
 .gear:hover{background:var(--soft)}
+.menu-btn{display:none;align-items:center;justify-content:center;width:40px;height:40px;border-radius:50%;border:0;background:transparent;color:var(--fg);cursor:pointer;flex-shrink:0}
+.menu-btn:hover{background:var(--soft)}
+.nav.open{display:flex;position:fixed;top:54px;right:14px;left:auto;width:auto;max-width:calc(100vw - 28px);flex-direction:column;gap:4px;padding:8px;background:var(--card);border:1px solid var(--line);border-radius:10px;box-shadow:0 18px 50px rgba(0,0,0,.22);z-index:1001;overflow:hidden}
+.nav.open .nav-btn{width:100%;justify-content:flex-start;border-radius:8px}
+.nav.open .nav-btn span{display:inline}
 .panel{position:fixed;top:70px;right:20px;width:340px;max-width:calc(100vw - 24px);background:var(--card);border:1px solid var(--line);border-radius:10px;box-shadow:0 24px 60px rgba(0,0,0,.18);padding:8px;display:none;z-index:1001}
 .panel.open{display:block}
 .sec{padding:12px 14px;border-bottom:1px solid var(--line)}
@@ -83,8 +88,8 @@ ul.dots{padding-left:18px}
   .wrap{padding:72px 40px;max-width:920px}
   .wrap.narrow{max-width:700px}
 }
-@media(max-width:760px){.logo span{display:none}.wrap{padding:36px 18px 110px}.hero-wrap{padding-top:10vh}}
-@media(max-width:640px){body{padding-top:54px}.header{height:54px}.section{min-height:calc(100dvh - 54px)}}
+@media(max-width:760px) and (min-width:641px){.menu-btn{display:inline-flex}.nav{display:none}}
+@media(max-width:640px){body{padding-top:54px}.header{height:54px}.section{min-height:calc(100dvh - 54px)}.logo span{display:none}.wrap{padding:36px 18px 110px}.hero-wrap{padding-top:10vh}.menu-btn{display:none}.nav{display:flex;flex:1;gap:4px;margin-left:8px}.nav-btn span{display:none}.nav-btn{padding:0;width:40px;height:40px;border-radius:50%;justify-content:center}}
 @media print{.header,.panel,#cover,#hobby,#chat,.actions,.player{display:none!important}#official{display:block!important}}
 /* ===== Dev / Tech stack ===== */
 .st-title{font-size:11px;letter-spacing:3px;text-transform:uppercase;border-bottom:1px solid var(--fg);padding-bottom:8px;margin:36px 0 10px}
