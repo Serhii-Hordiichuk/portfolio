@@ -20,7 +20,7 @@ portfolio/
 ├── scripts/
 │   └── dev-server.js    # local dev API mirror (port 8788; NEVER 8787 — that's Vite)
 ├── tests/
-│   └── _lib.test.js     # Vitest unit tests (51 tests)
+│   └── _lib.test.js     # Vitest unit tests (57 tests)
 ├── vite.config.js       # Vite build config (ESM, code splitting)
 ├── vercel.json          # Vercel config (build command, outputDirectory=dist, function timeouts, headers)
 ├── api/openapi.yaml     # OpenAPI 3.0 specification
@@ -87,7 +87,7 @@ npm run dev          # concurrent: API (8788) + Vite frontend (8787)
 npm run dev:api      # API only
 npm run dev:frontend # Vite only
 npm run build        # production build to dist/
-npm run test         # Vitest (51 tests)
+npm run test         # Vitest (57 tests)
 npm run lint         # ESLint
 ```
 
