@@ -94,37 +94,38 @@ describe('api/_lib.js', () => {
   });
 
   describe('buildKB', () => {
-    it('includes base knowledge in output', () => {
+    it('encodes golden rules: name, maker, language, brevity', () => {
       const kb = lib.buildKB('', [], 'general');
-      expect(kb).toContain('Serhii Hordiichuk');
-      expect(kb).toContain('DUAL MODE');
+      expect(kb).toContain('.sh_ai');
+      expect(kb).toContain('serhord.dev');
+      expect(kb).toContain('GOLDEN RULES');
+      expect(kb).toContain('switch');
+      expect(kb).toContain('no filler');
+      expect(kb).toContain('offer to explain');
+      expect(kb).not.toContain('Serhii Hordiichuk');
+      expect(kb).not.toContain('DUAL MODE');
+      expect(kb).not.toContain('SITE INFO');
     });
 
     it('includes extra context when provided', () => {
       const kb = lib.buildKB('Extra context here', [], 'general');
-      expect(kb).toContain('LIVE PAGE SNAPSHOT');
+      expect(kb).toContain('Additional context');
       expect(kb).toContain('Extra context here');
     });
 
     it('truncates extra context to 4000 chars', () => {
       const longExtra = 'x'.repeat(5000);
       const kb = lib.buildKB(longExtra, [], 'general');
-      // KB includes base knowledge (~1000 chars) + system prompt (~1500 chars) + extra (4000 chars) + mode
-      // So total should be less than 5000 + 3000 = 8000
+      // KB is base prompt (~300 chars) + extra (4000 chars)
       expect(kb).not.toContain('x'.repeat(5000));
-      expect(kb.length).toBeLessThan(8000);
+      expect(kb.length).toBeLessThan(5000);
     });
 
-    it('includes site intent mode for "site" intent', () => {
-      const kb = lib.buildKB('', [], 'site');
-      expect(kb).toContain('INTENT: the user is asking about Serhii or this site');
-      expect(kb).toContain('do NOT invent');
-    });
-
-    it('includes general intent mode for "general" intent', () => {
-      const kb = lib.buildKB('', [], 'general');
-      expect(kb).toContain('INTENT: general topic');
-      expect(kb).toContain('answer freely like ChatGPT');
+    it('ignores intent branching (same neutral prompt)', () => {
+      const site = lib.buildKB('', [], 'site');
+      const general = lib.buildKB('', [], 'general');
+      expect(site).toBe(general);
+      expect(site).not.toContain('INTENT');
     });
 
     it('includes file attachments in output', () => {

@@ -316,25 +316,25 @@ function exportSession(): void {
 /* ---------- greeting + suggestions ---------- */
 const GREETS: Record<string, string[]> = {
   uk: [
-    'Привіт, я sh_ai, чим можу допомогти сьогодні?',
-    'Привіт, я sh_ai, що будемо досліджувати?',
-    'Привіт, я sh_ai, з чого почнемо?',
-    'Привіт, я sh_ai, що створимо разом?',
-    'Привіт, я sh_ai, про що поговоримо?',
-    'Привіт, я sh_ai, який у нас план?',
+    'Привіт, я .sh_ai, чим можу допомогти сьогодні?',
+    'Привіт, я .sh_ai, що будемо досліджувати?',
+    'Привіт, я .sh_ai, з чого почнемо?',
+    'Привіт, я .sh_ai, що створимо разом?',
+    'Привіт, я .sh_ai, про що поговоримо?',
+    'Привіт, я .sh_ai, який у нас план?',
   ],
   en: [
-    'Hi, I\'m sh_ai, how can I help today?',
-    'Hi, I\'m sh_ai, what shall we explore?',
-    'Hi, I\'m sh_ai, where do we start?',
-    'Hi, I\'m sh_ai, what will we build?',
-    'Hi, I\'m sh_ai, what shall we talk about?',
+    'Hi, I\'m .sh_ai, how can I help today?',
+    'Hi, I\'m .sh_ai, what shall we explore?',
+    'Hi, I\'m .sh_ai, where do we start?',
+    'Hi, I\'m .sh_ai, what will we build?',
+    'Hi, I\'m .sh_ai, what shall we talk about?',
   ],
   no: [
-    'Hei, jeg er sh_ai, hvordan kan jeg hjelpe i dag?',
-    'Hei, jeg er sh_ai, hva skal vi utforske?',
-    'Hei, jeg er sh_ai, hvor begynner vi?',
-    'Hei, jeg er sh_ai, hva skal vi lage?',
+    'Hei, jeg er .sh_ai, hvordan kan jeg hjelpe i dag?',
+    'Hei, jeg er .sh_ai, hva skal vi utforske?',
+    'Hei, jeg er .sh_ai, hvor begynner vi?',
+    'Hei, jeg er .sh_ai, hva skal vi lage?',
   ],
 };
 let typeTimer = 0;

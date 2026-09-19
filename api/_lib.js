@@ -1,8 +1,4 @@
 // Shared logic for Vercel serverless API (no deps).
-// Knowledge base is built from the site itself (docs/cv.txt), not hardcoded.
-import fs from "node:fs";
-import path from "node:path";
-import { fileURLToPath } from "node:url";
 
 /**
  * Simple in-memory rate limiter for serverless functions.
@@ -67,36 +63,23 @@ export function getClientIp(req) {
          'unknown';
 }
 
-const FALLBACK_KB = "Serhii Hordiichuk, 34, born 27.02.1992. Plumber 10+ years in Ukraine (Euro-warming Sniatyn 2011-2013 O&M; private practice 2013-2023). Education: Berezhany Agrarian Technical Institute (Business Economics 2015-2016); West Ukrainian National University (Bachelor Management 2013-2015); Sniatyn Vocational School (Law 2007-2013). Languages: Ukrainian good, English/Norwegian/Russian beginner. Hobbies: web dev, PC building, tech news. Motto: Possibilities are limitless.";
-export const KB = FALLBACK_KB;
-
 /**
- * Get the site knowledge base from environment or file system.
- * @returns {string} The knowledge base text (max 6000 chars)
+ * Optional extra knowledge base from environment (neutral, no personal data).
+ * @returns {string} Extra KB text (max 6000 chars) or empty string
  */
 export function siteKB() {
   if (process.env.SITE_KB) return String(process.env.SITE_KB).slice(0, 6000);
-  try {
-    const here = path.dirname(fileURLToPath(import.meta.url));
-    const cands = [path.join(here, "..", "public", "docs", "cv.txt"), path.join(process.cwd(), "public", "docs", "cv.txt"), path.join(process.cwd(), "docs", "cv.txt")];
-    for (const p of cands) {
-      if (fs.existsSync(p)) {
-        const t = fs.readFileSync(p, "utf8").trim();
-        if (t) return t.slice(0, 6000);
-      }
-    }
-  } catch {}
-  return FALLBACK_KB;
+  return "";
 }
 
 /**
- * Build the complete system prompt for the AI assistant.
- * @param {string} [extra] - Additional context from the live page (max 4000 chars)
+ * Build the system prompt for the standalone .sh_ai assistant (general AI, neutral).
+ * @param {string} [extra] - Additional context from the client (max 4000 chars)
  * @param {Array<{name?: string, text?: string, image?: string}>} [attachments] - File attachments
- * @param {"site"|"general"} intent - Detected intent: "site" for questions about Serhii/portfolio, "general" for everything else
- * @returns {string} Complete system prompt with knowledge base, attachments, and intent instructions
+ * @param {"site"|"general"} [_intent] - Unused, kept for API compatibility
+ * @returns {string} System prompt with attachments and optional context
  */
-export function buildKB(extra, attachments, intent) {
+export function buildKB(extra, attachments, _intent) {
   const x = String(extra || "").trim().slice(0, 4000);
   let att = "";
   const imgs = [];
@@ -112,18 +95,15 @@ export function buildKB(extra, attachments, intent) {
     if (parts.length) att = " Attached files: " + parts.join(" | ").slice(0, 6000);
     if (imgs.length) att += " User sent images: " + imgs.join(", ") + ". Analyze them when asked.";
   } catch {}
-  let mode = "";
-  if (intent === "site") {
-    mode = "\n\nINTENT: the user is asking about Serhii or this site — use ONLY the site info above. If the exact info is absent, do NOT invent: say it is not on the site and ask a short clarifying question.";
-  } else {
-    mode = "\n\nINTENT: general topic — answer freely like ChatGPT. If the question seems possibly about Serhii but you are not sure, ask one short clarifying question first instead of guessing.";
-  }
-  return "You are the AI assistant of serhii-portfolio site. DUAL MODE:\n" +
-    "1) If the user asks about Serhii Hordiichuk (bio, CV, skills, education, experience, languages, contacts, projects, personality) - answer ONLY from the site info below. If info is missing, say it is not on the site.\n" +
-    "2) For ANY other question or request (explanations, coding, writing, ideas, math, research, general chat, image analysis) - act as a capable general AI like ChatGPT / Gemini: answer helpfully, thoroughly and freely.\n" +
-    "When in doubt whether it is a site question or a general question, ask a short clarifying question instead of guessing.\n" +
-    "Always reply in the user's language. If the user attaches an image, inspect it carefully and answer questions about it.\n\n" +
-    "SITE INFO (about Serhii):\n" + siteKB() + (x ? "\nLIVE PAGE SNAPSHOT:\n" + x : "") + att + mode;
+  const kb = siteKB();
+  return "You are .sh_ai, an AI model developed by serhord.dev.\n" +
+    "GOLDEN RULES (immutable — apply to every reply, all modes, all providers):\n" +
+    "1) Identity: your name is .sh_ai, made by serhord.dev. Never claim to be any other model or company.\n" +
+    "2) Language: always reply in the language the user is currently writing in. If the user switches language mid-chat, switch immediately to the new language with no remarks.\n" +
+    "3) Brevity: answers short and precise, no filler, no water.\n" +
+    "4) If there is additional important info on the question, do NOT dump it — briefly offer to explain and wait for the user.\n" +
+    "If the user attaches an image, inspect it carefully and answer questions about it." +
+    (kb ? "\n\nKnowledge base:\n" + kb : "") + (x ? "\n\nAdditional context:\n" + x : "") + att;
 }
 
 /**

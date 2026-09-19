@@ -8,7 +8,7 @@
 - **Resume** (`/#resume`) — CV з `src/data/cv.ts` (10 мов), кнопка PDF (`public/docs/`)
 - **Stack** (`/#stack`) — 38 технологій у 9 групах, пошук + фільтр (`src/data/stack.ts`)
 - **Contacts** (`/#contacts`) — 9 каналів (`src/data/contacts.ts`)
-- **Assistant** (`/sh_ai` (додаток `apps/sh_ai`), окрема сторінка без хедера портфоліо) — повноцінний ШІ-чат:
+- **Assistant** (`/sh_ai`, додаток `apps/.sh_ai`), окрема сторінка без хедера портфоліо) — повноцінний ШІ-чат:
   Gemini-стиль (щоразу різне анімоване привітання, ввод під ним), топбар без ліній:
   зліва dropdown Flash (Groq) / Deep (OpenRouter, модель з апі) / Uncensored (приватна Ollama з `.env`),
   справа тумблер запису в історію. shadcn Sidebar тільки з чатами, icon-rail, бульбашки.
@@ -23,14 +23,14 @@
 ```
 portfolio/
 ├── src/
-│   ├── pages/index.astro + sh_ai.astro (/sh_ai → apps/sh_ai/App.astro)
+│   ├── pages/index.astro + sh_ai.astro (/sh_ai → apps/.sh_ai/App.astro)
 │   ├── layouts/Base.astro
 │   ├── components/Header|Hero|Resume|Stack|Contacts|Icons.astro
 │   ├── data/i18n.ts (10 мов: uk,en,no,de,fr,es,pl,ru,zh,ar)
 │   ├── data/cv.ts | contacts.ts | stack.ts
 │   ├── scripts/app.ts (головна: мова, тема, CV, фільтр)
 │   └── styles/global.css (монохром)
-├── apps/sh_ai/ (окремий додаток: App.astro, ui/, scripts/, styles/ — див. apps/sh_ai/README.md)
+├── apps/.sh_ai/ (окремий додаток: App.astro, ui/, scripts/, styles/ — див. apps/.sh_ai/README.md)
 ├── public/ (favicons, manifest.json, docs/cv.txt + PDF)
 ├── api/ (_lib.js, chat, health, models — ключі ТІЛЬКИ з env)
 ├── tests/ (53 тести: api _lib + CV)

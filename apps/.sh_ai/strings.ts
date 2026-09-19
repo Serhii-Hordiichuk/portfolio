@@ -1,4 +1,4 @@
-// sh_ai UI strings — self-contained, no personal data, no host imports.
+// .sh_ai UI strings — self-contained, no personal data, no host imports.
 export const SH_AI_STR: Record<string, { newChat: string; ph: string; search: string }> = {
   uk: { newChat: 'Новий чат', ph: 'Напишіть повідомлення…', search: 'Пошук…' },
   en: { newChat: 'New chat', ph: 'Type a message…', search: 'Search…' },

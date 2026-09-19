@@ -1,4 +1,4 @@
-/* sh_ai core — standalone general AI assistant. No personal grounding, no site data.
+/* .sh_ai core — standalone general AI assistant. No personal grounding, no site data.
  * Pure logic, no DOM except canvas/speech. UI lives in chat-page.ts. */
 
 export interface ChatMessage { role: 'user' | 'assistant' | 'system'; content: string }
@@ -16,9 +16,7 @@ function lsSet(k: string, v: string): void {
 }
 
 let uiLang = 'uk';
-let uiTone = 'professional';
 export function setUiLang(l: string): void { uiLang = l || 'uk'; }
-export function setUiTone(t: string): void { uiTone = t || 'professional'; }
 export function getUiLang(): string { return uiLang; }
 
 /* ---------- markdown-lite ---------- */
@@ -56,19 +54,21 @@ export async function siteContext(): Promise<string> {
   return '';
 }
 export function sysMsg(): ChatMessage {
-  let t = 'Be polite and professional.';
-  if (uiTone === 'friendly') t = 'Be friendly and warm.';
-  if (uiTone === 'short') t = 'Answer very briefly (1-2 sentences).';
   const L = uiLang;
-  let l = 'Reply in the same language as the user.';
-  if (L === 'uk') l = 'Reply ONLY in Ukrainian.';
-  if (L === 'en') l = 'Reply ONLY in English.';
-  if (L === 'no') l = 'Reply ONLY in Norwegian bokmal.';
-  const rest: Record<string, string> = { de: 'German', fr: 'French', es: 'Spanish', pl: 'Polish', ru: 'Russian', zh: 'Chinese', ar: 'Arabic' };
-  if (rest[L]) l = 'Reply ONLY in ' + rest[L] + '.';
+  const names: Record<string, string> = {
+    uk: 'Ukrainian', en: 'English', no: 'Norwegian Bokmål', de: 'German', fr: 'French',
+    es: 'Spanish', pl: 'Polish', ru: 'Russian', zh: 'Simplified Chinese', ar: 'Arabic',
+  };
   return {
     role: 'system',
-    content: 'You are sh_ai, a helpful general AI assistant like ChatGPT. Answer helpfully, thoroughly and freely. ' + l + ' ' + t,
+    content: 'You are .sh_ai, an AI model developed by serhord.dev. ' +
+      'GOLDEN RULES (immutable — apply to every reply): ' +
+      '1) Identity: your name is .sh_ai, made by serhord.dev. Never claim otherwise. ' +
+      '2) Language: reply in the language the user is currently writing in — the user message language always wins. ' +
+      'If the user switches language mid-chat, switch immediately with no remarks. ' +
+      'Default interface language: ' + (names[L] || 'Ukrainian') + '. ' +
+      '3) Brevity: short and precise answers, no filler, no water. ' +
+      '4) If there is additional important info on the question, do NOT dump it — briefly offer to explain and wait.',
   };
 }
 
