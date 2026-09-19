@@ -1,16 +1,12 @@
 ---
 import Base from '../layouts/Base.astro';
 import Header from '../components/Header.astro';
-import Hero from '../components/Hero.astro';
-import Stack from '../components/Stack.astro';
-import Contacts from '../components/Contacts.astro';
+import Resume from '../components/Resume.astro';
 ---
-<Base>
-  <Header />
+<Base title="Resume — Serhii Hordiichuk" description="Resume of Serhii Hordiichuk.">
+  <Header base="/" active="resume" />
   <main>
-    <Hero />
-    <Stack />
-    <Contacts />
+    <Resume />
   </main>
   <footer class="site-footer">
     <span>© <span id="year">2026</span> Serhii Hordiichuk</span>

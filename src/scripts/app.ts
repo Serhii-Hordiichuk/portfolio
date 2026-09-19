@@ -59,6 +59,15 @@ function applyTheme() {
   const m = store.get('sh.theme', 'auto');
   const dark = m === 'dark' || (m === 'auto' && matchMedia('(prefers-color-scheme: dark)').matches);
   document.body.classList.toggle('dark', dark);
+  renderThemeIcon();
+}
+
+function renderThemeIcon() {
+  const btn = $('#theme-btn');
+  if (!btn) return;
+  const m = store.get('sh.theme', 'auto');
+  const icon = m === 'dark' ? 'i-moon' : m === 'light' ? 'i-sun' : 'i-contrast';
+  btn.innerHTML = '<svg class="ic ic-lg"><use href="#' + icon + '"/></svg>';
 }
 
 function esc(s: unknown): string {
@@ -175,9 +184,12 @@ function initCopy() {
 function boot() {
   applyLang(store.get('sh.lang', 'auto'));
   applyTheme();
+  const yr = $('#year');
+  if (yr) yr.textContent = String(new Date().getFullYear());
   renderCV();
   initStack();
   initCopy();
+  $('#cv-print')?.addEventListener('click', () => window.print());
   const ls = $('#lang-select') as HTMLSelectElement | null;
   ls?.addEventListener('change', (e) => applyLang((e.target as HTMLSelectElement).value));
   $('#theme-btn')?.addEventListener('click', () => {

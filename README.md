@@ -5,7 +5,7 @@
 ## Розділи
 
 - **Hero** — ім'я, роль, статуси, CTA
-- **Resume** (`/#resume`) — CV з `src/data/cv.ts` (10 мов), кнопка PDF (`public/docs/`)
+- **Resume** (`/resume`) — CV з `src/data/cv.ts` (10 мов), кнопка «Завантажити PDF» друкує CV поточною мовою екрану (print → PDF, старого PDF-файлу більше немає)
 - **Stack** (`/#stack`) — 38 технологій у 9 групах, пошук + фільтр (`src/data/stack.ts`)
 - **Contacts** (`/#contacts`) — 9 каналів (`src/data/contacts.ts`)
 - **Assistant** (`/sh_ai`, додаток `apps/.sh_ai`), окрема сторінка без хедера портфоліо) — повноцінний ШІ-чат:
