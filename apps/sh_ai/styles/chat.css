@@ -69,7 +69,7 @@ body.dark .badge2.on .dot { background: #66bb6a; }
 .switch2 input:checked + .tr::after { transform: translateX(1rem); background: var(--primary-foreground); }
 
 /* ---------- Sidebar system (shadcn composition, collapsible="icon" on desktop) ---------- */
-.sb-provider { display: flex; min-height: 100dvh; }
+.sb-provider { display: flex; height: var(--vv-h, 100dvh); min-height: var(--vv-h, 100dvh); overflow: hidden; }
 .sb-overlay { position: fixed; inset: 0; background: rgba(0,0,0,.55); opacity: 0; pointer-events: none; transition: opacity .25s; z-index: 150; }
 .sb { position: fixed; top: 0; bottom: 0; left: 0; width: var(--sidebar-width-mobile); z-index: 160;
   background: var(--background); display: flex; flex-direction: column;
@@ -98,7 +98,7 @@ body.dark .badge2.on .dot { background: #66bb6a; }
   .sb-provider[data-collapsed="true"] .sb-footrow { flex-direction: column; align-items: center; }
   .sb-provider[data-collapsed="true"] .sb-footer { align-items: center; padding: .75rem .5rem; }
 }
-.sb-inset { flex: 1; min-width: 0; display: flex; flex-direction: column; }
+.sb-inset { flex: 1; min-width: 0; min-height: 0; height: var(--vv-h, 100dvh); display: flex; flex-direction: column; overflow: hidden; }
 .sb-header { padding: .875rem; display: flex; flex-direction: column; align-items: stretch; gap: .625rem; }
 .sb-toprow { display: flex; align-items: center; gap: .5rem; }
 .sb-brand { font-size: .8125rem; font-weight: 600; white-space: nowrap; }
@@ -134,7 +134,7 @@ body.dark .badge2.on .dot { background: #66bb6a; }
 .sb-trigger:hover { background: var(--accent); }
 
 /* ---------- Chat page (no divider lines — bubbles only) ---------- */
-.chat-scroll { flex: 1; overflow-y: auto; }
+.chat-scroll { flex: 1 1 auto; min-height: 0; overflow-y: auto; overscroll-behavior: contain; }
 .chat-inner { max-width: 760px; margin: 0 auto; padding: 1.25rem 1rem 1rem; display: flex; flex-direction: column; gap: .875rem; }
 .msg2 { display: flex; gap: .625rem; max-width: 100%; }
 .msg2.user { justify-content: flex-end; }
@@ -160,7 +160,7 @@ body.dark .badge2.on .dot { background: #66bb6a; }
 
 .filechip2 { display: flex; align-items: center; gap: .625rem; border: 1px solid var(--border); border-radius: 10px; padding: .5rem .625rem; background: var(--background); font-size: .75rem; }
 .filechip2 img { width: 2.5rem; height: 2.5rem; object-fit: cover; border-radius: 6px; }
-.composer2 { background: var(--background); }
+.composer2 { background: var(--background); flex-shrink: 0; }
 .composer2-inner { max-width: 760px; margin: 0 auto; padding: .75rem 1rem 1rem; display: flex; flex-direction: column; gap: .5rem; }
 .pending2 { display: none; gap: .5rem; flex-wrap: wrap; }
 .pending2.show { display: flex; }
@@ -193,7 +193,7 @@ body.dark .badge2.on .dot { background: #66bb6a; }
 .hint2 { font-size: .6875rem; color: var(--muted-foreground); line-height: 1.5; }
 
 /* ---------- topbar (no lines) + model dropdown (shadcn dropdown-menu) ---------- */
-.topbar2 { display: flex; align-items: center; gap: .5rem; padding: .625rem 1rem; }
+.topbar2 { display: flex; align-items: center; gap: .5rem; padding: .625rem 1rem; flex-shrink: 0; }
 .topbar2 .btn2 .ic { width: 14px; height: 14px; }
 .mode-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--foreground); flex-shrink: 0; }
 .dd { position: relative; }

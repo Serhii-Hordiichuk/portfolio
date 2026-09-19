@@ -659,6 +659,27 @@ async function fetchDeepModel(): Promise<void> {
   store.set('sh.deepModel', 'auto');
 }
 
+/* ---------- viewport: pin header + composer, follow mobile keyboard ---------- */
+function fitViewport(): void {
+  try {
+    const vv = window.visualViewport;
+    const h = vv ? Math.round(vv.height) : window.innerHeight;
+    document.documentElement.style.setProperty('--vv-h', h + 'px');
+  } catch {}
+}
+function viewportFix(): void {
+  try {
+    fitViewport();
+    const vv = window.visualViewport;
+    if (vv) {
+      vv.addEventListener('resize', fitViewport);
+      vv.addEventListener('scroll', fitViewport);
+    }
+    window.addEventListener('resize', fitViewport);
+    window.addEventListener('orientationchange', fitViewport);
+  } catch {}
+}
+
 /* ---------- boot ---------- */
 function boot(): void {
   applyLang(lang);
@@ -757,6 +778,7 @@ function boot(): void {
   renderSessions();
   newSession();
   autoresize();
+  viewportFix();
 }
 
 if (document.readyState === 'loading') document.addEventListener('DOMContentLoaded', boot);
