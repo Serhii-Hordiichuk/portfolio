@@ -53,6 +53,7 @@ h1.hero.sm { font-size: 30px; }
 .role { font-size: 14px; color: var(--mut); margin: 6px 0 22px; }
 .meta-row { display: flex; flex-wrap: wrap; gap: 8px; margin: 18px 0 26px; }
 .pill { font-size: 11px; letter-spacing: 1.5px; text-transform: uppercase; border: 1px solid var(--line); border-radius: 999px; padding: 7px 13px; color: var(--mut); background: var(--card); }
+a.pill:hover { text-decoration: none; color: var(--fg); border-color: var(--fg); }
 .pill.dot::before { content: ""; display: inline-block; width: 7px; height: 7px; border-radius: 50%; background: #2e7d32; margin-right: 8px; vertical-align: 1px; }
 body.dark .pill.dot::before { background: #66bb6a; }
 .actions { display: flex; gap: 10px; flex-wrap: wrap; margin-top: 22px; }
