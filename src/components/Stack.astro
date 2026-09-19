@@ -1,0 +1,37 @@
+---
+import { SH_STACK_GROUPS, SH_STACK } from '../data/stack';
+---
+<section class="block" id="stack">
+  <div class="wrap">
+    <div class="kicker">.sh / stack</div>
+    <h2 class="sec-title" data-i18n="stackT">Стек технологій</h2>
+    <p class="sec-sub" data-i18n="stackS">Навички та технології, з якими я працюю у світі IT</p>
+    <div class="st-bar">
+      <input id="st-q" class="st-q" type="search" data-i18n-ph="stSearch" placeholder="Пошук технології…" aria-label="search stack" />
+      <div class="st-chips" id="st-chips">
+        <button class="chip on" data-f="all" data-i18n="fAll">Усе</button>
+        {SH_STACK_GROUPS.map((g) => (
+          <button class="chip" data-f={g.id} data-i18n={g.titleKey}>{g.fallback}</button>
+        ))}
+      </div>
+    </div>
+    <div class="st-count" id="st-count"></div>
+    <div id="st-groups">
+      {SH_STACK_GROUPS.map((g) => (
+        <div class="st-group" data-g={g.id}>
+          <h3 class="st-h" data-i18n={g.titleKey} data-n="">{g.fallback}</h3>
+          <div class="st-grid">
+            {SH_STACK.filter((t) => t.group === g.id).map((t) => (
+              <div class="st-tile" data-tags={t.tags + ' ' + t.abbr.toLowerCase()} title={t.fallback}>
+                <svg class="ic st-ic"><use href={'#' + t.icon} /></svg>
+                <b>{t.abbr}</b>
+                <span data-i18n={t.labelKey}>{t.fallback}</span>
+              </div>
+            ))}
+          </div>
+        </div>
+      ))}
+    </div>
+    <div class="st-empty" id="st-empty" data-i18n="stNone">Нічого не знайдено — спробуй інший запит</div>
+  </div>
+</section>

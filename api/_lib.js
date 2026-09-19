@@ -379,7 +379,7 @@ export async function fetchJSON(url, key, timeoutMs) {
 
 /**
  * List available models for a provider.
- * @param {"openrouter"|"groq"|"hf"|"huggingface"|"ollama"} provider - Provider name
+ * @param {"openrouter"|"groq"|"ollama"} provider - Provider name
  * @param {string} [clientUrl] - Ollama URL (only used for ollama provider)
  * @returns {Promise<{models: string[], via: string}>} Available models and source
  */
@@ -401,14 +401,6 @@ export async function listModels(provider, clientUrl) {
     const ids = (d.data || []).map((m) => m && m.id).filter(Boolean);
     if (!ids.length) throw new Error("no models returned");
     return { models: ids.slice(0, 60), via: "groq-api" };
-  }
-  if (p === "hf" || p === "huggingface") {
-    const k = process.env.HF_TOKEN || "";
-    if (!k) throw new Error("HF_TOKEN not set in Vercel env");
-    const d = await fetchJSON("https://huggingface.co/api/models?pipeline_tag=text-generation&sort=likes&direction=-1&limit=30", k);
-    const ids = (Array.isArray(d) ? d : []).map((m) => m && m.id).filter(Boolean);
-    if (!ids.length) throw new Error("no models returned");
-    return { models: ids.slice(0, 30), via: "hf-api" };
   }
   if (p === "ollama") {
     const base = ollamaBase(clientUrl || "");

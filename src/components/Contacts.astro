@@ -1,0 +1,23 @@
+---
+import { SH_CONTACTS } from '../data/contacts';
+---
+<section class="block" id="contacts">
+  <div class="wrap narrow">
+    <div class="kicker">Contacts</div>
+    <h2 class="sec-title" data-i18n="navContacts">Контакти</h2>
+    <p class="sec-sub" data-i18n="contactSub">Звʼяжіться зі мною — оберіть зручний канал</p>
+    <div class="ct-grid">
+      {SH_CONTACTS.map((c) => (
+        <a class="ct-card" href={c.href} target="_blank" rel="noopener noreferrer">
+          <span class="ct-ic"><svg class="ic"><use href={'#' + c.icon} /></svg></span>
+          <span class="ct-tx"><b>{c.label}</b><i>{c.handle}</i></span>
+          {c.copy ? (
+            <button class="ct-copy" data-copy={c.copy} title="Copy" aria-label="copy"><svg class="ic"><use href="#i-copy"/></svg></button>
+          ) : (
+            <span class="ct-go" aria-hidden="true">↗</span>
+          )}
+        </a>
+      ))}
+    </div>
+  </div>
+</section>

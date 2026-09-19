@@ -1,0 +1,6 @@
+---
+// shadcn/ui Skeleton — vanilla Astro port.
+interface Props { w?: string; h?: string; cls?: string }
+const { w = '100%', h = '1rem', cls = '' } = Astro.props;
+---
+<div class={`skeleton2 ${cls}`} style={`width:${w};height:${h}`} aria-hidden="true"></div>

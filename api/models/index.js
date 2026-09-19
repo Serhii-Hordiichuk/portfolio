@@ -12,11 +12,11 @@ export default async function handler(req, res) {
   else if (req.method === "GET") { provider = (req.query && req.query.provider) || ""; ollamaUrl = (req.query && req.query.ollamaUrl) || ""; }
   else return res.status(405).json({ error: "GET or POST only" });
   provider = String(provider || "").toLowerCase();
-  const known = ["openrouter", "groq", "hf", "huggingface", "ollama"];
+  const known = ["openrouter", "groq", "ollama"];
   if (!provider) {
     // bulk: one call populates all dropdowns
     const out = {};
-    for (const p of ["openrouter", "groq", "hf", "ollama"]) {
+    for (const p of ["openrouter", "groq", "ollama"]) {
       try {
         const r = await listModels(p, p === "ollama" ? ollamaUrl : "");
         out[p] = { configured: true, models: r.models, via: r.via };
@@ -26,7 +26,6 @@ export default async function handler(req, res) {
     }
     return res.status(200).json({ providers: out });
   }
-  if (provider === "huggingface") provider = "hf";
   if (!known.includes(provider)) return res.status(400).json({ error: "unknown provider", providers: known });
   try {
     const r = await listModels(provider, provider === "ollama" ? ollamaUrl : "");

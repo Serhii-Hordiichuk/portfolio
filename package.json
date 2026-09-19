@@ -7,24 +7,23 @@
     "node": ">=20"
   },
   "scripts": {
-    "dev": "concurrently \"node scripts/dev-server.js\" \"vite --config vite.config.js\"",
+    "dev": "concurrently \"node scripts/dev-server.js\" \"astro dev\"",
     "dev:api": "node scripts/dev-server.js",
-    "dev:frontend": "vite --config vite.config.js",
-    "build": "vite build --config vite.config.js && node scripts/copy-static.js",
-    "preview": "vite preview --config vite.config.js",
+    "dev:astro": "astro dev",
+    "build": "astro build",
+    "preview": "astro preview",
     "test": "vitest run",
     "test:watch": "vitest",
-    "lint": "eslint . --ext .js"
+    "lint": "eslint api scripts tests --ext .js"
   },
   "devDependencies": {
+    "@types/node": "^26.6.1",
+    "astro": "^7.3.3",
     "concurrently": "^8.0.0",
-    "esbuild": "^0.28.2",
     "eslint": "^9.0.0",
     "globals": "^15.0.0",
-    "vite": "^8.3.0",
+    "typescript": "^7.0.2",
     "vitest": "^5.0.1"
   },
-  "dependencies": {
-    "hls.js": "^1.7.3"
-  }
+  "dependencies": {}
 }

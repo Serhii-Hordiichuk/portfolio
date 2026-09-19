@@ -76,7 +76,7 @@ const server = http.createServer(async (req, res) => {
       if (base) { const r = await fetch(base + "/api/tags"); ollama = r.ok; }
     } catch {}
     return json(res, 200, { ok: true, ollamaModel: ollamaModel(""),
-      providers: { ollama, openrouter: !!process.env.OPENROUTER_API_KEY, groq: !!process.env.GROQ_API_KEY, hf: !!process.env.HF_TOKEN } });
+      providers: { ollama, openrouter: !!process.env.OPENROUTER_API_KEY, groq: !!process.env.GROQ_API_KEY } });
   }
   if (u.pathname === "/api/models" && (req.method === "POST" || req.method === "GET")) {
     let provider = ""; let ollamaUrl = "";
@@ -85,14 +85,13 @@ const server = http.createServer(async (req, res) => {
     provider = String(provider).toLowerCase();
     if (!provider) {
       const out = {};
-      for (const p of ["openrouter", "groq", "hf", "ollama"]) {
+      for (const p of ["openrouter", "groq", "ollama"]) {
         try { const r = await listModels(p, p === "ollama" ? ollamaUrl : ""); out[p] = { configured: true, models: r.models, via: r.via }; }
         catch (e) { out[p] = { configured: false, models: [], via: "none", error: String((e && e.message) || e) }; }
       }
       return json(res, 200, { providers: out });
     }
-    if (provider === "huggingface") provider = "hf";
-    try {
+        try {
       const out = await listModels(provider, provider === "ollama" ? ollamaUrl : "");
       return json(res, 200, { provider, configured: true, models: out.models, via: out.via });
     } catch (e) {
@@ -122,7 +121,7 @@ const server = http.createServer(async (req, res) => {
     const p = String(b.provider || "auto").toLowerCase();
     const sysKB = buildKB(b.siteContext, b.attachments, detectIntent(messages));
     const ollamaUrl = String(b.ollamaUrl || "").replace(/\/$/, "");
-    const order = p === "auto" ? ["ollama", "openrouter", "groq", "hf"] : [p];
+    const order = p === "auto" ? ["ollama", "openrouter", "groq"] : [p];
     const full = [{ role: "system", content: sysKB }, ...messages];
     const llm = buildLLMMessages(full, b.attachments);
     let lastErr = "no provider configured (set keys in Vercel env)";
@@ -131,11 +130,9 @@ const server = http.createServer(async (req, res) => {
         try {
           if (name === "ollama") await streamOllamaChat(full, b.attachments, ollamaUrl, b.model, res, name);
           else if (name === "openrouter" && process.env.OPENROUTER_API_KEY)
-            await streamOAISSE("https://openrouter.ai/api/v1/chat/completions", process.env.OPENROUTER_API_KEY, b.model || "meta-llama/llama-3.1-8b-instruct:free", llm.messages, res, { via: name, extraHeaders: { "HTTP-Referer": "https://portfolio", "X-Title": "SH Portfolio" } });
+            await streamOAISSE("https://openrouter.ai/api/v1/chat/completions", process.env.OPENROUTER_API_KEY, b.model || process.env.OPENROUTER_MODEL || "openrouter/free", llm.messages, res, { via: name, extraHeaders: { "HTTP-Referer": "https://portfolio", "X-Title": "SH Portfolio" } });
           else if (name === "groq" && process.env.GROQ_API_KEY)
-            await streamOAISSE("https://api.groq.com/openai/v1/chat/completions", process.env.GROQ_API_KEY, b.model || "llama-3.1-8b-instant", llm.messages, res, { via: name });
-          else if ((name === "hf" || name === "huggingface") && process.env.HF_TOKEN)
-            await streamOAISSE("https://router.huggingface.co/v1/chat/completions", process.env.HF_TOKEN, b.model || "meta-llama/Llama-3.1-8B-Instruct", llm.messages, res, { via: name });
+            await streamOAISSE("https://api.groq.com/openai/v1/chat/completions", process.env.GROQ_API_KEY, b.model || process.env.GROQ_MODEL || "openai/gpt-oss-20b", llm.messages, res, { via: name });
           else { lastErr = name + ": key not set in Vercel env"; continue; }
           return;
         } catch (e) {
@@ -150,11 +147,9 @@ const server = http.createServer(async (req, res) => {
         let reply = "";
         if (name === "ollama") reply = await chatOllama(full, b.attachments, ollamaUrl, b.model);
         else if (name === "openrouter" && process.env.OPENROUTER_API_KEY)
-          reply = await chatOAI("https://openrouter.ai/api/v1/chat/completions", process.env.OPENROUTER_API_KEY, b.model || "meta-llama/llama-3.1-8b-instruct:free", llm.messages);
+          reply = await chatOAI("https://openrouter.ai/api/v1/chat/completions", process.env.OPENROUTER_API_KEY, b.model || process.env.OPENROUTER_MODEL || "openrouter/free", llm.messages);
         else if (name === "groq" && process.env.GROQ_API_KEY)
-          reply = await chatOAI("https://api.groq.com/openai/v1/chat/completions", process.env.GROQ_API_KEY, b.model || "llama-3.1-8b-instant", llm.messages);
-        else if ((name === "hf" || name === "huggingface") && process.env.HF_TOKEN)
-          reply = await chatOAI("https://router.huggingface.co/v1/chat/completions", process.env.HF_TOKEN, b.model || "meta-llama/Llama-3.1-8B-Instruct", llm.messages);
+          reply = await chatOAI("https://api.groq.com/openai/v1/chat/completions", process.env.GROQ_API_KEY, b.model || process.env.GROQ_MODEL || "openai/gpt-oss-20b", llm.messages);
         else { lastErr = name + ": key not set in Vercel env"; continue; }
         if (reply) return json(res, 200, { reply, via: name });
       } catch (e) { lastErr = name + ": " + (e.message || e); }

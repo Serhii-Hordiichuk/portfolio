@@ -1,0 +1,30 @@
+---
+interface Props { base?: string; active?: string }
+const { base = '', active = '' } = Astro.props;
+---
+<header class="site-header">
+  <a class="brand" href={`${base}#top`}><i></i><span>.sh</span></a>
+  <nav class="site-nav" aria-label="primary">
+    <a class="nav-link" href={`${base}#top`}><svg class="ic"><use href="#i-home"/></svg><span data-i18n="navHome">Головна</span></a>
+    <a class="nav-link" href={`${base}#resume`}><svg class="ic"><use href="#i-cv"/></svg><span data-i18n="navResume">Резюме</span></a>
+    <a class="nav-link" href={`${base}#stack`}><svg class="ic"><use href="#i-code"/></svg><span data-i18n="navStack">Розробки</span></a>
+    <a class="nav-link" href={`${base}#contacts`}><svg class="ic"><use href="#i-mail"/></svg><span data-i18n="navContacts">Контакти</span></a>
+    <a class="nav-link" href="/sh_ai" data-active={active === 'chat' ? 'true' : undefined} style={active === 'chat' ? 'color:var(--fg);background:var(--soft)' : ''}><svg class="ic"><use href="#i-ai"/></svg><span data-i18n="navChat">Асистент</span></a>
+  </nav>
+  <div class="header-actions">
+    <select id="lang-select" class="select-mini" aria-label="language">
+      <option value="auto">Auto</option>
+      <option value="uk">UA</option>
+      <option value="en">EN</option>
+      <option value="no">NO</option>
+      <option value="de">DE</option>
+      <option value="fr">FR</option>
+      <option value="es">ES</option>
+      <option value="pl">PL</option>
+      <option value="ru">RU</option>
+      <option value="zh">ZH</option>
+      <option value="ar">AR</option>
+    </select>
+    <button id="theme-btn" class="icon-btn" aria-label="theme"><svg class="ic ic-lg"><use href="#i-gear"/></svg></button>
+  </div>
+</header>

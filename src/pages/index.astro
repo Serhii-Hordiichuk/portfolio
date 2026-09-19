@@ -1,0 +1,19 @@
+---
+import Base from '../layouts/Base.astro';
+import Header from '../components/Header.astro';
+import Hero from '../components/Hero.astro';
+import Resume from '../components/Resume.astro';
+import Stack from '../components/Stack.astro';
+import Contacts from '../components/Contacts.astro';
+---
+<Base>
+  <Header />
+  <main>
+    <Hero />
+    <Resume />
+    <Stack />
+    <Contacts />
+  </main>
+  <footer class="site-footer"><span data-i18n="footer">Портфоліо · Монохром · Astro</span></footer>
+  <script src="../scripts/app.ts"></script>
+</Base>

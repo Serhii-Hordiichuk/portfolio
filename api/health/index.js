@@ -17,6 +17,5 @@ export default async function handler(req, res) {
     ollamaModel: process.env.OLLAMA_MODEL || "llama3.1:8b",
     providers: { ollama,
       openrouter: !!process.env.OPENROUTER_API_KEY,
-      groq: !!process.env.GROQ_API_KEY,
-      hf: !!process.env.HF_TOKEN } });
+      groq: !!process.env.GROQ_API_KEY } });
 }

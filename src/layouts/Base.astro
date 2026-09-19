@@ -1,0 +1,34 @@
+---
+import '../styles/global.css';
+import Icons from '../components/Icons.astro';
+
+interface Props { title?: string; description?: string }
+const { title = 'Serhii Hordiichuk — Portfolio', description = 'Serhii Hordiichuk — Possibilities are limitless. Portfolio + AI assistant.' } = Astro.props;
+---
+<!DOCTYPE html>
+<html lang="uk" dir="ltr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+  <link rel="icon" href="/favicon-32.png" sizes="32x32" type="image/png" />
+  <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
+  <link rel="manifest" href="/manifest.json" />
+  <meta name="theme-color" content="#0a0a0a" />
+  <title>{title}</title>
+  <meta name="description" content={description} />
+  <script is:inline>
+    try {
+      const t = localStorage.getItem('sh.theme') || 'auto';
+      const dark = t === 'dark' || (t === 'auto' && matchMedia('(prefers-color-scheme: dark)').matches);
+      if (dark) document.addEventListener('DOMContentLoaded', () => document.body.classList.add('dark'));
+      else document.addEventListener('DOMContentLoaded', () => document.body.classList.remove('dark'));
+      if (dark) document.documentElement.style.colorScheme = 'dark';
+    } catch {}
+  </script>
+</head>
+<body>
+  <Icons />
+  <slot />
+</body>
+</html>

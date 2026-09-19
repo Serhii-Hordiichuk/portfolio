@@ -1,0 +1,6 @@
+---
+// shadcn/ui Avatar — vanilla Astro port (fallback initials only, monochrome).
+interface Props { text?: string; cls?: string }
+const { text = 'SH', cls = '' } = Astro.props;
+---
+<span class={`avatar2 ${cls}`} aria-hidden="true">{text}</span>

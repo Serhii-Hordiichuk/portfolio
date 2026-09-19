@@ -1,0 +1,98 @@
+---
+// sh_ai — standalone integrated AI chat app (ready to migrate to its own repo).
+// This fragment renders the full UI; the host page provides <html> shell.
+import Button from './components/ui/Button.astro';
+import Avatar from './components/ui/Avatar.astro';
+import Skeleton from './components/ui/Skeleton.astro';
+import './styles/chat.css';
+---
+<div class="sb-provider chat-page" id="sb-provider" data-open="false" data-collapsed="false">
+  <div class="sb-overlay" id="sb-overlay"></div>
+
+  <aside class="sb" id="sb" aria-label="chat sidebar">
+      <div class="sb-header">
+        <div class="sb-toprow">
+          <button class="sb-trigger" id="sb-trigger" aria-label="toggle sidebar"><svg class="ic"><use href="#i-panel"/></svg></button>
+          <span class="sb-brand">sh_ai</span>
+        </div>
+        <label class="sb-search">
+          <svg class="ic"><use href="#i-search"/></svg>
+          <input id="sess-search" type="search" autocomplete="off" data-i18n-ph="search" placeholder="Пошук…" aria-label="search chats" />
+        </label>
+        <Button variant="default" size="sm" id="new-chat" title="New chat" label="new chat" cls="sb-new">
+          <svg class="ic"><use href="#i-plus"/></svg><span data-i18n="newChat">Новий чат</span>
+        </Button>
+      </div>
+
+    <div class="sb-content">
+      <div class="sb-group">
+          <div class="sb-group-label"><span>Chats</span></div>
+        <ul class="sb-menu" id="sessions"></ul>
+        <div class="sb-empty" id="sess-empty" style="display:none">No chats yet</div>
+      </div>
+    </div>
+
+    <div class="sb-footer">
+      <div class="sb-footrow">
+        <Button variant="ghost" size="icon" id="cx-export" title="Copy chat" label="copy chat">
+          <svg class="ic"><use href="#i-copy"/></svg>
+        </Button>
+        <Button variant="ghost" size="icon" id="cx-clear" title="Clear chat" label="clear chat">
+          <svg class="ic"><use href="#i-trash"/></svg>
+        </Button>
+        <a class="sb-home" href="/" title="Portfolio" aria-label="portfolio"><svg class="ic"><use href="#i-home"/></svg></a>
+      </div>
+    </div>
+  </aside>
+
+    <div class="sb-inset" id="sb-inset">
+      <div class="topbar2">
+        <div class="dd" id="mode-dd">          <button class="btn2 btn2-outline btn2-sm" id="mode-btn" aria-haspopup="menu" aria-expanded="false">
+            <span class="mode-dot" id="mode-dot"></span>
+            <span id="mode-name">Flash</span>
+            <svg class="ic"><use href="#i-chev-d"/></svg>
+          </button>
+          <div class="dd-menu" id="mode-menu" role="menu">
+            <button class="dd-item" data-mode="flash" role="menuitem">
+              <span class="dd-t">Flash</span>
+            </button>
+            <button class="dd-item" data-mode="deep" role="menuitem">
+              <span class="dd-t">Deep</span>
+            </button>
+            <button class="dd-item" data-mode="uncensored" role="menuitem">
+              <span class="dd-t">Uncensored</span>
+            </button>
+          </div>
+        </div>
+        <span style="margin-left:auto"></span>
+        <button class="ctool2" id="theme-btn" title="Theme" aria-label="theme"><svg class="ic"><use href="#i-contrast"/></svg></button>
+      </div>
+      <div class="chat-scroll" id="chat-scroll">
+        <div class="chat-inner" id="chat-body">
+          <div class="hero2" id="hero">
+            <div class="hero2-greet"><span id="hero-greet"></span><span class="caret" id="hero-caret"></span></div>
+          </div>
+          <div id="chat-skel" style="display:flex;flex-direction:column;gap:.875rem">
+            <Skeleton h="4.5rem" /><Skeleton h="6rem" w="85%" /><Skeleton h="3.5rem" w="70%" />
+          </div>
+          <div id="chat-inner" style="display:flex;flex-direction:column;gap:.875rem"></div>
+        </div>
+      </div>
+
+    <div class="composer2">
+      <div class="composer2-inner">
+        <div class="typing2" id="typing"><i></i><i></i><i></i></div>
+        <div class="pending2" id="cx-files"></div>
+        <div class="cbox2">
+          <button class="ctool2" id="attach" title="Attach file" aria-label="attach file"><svg class="ic"><use href="#i-clip"/></svg></button>
+          <textarea id="chat-input" class="textarea2" rows="1" data-i18n-ph="ph" placeholder="Напишіть повідомлення…" autocomplete="off"></textarea>
+          <input type="file" id="file" hidden multiple accept="image/*,.txt,.md,.pdf,.json,.csv,.js,.ts,.py,.html,.css" />
+          <button class="ctool2" id="mic" title="Voice input" aria-label="voice input"><svg class="ic"><use href="#i-mic"/></svg></button>
+          <button class="csend2" id="send" title="Send" aria-label="send"><svg class="ic"><use href="#i-send"/></svg></button>
+        </div>
+      </div>
+    </div>
+  </div>
+  </div>
+
+  <div class="toast2" id="cx-toast"></div>

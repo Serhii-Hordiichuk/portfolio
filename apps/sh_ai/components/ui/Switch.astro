@@ -1,0 +1,9 @@
+---
+// shadcn/ui Switch — vanilla Astro port (checkbox-based).
+interface Props { id: string; checked?: boolean; label?: string }
+const { id, checked, label } = Astro.props;
+---
+<label class="switch2" title={label} aria-label={label}>
+  <input type="checkbox" id={id} checked={checked} />
+  <span class="tr"></span>
+</label>

@@ -1,0 +1,11 @@
+---
+// shadcn/ui Button (new-york) — vanilla Astro port. Variants: default | secondary | outline | ghost.
+interface Props {
+  variant?: 'default' | 'secondary' | 'outline' | 'ghost';
+  size?: 'default' | 'sm' | 'icon';
+  type?: 'button' | 'submit';
+  id?: string; title?: string; label?: string; disabled?: boolean; cls?: string;
+}
+const { variant = 'default', size = 'default', type = 'button', id, title, label, disabled, cls = '' } = Astro.props;
+---
+<button type={type} id={id} title={title} aria-label={label || title} disabled={disabled} class={`btn2 btn2-${variant} ${size !== 'default' ? 'btn2-' + size : ''} ${cls}`}><slot /></button>

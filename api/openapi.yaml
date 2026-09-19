@@ -89,9 +89,9 @@ components:
           description: "Chat history (last 12 messages used)"
         provider:
           type: string
-          enum: [auto, openrouter, groq, hf, huggingface, ollama]
+          enum: [auto, openrouter, groq, ollama]
           default: auto
-          description: "AI provider to use. 'auto' tries ollama, openrouter, groq, hf in order"
+          description: "AI provider to use. 'auto' tries ollama, openrouter, groq in order"
         model:
           type: string
           default: "auto"
@@ -129,7 +129,7 @@ components:
           type: array
           items:
             type: string
-          example: ["meta-llama/llama-3.1-8b-instruct:free", "google/gemma-2-9b-it:free"]
+          example: ["openrouter/free", "openai/gpt-oss-20b:free"]
         via:
           type: string
           example: "openrouter-api"
@@ -179,15 +179,13 @@ components:
               type: boolean
             groq:
               type: boolean
-            hf:
-              type: boolean
   parameters:
     providerQuery:
       name: provider
       in: query
       schema:
         type: string
-        enum: [openrouter, groq, hf, huggingface, ollama]
+        enum: [openrouter, groq, ollama]
       description: "Provider to query (optional, returns all if omitted)"
     ollamaUrlQuery:
       name: ollamaUrl
@@ -295,19 +293,14 @@ paths:
                       openrouter:
                         configured: true
                         models:
-                          - meta-llama/llama-3.1-8b-instruct:free
-                          - google/gemma-2-9b-it:free
+                          - openrouter/free
+                          - openai/gpt-oss-20b:free
                         via: openrouter-api
                       groq:
                         configured: true
                         models:
-                          - llama-3.1-8b-instant
+                          - openai/gpt-oss-20b
                         via: groq-api
-                      hf:
-                        configured: false
-                        models: []
-                        via: none
-                        error: "HF_TOKEN not set in Vercel env"
                       ollama:
                         configured: false
                         models: []
@@ -319,7 +312,7 @@ paths:
                     provider: openrouter
                     configured: true
                     models:
-                      - meta-llama/llama-3.1-8b-instruct:free
+                      - openrouter/free
                     via: openrouter-api
         '400':
           description: Unknown provider
@@ -332,8 +325,6 @@ paths:
                 providers:
                   - openrouter
                   - groq
-                  - hf
-                  - huggingface
                   - ollama
         '405':
           description: Method not allowed
@@ -355,7 +346,7 @@ paths:
               properties:
                 provider:
                   type: string
-                  enum: [openrouter, groq, hf, huggingface, ollama]
+                  enum: [openrouter, groq, ollama]
                 ollamaUrl:
                   type: string
                   format: uri
@@ -401,5 +392,4 @@ paths:
                   ollama: false
                   openrouter: true
                   groq: true
-                  hf: false
       x-vercel-max-duration: 10

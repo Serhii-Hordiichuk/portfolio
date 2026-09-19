@@ -1,0 +1,6 @@
+---
+// shadcn/ui Badge — vanilla Astro port.
+interface Props { id?: string; on?: boolean; cls?: string }
+const { id, on, cls = '' } = Astro.props;
+---
+<span id={id} class={`badge2${on ? ' on' : ''} ${cls}`}><slot /></span>

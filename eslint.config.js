@@ -1,6 +1,6 @@
 export default [
   {
-    ignores: ['public/assets/**', 'public/sw.js', '.kilo/**', 'node_modules/**'],
+    ignores: ['dist/**', 'node_modules/**', '.astro/**', 'src/**/*.astro', 'src/**/*.ts', 'tests/**/*.ts', '.kilo/**', '.vercel/**'],
   },
   {
     files: ['**/*.js'],
@@ -24,8 +24,6 @@ export default [
         speechSynthesis: 'readonly',
         Image: 'readonly',
         FileReader: 'readonly',
-        canvas: 'readonly',
-        Hls: 'readonly',
         matchMedia: 'readonly',
       },
     },
