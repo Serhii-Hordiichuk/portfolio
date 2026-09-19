@@ -194,6 +194,8 @@ body.dark .badge2.on .dot { background: #66bb6a; }
 
 /* ---------- topbar (no lines) + model dropdown (shadcn dropdown-menu) ---------- */
 .topbar2 { display: flex; align-items: center; gap: .5rem; padding: .625rem 1rem; flex-shrink: 0; }
+.sb-trigger-top { display: none; }
+@media (max-width: 899px) { .sb-trigger-top { display: inline-flex; } }
 .topbar2 .btn2 .ic { width: 14px; height: 14px; }
 .mode-dot { width: 7px; height: 7px; border-radius: 50%; background: var(--foreground); flex-shrink: 0; }
 .dd { position: relative; }

@@ -711,13 +711,15 @@ function boot(): void {
     if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); send(); }
   });
 
-  $('#sb-trigger')?.addEventListener('click', (e) => { e.stopPropagation(); toggleSb(); });
+  document.querySelectorAll('.sb-trigger').forEach((btn) => {
+    btn.addEventListener('click', (e) => { e.stopPropagation(); toggleSb(); });
+  });
   $('#sb-overlay')?.addEventListener('click', () => setSbOpen(false));
   document.addEventListener('click', (e) => {
     if (isDesktop()) return;
     if ($('#sb-provider')?.getAttribute('data-open') === 'true'
       && !$('#sb')?.contains(e.target as Node)
-      && !$('#sb-trigger')?.contains(e.target as Node)) setSbOpen(false);
+      && !(e.target as HTMLElement).closest?.('.sb-trigger')) setSbOpen(false);
   });
   document.addEventListener('keydown', (e) => {
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === 'b') { e.preventDefault(); toggleSb(); }
